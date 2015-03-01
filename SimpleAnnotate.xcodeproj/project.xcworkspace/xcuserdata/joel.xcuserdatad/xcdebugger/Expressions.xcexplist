@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "-[KernelEditorController sizeChanged:]:KernelEditorController.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "xSlider.intValue">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[GLRectangleDragger reOrderRectangle:]:GLRectangleDragger.mm">
+      </ContextState>
+      <ContextState
+         contextName = "-[GLRectangleDragger getRects]:GLRectangleDragger.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "points[i+1]">
+            </PersistentString>
+            <PersistentString
+               value = "points[i+2]">
+            </PersistentString>
+            <PersistentString
+               value = "points[i]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[AppDelegate NextFrame:]:AppDelegate.mm">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
