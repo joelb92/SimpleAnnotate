@@ -246,9 +246,18 @@
 	if(mouseOverController && [mouseOverController.superview isEqual:self] && (!spaceConverter.ImageRect.size.isNull() || spaceConverter.type==_3d))
 	{
 		[mouseOverController.tool SetMousePosition:mousePosition UsingSpaceConverter:spaceConverter];
-		[infoOutput.xCoordMouseLabel setStringValue:[NSString stringWithFormat:@"%f",[objectList MouseOverPointAtScreenPoint:mousePosition UsingSpaceConverter:spaceConverter].x]];
-		[infoOutput.yCoordMouseLabel setStringValue:[NSString stringWithFormat:@"%f",[objectList MouseOverPointAtScreenPoint:mousePosition UsingSpaceConverter:spaceConverter].y]];
-
+        int mouseX = [objectList MouseOverPointAtScreenPoint:mousePosition UsingSpaceConverter:spaceConverter].x;
+        int mouseY =[objectList MouseOverPointAtScreenPoint:mousePosition UsingSpaceConverter:spaceConverter].y;
+		[infoOutput.xCoordMouseLabel setStringValue:[NSString stringWithFormat:@"%i",mouseX]];
+		[infoOutput.yCoordMouseLabel setStringValue:[NSString stringWithFormat:@"%i",mouseY]];
+        id obj =[objectList ObjectForKeyPath:@"/First"];
+        cv::Mat img = [(OpenImageHandler *)([(TreeListItem *)[objectList ObjectForKeyPath:@"/First"] object]) Cv];
+        int r,g,b;
+        cv::Vec4b bgra;
+        bgra = img.at<cv::Vec4b>(mouseY,mouseX);
+        infoOutput.blueLabel.intValue = bgra[0];
+        infoOutput.greenLabel.intValue = bgra[1];
+        infoOutput.redLabel.intValue = bgra[2];
 	}
 }
 - (void)mouseDown:(NSEvent*)event

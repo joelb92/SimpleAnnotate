@@ -18,6 +18,9 @@
 	IBOutlet NSTextField *yCoordRectLabel;
 	IBOutlet NSTextField *widthLabel;
 	IBOutlet NSTextField *heightLabel;
+    IBOutlet NSTextField *redLabel;
+    IBOutlet NSTextField *greenLabel;
+    IBOutlet NSTextField *blueLabel;
 }
 
 @property IBOutlet NSTextField *frameNumLabel;
@@ -28,4 +31,7 @@
 @property IBOutlet NSTextField *yCoordRectLabel;
 @property IBOutlet NSTextField *widthLabel;
 @property IBOutlet NSTextField *heightLabel;
+@property IBOutlet NSTextField *redLabel;
+@property IBOutlet NSTextField *greenLabel;
+@property IBOutlet NSTextField *blueLabel;
 @end

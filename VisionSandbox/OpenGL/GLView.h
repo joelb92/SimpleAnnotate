@@ -10,7 +10,7 @@
 #import "GLUT/glut.h"
 #import "Ray3.h"
 #import "GLViewMouseOverController.h"
-
+#import "OpenImageHandler.h"
 @interface GLView : NSOpenGLView 
 {
 	bool Enabled;

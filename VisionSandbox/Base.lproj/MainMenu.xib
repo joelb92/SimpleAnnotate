@@ -748,8 +748,11 @@
                                             </textField>
                                         </subviews>
                                         <connections>
+                                            <outlet property="blueLabel" destination="di5-Sy-5GT" id="Wkt-A5-j6V"/>
                                             <outlet property="frameNumLabel" destination="olJ-O8-bg3" id="yXc-2a-nNA"/>
+                                            <outlet property="greenLabel" destination="uqc-tm-hAJ" id="ZoO-iN-1ho"/>
                                             <outlet property="heightLabel" destination="f43-Lx-BHA" id="s8z-As-RKA"/>
+                                            <outlet property="redLabel" destination="91q-zk-Q63" id="3yP-0f-vLX"/>
                                             <outlet property="trackNumberLabel" destination="opx-QU-bRd" id="5Gg-47-NXU"/>
                                             <outlet property="widthLabel" destination="pIY-rN-NiR" id="2VV-2E-2FH"/>
                                             <outlet property="xCoordMouseLabel" destination="Xhp-7e-FoE" id="iTd-oL-zhq"/>

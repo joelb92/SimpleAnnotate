@@ -8,5 +8,5 @@
 
 #import "InfoOutputController.h"
 @implementation InfoOutputController
-@synthesize frameNumLabel,trackNumberLabel,xCoordMouseLabel,yCoordMouseLabel,xCoordRectLabel,yCoordRectLabel,widthLabel,heightLabel;
+@synthesize frameNumLabel,trackNumberLabel,xCoordMouseLabel,yCoordMouseLabel,xCoordRectLabel,yCoordRectLabel,widthLabel,heightLabel,redLabel,greenLabel,blueLabel;
 @end
