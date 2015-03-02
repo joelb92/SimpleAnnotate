@@ -11,6 +11,7 @@
 - (GLViewTool*)tool
 {
 	return [[currentTool retain] autorelease];
+    
 }
 
 - (id)initWithFrame:(NSRect)frame
@@ -18,14 +19,16 @@
     self = [super initWithFrame:frame];
     if(self)
 	{
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"TableReload" object:nil];
 		rulerTool = [[GLRuler alloc] init];
 		protractorTool = [[GLProtractor alloc] init];
 		rectangleTool = [[GLRectangleDragger alloc] initWithOutputView:infoOutput];
-
-		
+        labelFields = [[NSMutableDictionary alloc] init];
+//		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
 		currentTool = rectangleTool;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UpdateOutput) name:@"MouseOverToolValueChanged" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OpenSegmentationAssistant) name:@"Open Segmentation Assistant!" object:nil];
+//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OpenSegmentationAssistant) name:@"Open Segmentation Assistant!" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setSelectedTableRow:) name:@"SelectionChanged" object:nil];
     }
     
     return self;
@@ -55,10 +58,12 @@
 	
 }
 
--(void)mouseClickedAtPoint:(Vector2)p withEvent:(NSEvent *)event
+-(void)mouseClickedAtPoint:(Vector2)p SuperViewPoint:(Vector2)SP withEvent:(NSEvent *)event
 {
     rectangleTool.rectWidth = defaultRectWidthField.intValue;
     rectangleTool.rectHeight = defaultRectHeightField.intValue;
+    NSRect newframe  = NSMakeRect(SP.x, SP.y, testLabel.frame.size.width, testLabel.frame.size.height);
+    [testLabel setFrame:newframe];
 	[currentTool mouseClickedAtPoint:p withEvent:event];
 }
 
@@ -79,6 +84,58 @@
 	[view addSubview:self];
 	[self makeViewFitParentView];
 }
+
+-(void)setSelectedTableRow:(NSNotification *)notification
+{
+    int row = [(NSNumber *)notification.object intValue];
+    NSIndexSet *i = [[NSIndexSet alloc] initWithIndex:row];
+    [mainTableView selectRowIndexes:i byExtendingSelection:NO];
+    if (row < 0) {
+        [mainTableView deselectAll:nil];
+    }
+}
+
+-(NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
+{
+    return rectangleTool.getRects.count;
+}
+- (NSView *)tableView:(NSTableView *)tableView
+   viewForTableColumn:(NSTableColumn *)tableColumn
+                  row:(NSInteger)row
+{
+    NSTextField *result;
+    result = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, tableColumn.width, 21)];
+    if ([tableColumn.identifier isEqualToString:@"Location"]) {
+        NSRect r =[[[rectangleTool getRects] objectForKey:[[rectangleTool getKeys] objectAtIndex:row]] rectValue];
+        result.stringValue =  [NSString stringWithFormat:@"%i,%i,%i,%i",(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height];
+    }
+    else{
+        result.stringValue = [rectangleTool.getKeys objectAtIndex:row];
+    }
+    return result;
+}
+
+- (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+{
+//    if ([[aTableView selectedRowIndexes] containsIndex:rowIndex])
+//    {
+//        [aCell setBackgroundColor: [NSColor yellowColor]];
+//    }
+//    else
+//    {
+//        [aCell setBackgroundColor: [NSColor whiteColor]];
+//    }
+    [aCell setDrawsBackground:YES];
+    if ([(ROTableView *)aTableView mouseOverRow] == rowIndex)
+        NSLog(@"%d could be highlighted", rowIndex);
+    else NSLog(@"%d shouldn't be highlighted", rowIndex);
+}
+-(void)reloadTable
+{
+    [mainTableView reloadData];
+}
+
+
 - (void)dealloc
 {
 	[rulerTool release];

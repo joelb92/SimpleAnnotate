@@ -81,6 +81,7 @@
 		5D55C5771995D1AE00D9F78A /* ImageListView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D55C5761995D1AE00D9F78A /* ImageListView.mm */; };
 		5D55C57A1995F04200D9F78A /* FunctionVisualTableCellView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D55C5791995F04200D9F78A /* FunctionVisualTableCellView.mm */; };
 		5D55C5811995F36700D9F78A /* FunctionVisualParametersView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D55C5801995F36700D9F78A /* FunctionVisualParametersView.mm */; };
+		5D7BF1501AA4E8AD00AC2DBE /* ROTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D7BF14F1AA4E8AD00AC2DBE /* ROTableView.m */; };
 		5D94B565199C185300E080E5 /* SliderView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D94B564199C185300E080E5 /* SliderView.mm */; };
 		5D94B568199C313500E080E5 /* ComboView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D94B567199C313500E080E5 /* ComboView.mm */; };
 		5D94B56B199C318400E080E5 /* RadioView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D94B56A199C318400E080E5 /* RadioView.mm */; };
@@ -260,6 +261,8 @@
 		5D55C5791995F04200D9F78A /* FunctionVisualTableCellView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FunctionVisualTableCellView.mm; sourceTree = "<group>"; };
 		5D55C57F1995F36700D9F78A /* FunctionVisualParametersView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionVisualParametersView.h; sourceTree = "<group>"; };
 		5D55C5801995F36700D9F78A /* FunctionVisualParametersView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FunctionVisualParametersView.mm; sourceTree = "<group>"; };
+		5D7BF14E1AA4E8AD00AC2DBE /* ROTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ROTableView.h; sourceTree = "<group>"; };
+		5D7BF14F1AA4E8AD00AC2DBE /* ROTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ROTableView.m; sourceTree = "<group>"; };
 		5D94B563199C185300E080E5 /* SliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderView.h; sourceTree = "<group>"; };
 		5D94B564199C185300E080E5 /* SliderView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SliderView.mm; sourceTree = "<group>"; };
 		5D94B566199C313500E080E5 /* ComboView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComboView.h; sourceTree = "<group>"; };
@@ -523,6 +526,8 @@
 				5DF796AF199BED55003D7930 /* Visual Function Views */,
 				5D2898631991FFCA0036CFD6 /* DragableSubView.h */,
 				5D2898641991FFCA0036CFD6 /* DragableSubView.mm */,
+				5D7BF14E1AA4E8AD00AC2DBE /* ROTableView.h */,
+				5D7BF14F1AA4E8AD00AC2DBE /* ROTableView.m */,
 				5D55C52F19933F8800D9F78A /* SingleViewCellView.h */,
 				5D55C53019933F8800D9F78A /* SingleViewCellView.mm */,
 				5DF796A9199B2229003D7930 /* ColorTableCellView.h */,
@@ -776,6 +781,7 @@
 				5D28984A1991FA890036CFD6 /* GLView.mm in Sources */,
 				5D28985F1991FF8E0036CFD6 /* GLRuler.mm in Sources */,
 				5D55C53119933F8800D9F78A /* SingleViewCellView.mm in Sources */,
+				5D7BF1501AA4E8AD00AC2DBE /* ROTableView.m in Sources */,
 				5D2898491991FA890036CFD6 /* GLOutlineViewController.mm in Sources */,
 				5D2898611991FF8E0036CFD6 /* GLViewMouseOverController.mm in Sources */,
 				5D55C53A199340DA00D9F78A /* Color.mm in Sources */,

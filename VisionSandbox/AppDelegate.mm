@@ -151,6 +151,28 @@
     }
 }
 
+- (IBAction)copyPreviousRects:(id)sender
+{
+    [self copyRectsFromLastNonEmptyFrame];
+}
+
+
+-(void)copyRectsFromLastNonEmptyFrame
+{
+    for(int i = frameNum-1; i >= 0; i--)
+    {
+        NSMutableDictionary* rects = [rectsForFrames objectForKey:@(i)];
+        if (rects && rects.count > 0) {
+            [mainGLView.mouseOverController.rectangleTool setRects:rects]; //load new rects for next frame
+            return;
+        }
+    }
+}
+- (IBAction)ClearCurrentRects:(id)sender
+{
+    mainGLView.mouseOverController.rectangleTool.clearAll;
+}
+
 -(bool)shouldStoreRects
 {
     //	bool allEmpty = true;

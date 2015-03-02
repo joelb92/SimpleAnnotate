@@ -254,10 +254,18 @@
         cv::Mat img = [(OpenImageHandler *)([(TreeListItem *)[objectList ObjectForKeyPath:@"/First"] object]) Cv];
         int r,g,b;
         cv::Vec4b bgra;
-        bgra = img.at<cv::Vec4b>(mouseY,mouseX);
-        infoOutput.blueLabel.intValue = bgra[0];
-        infoOutput.greenLabel.intValue = bgra[1];
-        infoOutput.redLabel.intValue = bgra[2];
+        if (mouseX >= 0 && mouseX < img.cols && mouseY >= 0 && mouseY < img.rows) {
+            bgra = img.at<cv::Vec4b>(mouseY,mouseX);
+            infoOutput.blueLabel.intValue = bgra[0];
+            infoOutput.greenLabel.intValue = bgra[1];
+            infoOutput.redLabel.intValue = bgra[2];
+        }
+        else{
+            infoOutput.blueLabel.stringValue = @"NA";
+            infoOutput.redLabel.stringValue = @"NA";
+            infoOutput.greenLabel.stringValue = @"NA";
+        }
+        
 	}
 }
 - (void)mouseDown:(NSEvent*)event
@@ -285,7 +293,7 @@
 }
 - (void)mouseClicked:(NSEvent *)event
 {
-	[mouseOverController mouseClickedAtPoint:[objectList MouseOverPointAtScreenPoint:mousePosition UsingSpaceConverter:spaceConverter] withEvent:event];
+	[mouseOverController mouseClickedAtPoint:[objectList MouseOverPointAtScreenPoint:mousePosition UsingSpaceConverter:spaceConverter] SuperViewPoint:mousePosition withEvent:event];
 }
 - (void)mouseDragged:(NSEvent*)event
 {

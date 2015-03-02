@@ -8,7 +8,8 @@
 #import "GLRuler.h"
 #import "GLProtractor.h"
 #import "GLRectangleDragger.h"
-@interface GLViewMouseOverController : DragableSubView <NSTabViewDelegate>
+#import "ROTableView.h"
+@interface GLViewMouseOverController : DragableSubView <NSTabViewDelegate,NSTableViewDataSource>
 {
 	GLRuler*rulerTool;
 	GLProtractor*protractorTool;
@@ -30,13 +31,16 @@
 	//RectTool
 	IBOutlet NSTextField *RectKey;
 	
+    NSMutableDictionary *labelFields;
+    IBOutlet NSTextField *testLabel;
 	IBOutlet InfoOutputController *infoOutput;
-
+    IBOutlet ROTableView *mainTableView;
+    
 }
 @property (assign) GLRectangleDragger *rectangleTool;
 @property (assign) NSTextField *RectKey;
 - (GLViewTool*)tool;
 - (bool)ActiveInView:(NSView*)view;
 - (void)ToggleInView:(NSView*)view;
-- (void)mouseClickedAtPoint:(Vector2)p withEvent:(NSEvent *)event;
+- (void)mouseClickedAtPoint:(Vector2)p SuperViewPoint:(Vector2)SP withEvent:(NSEvent *)event;
 @end
