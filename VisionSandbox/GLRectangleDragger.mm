@@ -8,7 +8,7 @@
 
 #import "GLRectangleDragger.h"
 @implementation GLRectangleDragger
-@synthesize currentKey,mousedOverRectIndex;
+@synthesize currentKey,mousedOverRectIndex,rectWidth,rectHeight;
 - (id)initWithOutputView:(InfoOutputController *)inf
 {
 	self = [super init];
@@ -290,30 +290,37 @@
 }
 - (void)DragTo:(Vector3)point Event:(NSEvent *)event
 {
+    point.x = floor(point.x);
+    point.y = floor(point.y);
 	if(!point.isNull() && mousedOverPointIndex>=0)
 	{
 		int rectIndex = mousedOverPointIndex%4;
-		points[mousedOverPointIndex].x = point.x;
-		points[mousedOverPointIndex].y = point.y;
+        if(!draggingDiffIsSet){
+            xDifference = points[mousedOverPointIndex].x-point.x;
+            yDifference = points[mousedOverPointIndex].y-point.y;
+            draggingDiffIsSet = true;
+        }
+		points[mousedOverPointIndex].x = point.x+xDifference;
+		points[mousedOverPointIndex].y = point.y+yDifference;
 		if(rectIndex == 0) //top left corner
 		{
-			points[mousedOverPointIndex+1].y = point.y;
-			points[mousedOverPointIndex+3].x = point.x;
+			points[mousedOverPointIndex+1].y = point.y+yDifference;
+			points[mousedOverPointIndex+3].x = point.x+xDifference;
 		}
 		if (rectIndex == 1)
 		{
-			points[mousedOverPointIndex-1].y = point.y;
-			points[mousedOverPointIndex+1].x = point.x;
+			points[mousedOverPointIndex-1].y = point.y+yDifference;
+			points[mousedOverPointIndex+1].x = point.x+xDifference;
 		}
 		if (rectIndex == 2)
 		{
-			points[mousedOverPointIndex-1].x = point.x;
-			points[mousedOverPointIndex+1].y = point.y;
+			points[mousedOverPointIndex-1].x = point.x+xDifference;
+			points[mousedOverPointIndex+1].y = point.y+yDifference;
 		}
 		if (rectIndex == 3)
 		{
-			points[mousedOverPointIndex-1].y = point.y;
-			points[mousedOverPointIndex-3].x = point.x;
+			points[mousedOverPointIndex-1].y = point.y+yDifference;
+			points[mousedOverPointIndex-3].x = point.x+xDifference;
 		}
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
 	}
@@ -359,7 +366,7 @@
 - (void)mouseClickedAtPoint:(Vector2)p withEvent:(NSEvent *)event
 {
 	if ([event modifierFlags] & NSCommandKeyMask) {
-		[self addRect:NSMakeRect(p.x, p.y, 20, 20) color:Blue forKey:[NSString stringWithFormat:@"%i",points.Length/4]];
+		[self addRect:NSMakeRect(floor(p.x), floor(p.y), rectWidth, rectHeight) color:Blue forKey:[NSString stringWithFormat:@"%i",points.Length/4]];
 	}
 	if ([event modifierFlags] & NSShiftKeyMask) {
 		if (mousedOverRectIndex >= 0) {
@@ -398,6 +405,11 @@
 	ps[2] = points[rectangleIndex*4+2].AsCvPoint();
 	ps[3] = points[rectangleIndex*4+3].AsCvPoint();
 	cv::Rect r = cv::boundingRect(ps);
+//    points[rectangleIndex*4] = ps[0];
+//    points[rectangleIndex*4+1] =ps[1];
+//    points[rectangleIndex*4+2] =ps[2];
+//    points[rectangleIndex*4+3] =ps[3];
+
 	points[rectangleIndex*4] = cv::Point(r.x,r.y);
 	points[rectangleIndex*4+1] = cv::Point(r.x+r.width-1,r.y);
 	points[rectangleIndex*4+2] = cv::Point(r.x+r.width-1,r.y+r.height-1);
@@ -448,6 +460,7 @@
 
 - (void)StopDragging
 {
+    draggingDiffIsSet = false;
 	[self reOrderPointArray];
 	dragRectBegin = false;
 	[super StopDragging];

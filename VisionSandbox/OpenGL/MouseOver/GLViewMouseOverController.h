@@ -14,6 +14,8 @@
 	GLProtractor*protractorTool;
 	GLViewTool*currentTool;
 	GLRectangleDragger *rectangleTool;
+    IBOutlet NSTextField *defaultRectHeightField;
+    IBOutlet NSTextField *defaultRectWidthField;
 	IBOutlet NSTabView *TabView;
 	
 	//Ruler

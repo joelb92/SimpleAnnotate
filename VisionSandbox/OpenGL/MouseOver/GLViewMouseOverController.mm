@@ -57,6 +57,8 @@
 
 -(void)mouseClickedAtPoint:(Vector2)p withEvent:(NSEvent *)event
 {
+    rectangleTool.rectWidth = defaultRectWidthField.intValue;
+    rectangleTool.rectHeight = defaultRectHeightField.intValue;
 	[currentTool mouseClickedAtPoint:p withEvent:event];
 }
 

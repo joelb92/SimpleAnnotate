@@ -373,7 +373,6 @@
 				5D2898661992020C0036CFD6 /* Algebra */,
 				5D28988B199202620036CFD6 /* Array Types */,
 				5D55C5701995BFFB00D9F78A /* Categories */,
-				5D55C57E1995F2BA00D9F78A /* Functions for Algorithms */,
 				5DD4C763199916F40066DFE1 /* GUI Controllers */,
 				5D55C5721995C4DC00D9F78A /* GUI */,
 				5D2898271991FA890036CFD6 /* OpenGL */,
@@ -610,13 +609,6 @@
 				5D55C56519948EFC00D9F78A /* OpenGL View Icon.png */,
 			);
 			name = Images;
-			sourceTree = "<group>";
-		};
-		5D55C57E1995F2BA00D9F78A /* Functions for Algorithms */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Functions for Algorithms";
 			sourceTree = "<group>";
 		};
 		5D94B562199C17F900E080E5 /* Visual Parameter Field Views */ = {

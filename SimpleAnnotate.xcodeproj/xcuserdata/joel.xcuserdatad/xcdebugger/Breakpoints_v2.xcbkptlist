@@ -33,36 +33,6 @@
             endingLineNumber = "77"
             landmarkName = "-setting_max:"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[SliderView setting_max:]"
-                  moduleName = "SimpleAnnotate"
-                  urlString = "file:///Users/joel/Documents/Programming/SimpleAnnotate/SliderView.mm"
-                  timestampString = "444151901.462022"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "77"
-                  endingLineNumber = "77"
-                  offsetFromSymbolStart = "36">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[SliderView setting_max:]"
-                  moduleName = "SimpleAnnotate"
-                  urlString = "file:///Users/joel/Documents/Programming/SimpleAnnotate/SliderView.mm"
-                  timestampString = "444151901.462399"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "77"
-                  endingLineNumber = "77"
-                  offsetFromSymbolStart = "149">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

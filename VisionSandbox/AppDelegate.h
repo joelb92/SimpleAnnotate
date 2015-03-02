@@ -21,9 +21,12 @@
 	OpenImageHandler *loadedImg;
 	cv::VideoCapture capture;
 	NSMutableArray *allFrames;
+    NSMutableDictionary *frameForFrameNumber;
 	NSMutableDictionary *rectsForFrames;
 	IBOutlet NSButton *saveEmptyFrames;
 	IBOutlet NSTextField *frameSkipField;
+    IBOutlet NSTextField *frameJumpField;
+
 	NSString *currentFilePath;
 	int frameNum;
 	int frameSkip;

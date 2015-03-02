@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>EC8F51DD-3FEA-4267-8426-C1585B330724</string>
+	<key>IDESourceControlProjectName</key>
+	<string>SimpleAnnotate</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>D05B6629FB3FC48B12335DBCCDC5905ED591D59E</key>
+		<string>https://github.com/joelb92/SimpleAnnotate.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>SimpleAnnotate.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>D05B6629FB3FC48B12335DBCCDC5905ED591D59E</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/joelb92/SimpleAnnotate.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>D05B6629FB3FC48B12335DBCCDC5905ED591D59E</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D05B6629FB3FC48B12335DBCCDC5905ED591D59E</string>
+			<key>IDESourceControlWCCName</key>
+			<string>SimpleAnnotate</string>
+		</dict>
+	</array>
+</dict>
+</plist>
