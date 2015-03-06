@@ -50,14 +50,16 @@
 }
 
 - (void)controlTextDidChange:(NSNotification *)notification {
-	if (notification.object == RectKey) {
-		if ([currentTool isEqual:rectangleTool] && rectangleTool.mousedOverRectIndex >0) {
-			[rectangleTool setRectKey:RectKey.stringValue forIndex:rectangleTool.mousedOverRectIndex];
-		}
-	}
-	
 }
-
+-(void)controlTextDidEndEditing:(NSNotification *)obj
+{
+    int row = (int)mainTableView.selectedRow;
+    if (row >= 0) {
+        NSString *currentKey = [rectangleTool.getKeys objectAtIndex:row];
+        NSString *newKey = [(NSTextField *)obj.object stringValue];
+        [[rectangleTool getKeys] setObject:newKey atIndexedSubscript:row];
+    }
+}
 -(void)mouseClickedAtPoint:(Vector2)p SuperViewPoint:(Vector2)SP withEvent:(NSEvent *)event
 {
     rectangleTool.rectWidth = defaultRectWidthField.intValue;
@@ -112,6 +114,7 @@
     else{
         result.stringValue = [rectangleTool.getKeys objectAtIndex:row];
     }
+    [result setDelegate:self];
     return result;
 }
 

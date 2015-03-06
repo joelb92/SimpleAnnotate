@@ -15,6 +15,11 @@
 {
 	IBOutlet GLOutlineViewController *mainGLOutlineView;
 	IBOutlet GL2DView *mainGLView;
+    IBOutlet NSWindow *mainWindow;
+    IBOutlet NSWindow *splashScreen;
+    IBOutlet NSWindow *about;
+    IBOutlet NSWindow *help;
+    IBOutlet NSTextField *versionNumber;
 	GLViewList *viewList;
 	IBOutlet InfoOutputController *infoOutput;
 	IBOutlet NSButton *playButton;

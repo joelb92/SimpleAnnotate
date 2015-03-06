@@ -44,6 +44,6 @@
 -(void)setRectKey:(NSString *)key forIndex:(int)i;
 -(NSDictionary *)getRects;
 -(void)setRects:(NSDictionary *)rects;
--(NSArray *)getKeys;
+-(NSMutableArray *)getKeys;
 -(void)clearAll;
 @end

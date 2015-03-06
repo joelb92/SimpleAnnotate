@@ -11,6 +11,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    [self splashSequence];
     allFrames = [[NSMutableArray alloc] init];
     rectsForFrames = [[NSMutableDictionary alloc] init];
     frameForFrameNumber = [[NSMutableDictionary alloc] init];
@@ -22,6 +23,27 @@
     frameNum = 0;
     frameSkip = 10;
     [frameSkipField setStringValue:@"10"];
+}
+
+-(void)splashSequence
+{
+    [mainWindow orderOut:nil];
+    [splashScreen setLevel: NSMainMenuWindowLevel];
+    sleep(1.5);
+    [splashScreen orderOut:nil];
+    [mainWindow makeKeyAndOrderFront:nil];
+}
+
+
+-(IBAction)openAbout:(id)sender
+{
+    versionNumber.stringValue = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];;
+    [about makeKeyAndOrderFront:nil];
+}
+
+-(IBAction)openHelp:(id)sender
+{
+    [help makeKeyAndOrderFront:nil];
 }
 
 -(IBAction)playPause:(id)sender
@@ -134,6 +156,7 @@
         cv::cvtColor(frame, frame, CV_BGR2BGRA);
         if (!frame.empty()) {
             OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
+            [frameForFrameNumber setObject:img forKey:@(frameNum)];
             [allFrames addObject:img];
             return true;
         }
@@ -218,17 +241,26 @@
 {
     if ([self shouldStoreRects]) [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getRects forKey:@(frameNum)];
     NSMutableString *rectOutputLog = [@"Frame,Rectagle Key,X,Y,Width,Height\n" mutableCopy];
+    NSFileManager *fm = [NSFileManager defaultManager];
+
     if (currentFilePath) {
+        NSString *cropFilePath = [[currentFilePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"pedestrianCrops"];
+        BOOL DirExists =false;
+        if( !([fm fileExistsAtPath:cropFilePath isDirectory:&DirExists] && DirExists))
+        {
+            [fm createDirectoryAtPath:cropFilePath withIntermediateDirectories:NO attributes:nil error:nil];
+        }
         for(int i = 0; i < rectsForFrames.count;i++)
         {
             NSNumber *key = [rectsForFrames.allKeys objectAtIndex:i];
             NSDictionary *rects = [rectsForFrames objectForKey:key];
             int frameNumber = [key intValue];
             for (int j = 0; j < rects.count; j++) {
-                NSNumber *key = [[rects allKeys] objectAtIndex:j];
+                NSString *key = [[rects allKeys] objectAtIndex:j];
                 NSRect r = [[rects objectForKey:key] rectValue];
-                [rectOutputLog appendFormat:@"%i,%i,%i,%i,%i,%i\n",frameNumber,key.intValue,(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height];
+                [rectOutputLog appendFormat:@"%i,%@,%i,%i,%i,%i\n",frameNumber,key,(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height];
                 NSString *saveImgPath = [[[currentFilePath stringByDeletingPathExtension] stringByAppendingFormat:@"Frame%i_Rect%i",frameNumber,key.intValue] stringByAppendingPathExtension:@"jpg"];
+                
                 OpenImageHandler *img = [allFrames objectAtIndex:frameNumber];
                 cv::Mat m = img.Cv;
                 int x = r.origin.x;
@@ -244,13 +276,14 @@
                 if(height > 0 && width > 0 && x < m.cols && y < m.rows && x2 >= 0 && y2 >= 0){
                 cv::Rect cvr(x,y,width,height);
                 m = m(cvr);
+                saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"crop_frame%i_gID%i_x%i_y%i_w%i_h%i",frameNum,0,cvr.x,cvr.y,cvr.width,cvr.height]] stringByAppendingPathExtension:@"png"];
                 cv::imwrite(saveImgPath.UTF8String, m);
                     NSLog(@"written %i,%i,%i,%i",x,y,width,height);
                 }
             }
             
         }
-        [rectOutputLog writeToFile:[[[currentFilePath stringByDeletingPathExtension] stringByAppendingFormat:@"_RectLog"] stringByAppendingPathExtension:@"csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+        [rectOutputLog writeToFile:[[cropFilePath stringByAppendingPathComponent:@"log"] stringByAppendingPathExtension:@"csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
         
     }
 }

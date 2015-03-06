@@ -109,7 +109,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 
--(NSArray *)getKeys
+-(NSMutableArray *)getKeys
 {
     return keys;
 }
@@ -371,7 +371,7 @@
             NSString *newRectKey =[NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
             NSRect r = NSMakeRect(point.x, point.y, 1, 1);
             [self addRect:r color:Blue forKey:newRectKey];
-            [keys addObject:newRectKey];
+//            [keys addObject:newRectKey];
             mousedOverPointIndex = points.Length-4;
             madeNewRect = true;
             [self DragTo:point Event:event];
@@ -440,57 +440,13 @@
     ps[2] = points[rectangleIndex*4+2].AsCvPoint();
     ps[3] = points[rectangleIndex*4+3].AsCvPoint();
     cv::Rect r = cv::boundingRect(ps);
-    //    points[rectangleIndex*4] = ps[0];
-    //    points[rectangleIndex*4+1] =ps[1];
-    //    points[rectangleIndex*4+2] =ps[2];
-    //    points[rectangleIndex*4+3] =ps[3];
-    
+
     points[rectangleIndex*4] = cv::Point(r.x,r.y);
     points[rectangleIndex*4+1] = cv::Point(r.x+r.width-1,r.y);
     points[rectangleIndex*4+2] = cv::Point(r.x+r.width-1,r.y+r.height-1);
     points[rectangleIndex*4+3] = cv::Point(r.x,r.y+r.height-1);
-    //	Vector2 reorderedP[4];
-    //	float greatestX = 0;
-    //	float greatestY = 0;
-    //	for (int i = 0; i < 4; i++) {
-    //		Vector2 p =points[rectangleIndex*4+i];
-    //		if(p.x >= greatestX)
-    //		{
-    //			greatestX = p.x;
-    //		}
-    //		if(p.y >= greatestY)
-    //		{
-    //			greatestY = p.y;
-    //		}
-    //	}
-    //	for (int i = 4; i < 4; i++) {
-    //		Vector2 p =points[rectangleIndex*4+i];
-    //		bool bigX = false;
-    //		bool bigY = false;
-    //		if(p.x >= greatestX)
-    //		{
-    //			bigX = true;
-    //		}
-    //		if(p.y >= greatestY)
-    //		{
-    //			bigY = true;
-    //		}
-    //		if (bigX && bigY) { //bottom Right corner
-    //			reorderedP[2] = p;
-    //		}
-    //		if (bigX && !bigY) { //top Right corner
-    //			reorderedP[1] = p;
-    //		}
-    //		if (!bigX && bigY) { //bottom Left corner
-    //			reorderedP[3] = p;
-    //		}
-    //		if (!bigX && !bigY) { //top Left corner
-    //			reorderedP[0] = p;
-    //		}
-    //	}
-    //	for (int i = 0; i < 4; i++) {
-    //		points[rectangleIndex*4+i] = reorderedP[i];
-    //	}
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 
 - (void)StopDragging

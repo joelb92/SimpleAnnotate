@@ -9,7 +9,7 @@
 #import "GLProtractor.h"
 #import "GLRectangleDragger.h"
 #import "ROTableView.h"
-@interface GLViewMouseOverController : DragableSubView <NSTabViewDelegate,NSTableViewDataSource>
+@interface GLViewMouseOverController : DragableSubView <NSTabViewDelegate,NSTableViewDataSource,NSTextFieldDelegate>
 {
 	GLRuler*rulerTool;
 	GLProtractor*protractorTool;
