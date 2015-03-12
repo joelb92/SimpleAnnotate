@@ -242,7 +242,7 @@
     if ([self shouldStoreRects]) [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getRects forKey:@(frameNum)];
     NSMutableString *rectOutputLog = [@"Frame,Rectagle Key,X,Y,Width,Height\n" mutableCopy];
     NSFileManager *fm = [NSFileManager defaultManager];
-
+    
     if (currentFilePath) {
         NSString *cropFilePath = [[currentFilePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"pedestrianCrops"];
         BOOL DirExists =false;
@@ -260,7 +260,10 @@
                 NSRect r = [[rects objectForKey:key] rectValue];
                 [rectOutputLog appendFormat:@"%i,%@,%i,%i,%i,%i\n",frameNumber,key,(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height];
                 NSString *saveImgPath = [[[currentFilePath stringByDeletingPathExtension] stringByAppendingFormat:@"Frame%i_Rect%i",frameNumber,key.intValue] stringByAppendingPathExtension:@"jpg"];
-                
+                if([key hasPrefix:@"Rectangle "])
+                {
+                    key = [key substringFromIndex:10];
+                }
                 OpenImageHandler *img = [allFrames objectAtIndex:frameNumber];
                 cv::Mat m = img.Cv;
                 int x = r.origin.x;
@@ -274,11 +277,23 @@
                 int width = x2-x;
                 int height = y2-y;
                 if(height > 0 && width > 0 && x < m.cols && y < m.rows && x2 >= 0 && y2 >= 0){
-                cv::Rect cvr(x,y,width,height);
-                m = m(cvr);
-                saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"crop_frame%i_gID%i_x%i_y%i_w%i_h%i",frameNum,0,cvr.x,cvr.y,cvr.width,cvr.height]] stringByAppendingPathExtension:@"png"];
-                cv::imwrite(saveImgPath.UTF8String, m);
-                    NSLog(@"written %i,%i,%i,%i",x,y,width,height);
+                    cv::Rect cvr(x,y,width,height);
+                    m = m(cvr);
+                    BOOL valid;
+                    NSCharacterSet *alphaNums = [NSCharacterSet decimalDigitCharacterSet];
+                    NSCharacterSet *inStringSet = [NSCharacterSet characterSetWithCharactersInString:key];
+                    valid = [alphaNums isSupersetOfSet:inStringSet];
+                    if (valid) //numeric
+                    {
+                        int num = key.intValue;
+                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"crop_frame%08d_gID%06d_x%04d_y%04d_w%04d_h%04d",frameNum,num,cvr.x,cvr.y,cvr.width,cvr.height]] stringByAppendingPathExtension:@"png"];
+                    }
+                    else
+                    {
+                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"crop_frame%08d_gID%@_x%04d_y%04d_w%04d_h%04d",frameNum,key,cvr.x,cvr.y,cvr.width,cvr.height]] stringByAppendingPathExtension:@"png"];
+                    }
+                    cv::imwrite(saveImgPath.UTF8String, m);
+                    //                    NSLog(@"written %i,%i,%i,%i",x,y,width,height);
                 }
             }
             

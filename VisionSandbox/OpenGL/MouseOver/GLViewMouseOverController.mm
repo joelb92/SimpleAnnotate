@@ -54,6 +54,7 @@
 -(void)controlTextDidEndEditing:(NSNotification *)obj
 {
     int row = (int)mainTableView.selectedRow;
+    int column =mainTableView.selectedColumn;
     if (row >= 0) {
         NSString *currentKey = [rectangleTool.getKeys objectAtIndex:row];
         NSString *newKey = [(NSTextField *)obj.object stringValue];

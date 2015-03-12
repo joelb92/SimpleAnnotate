@@ -31,7 +31,6 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="checkForUpdates:" target="PtH-Et-Ab3" id="deZ-Lz-i3T"/>
-                                    <binding destination="PtH-Et-Ab3" name="target" keyPath="self" id="xfq-nF-XKd"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="143">
@@ -1008,17 +1007,6 @@ CA
                             <customView id="a5b-o1-q5b" userLabel="MainGLView" customClass="GL2DView">
                                 <rect key="frame" x="350" y="0.0" width="1214" height="980"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <subviews>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ahW-Tp-QZr">
-                                        <rect key="frame" x="86" y="92" width="38" height="17"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="cDT-pL-tEX">
-                                            <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                </subviews>
                                 <connections>
                                     <outlet property="infoOutput" destination="zmC-49-3s7" id="fy8-5e-sNb"/>
                                     <outlet property="mouseOverController" destination="thH-ug-6pU" id="sqv-IR-wr4"/>
@@ -1193,7 +1181,6 @@ CA
                 <outlet property="defaultRectWidthField" destination="KoR-HF-AZ8" id="A8w-5t-7Zw"/>
                 <outlet property="infoOutput" destination="zmC-49-3s7" id="weR-hH-nZZ"/>
                 <outlet property="mainTableView" destination="Uuo-1m-Dhq" id="jP8-gp-41F"/>
-                <outlet property="testLabel" destination="ahW-Tp-QZr" id="if9-9t-uiX"/>
             </connections>
         </customObject>
         <window title="Simple Annotate - About" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="zdB-yp-Ggp" userLabel="About">
@@ -1322,7 +1309,7 @@ CA
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" id="sen-9h-o1a">
                             <font key="font" metaFont="system"/>
-                            <mutableString key="title">Load/Save:
+                            <string key="title">Load/Save:
 Command+O: Open new video file
 Command+S: Save files
 
@@ -1344,7 +1331,7 @@ Command+C: Copy rectangles from previously annotated frame into current frame
 
 The bottom left corner of the screen holds a list of current rectangles in the frame.  You can rename any given rectangle to a custom name.  These names will be saved in the log file upon saving the project.
 
-By hitting command+S, you save your project.  All cropped images, along with a annotation log, will be placed in the folder "pedestrianCrops" located in the current working directory</mutableString>
+By hitting command+S, you save your project.  All cropped images, along with a annotation log, will be placed in the folder "pedestrianCrops" located in the current working directory</string>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
