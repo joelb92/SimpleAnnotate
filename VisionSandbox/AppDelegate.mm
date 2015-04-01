@@ -81,22 +81,38 @@
     if (newFrameNum >= 0) {
         
         if (![frameForFrameNumber.allKeys containsObject:@(newFrameNum)]){//we need to get the new frame
-            if (newFrameNum > frameNum) {//go forward
-                int framesToJump = newFrameNum-frameNum;
-                cv::Mat frame;
-                for(int i = 0; i < framesToJump-1; i++)
-                {
-                    capture >> frame;
-                    if (!frame.empty()) {
-                        OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
-                        [frameForFrameNumber setObject:img forKey:@(frameNum+i+1)];
-                    }
-                    else {
-                        stillGood = false;
-                        break;
-                    }
-                }
-                capture >> frame;
+            double currentPos = capture.get(CV_CAP_PROP_POS_FRAMES);
+            std::cout << "CV_CAP_PROP_POS_FRAMES = " << currentPos << std::endl;
+            
+            // position_slider 0 - 100
+            double noFrame = newFrameNum;
+            
+            // solution 1
+//            bool success = capture.set(CV_CAP_PROP_POS_FRAMES, noFrame);
+            // solution 2
+            double frameRate = capture.get(CV_CAP_PROP_FPS);
+            double frameTime = 1000.0 * noFrame / frameRate;
+            bool success = capture.set(CV_CAP_PROP_POS_MSEC, frameTime);
+            cv::Mat frame_aux;
+            if (!success) {
+                std::cout << "Cannot set frame position from video file at " << noFrame << std::endl;
+                stillGood = false;
+            }
+            
+            currentPos = capture.get(CV_CAP_PROP_POS_FRAMES);
+            if (currentPos != noFrame) {
+                std::cout << "Requesting frame " << noFrame << " but current position == " << currentPos << std::endl;
+            }
+            
+            success = capture.read(frame_aux);
+            if (!success) {
+                std::cout << "Cannot get frame from video file " << std::endl;
+                
+            }
+
+                cv::Mat frame = frame_aux;
+//                capture.set(CV_CAP_PROP_POS_FRAMES, newFrameNum);
+//                capture >> frame;
                 cv::cvtColor(frame, frame, CV_BGR2BGRA);
                 if (!frame.empty()) {
                     OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
@@ -113,20 +129,14 @@
                     [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",newFrameNum,(int)capture.get(CV_CAP_PROP_FRAME_COUNT)]];
                     
                     stillGood = true;
-                }
+                
                 
                 
                 
                 
             }
-            else if (newFrameNum == frameNum) NSLog(@"Warning: This is the same frame number you are on, but we don't seem to have the data stored.  Thats bad!");
-            else
-            {
-                NSLog(@"Warning: This is the same earlier number you are on, but we don't seem to have the data stored.  Thats bad!");
-            }
-            
         }
-        else
+        else //this frame already exists in our cached frame list
         {
             [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getRects forKey:@(frameNum)]; //save current rects for current frame
             if ([[rectsForFrames allKeys] containsObject:@(newFrameNum)]) {
@@ -212,6 +222,7 @@
     return [saveEmptyFrames state];
 }
 - (IBAction)JumpToFrame:(id)sender {
+//    capture.set(CV_CAP_PROP_POS_FRAMES, frameJumpField.intValue);
     [self GoToFrame:frameJumpField.intValue];
     
 }
@@ -264,7 +275,7 @@
                 {
                     key = [key substringFromIndex:10];
                 }
-                OpenImageHandler *img = [allFrames objectAtIndex:frameNumber];
+                OpenImageHandler *img = [frameForFrameNumber objectForKey:@(frameNumber)];
                 cv::Mat m = img.Cv;
                 int x = r.origin.x;
                 int y = r.origin.y;
@@ -286,11 +297,11 @@
                     if (valid) //numeric
                     {
                         int num = key.intValue;
-                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"crop_frame%08d_gID%06d_x%04d_y%04d_w%04d_h%04d",frameNum,num,cvr.x,cvr.y,cvr.width,cvr.height]] stringByAppendingPathExtension:@"png"];
+                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"crop_frame%08d_gID%06d_x%04d_y%04d_w%04d_h%04d",frameNumber,num,cvr.x,cvr.y,cvr.width,cvr.height]] stringByAppendingPathExtension:@"png"];
                     }
                     else
                     {
-                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"crop_frame%08d_gID%@_x%04d_y%04d_w%04d_h%04d",frameNum,key,cvr.x,cvr.y,cvr.width,cvr.height]] stringByAppendingPathExtension:@"png"];
+                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"crop_frame%08d_gID%@_x%04d_y%04d_w%04d_h%04d",frameNumber,key,cvr.x,cvr.y,cvr.width,cvr.height]] stringByAppendingPathExtension:@"png"];
                     }
                     cv::imwrite(saveImgPath.UTF8String, m);
                     //                    NSLog(@"written %i,%i,%i,%i",x,y,width,height);

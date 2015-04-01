@@ -14,16 +14,24 @@
          contextName = "-[GLRectangleDragger reOrderRectangle:]:GLRectangleDragger.mm">
       </ContextState>
       <ContextState
-         contextName = "-[GLRectangleDragger getRects]:GLRectangleDragger.mm">
+         contextName = "-[AppDelegate GoToFrame:]:AppDelegate.mm">
          <PersistentStrings>
             <PersistentString
-               value = "points[i+1]">
+               value = "frameForFrameNumber">
             </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[GLRectangleDragger getRects]:GLRectangleDragger.mm">
+         <PersistentStrings>
             <PersistentString
                value = "points[i+2]">
             </PersistentString>
             <PersistentString
                value = "points[i]">
+            </PersistentString>
+            <PersistentString
+               value = "points[i+1]">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

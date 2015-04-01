@@ -111,9 +111,12 @@
     if ([tableColumn.identifier isEqualToString:@"Location"]) {
         NSRect r =[[[rectangleTool getRects] objectForKey:[[rectangleTool getKeys] objectAtIndex:row]] rectValue];
         result.stringValue =  [NSString stringWithFormat:@"%i,%i,%i,%i",(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height];
+        [result setEditable:NO];
+        [result setSelectable:NO];
     }
     else{
         result.stringValue = [rectangleTool.getKeys objectAtIndex:row];
+        
     }
     [result setDelegate:self];
     return result;
