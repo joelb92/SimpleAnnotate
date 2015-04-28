@@ -399,7 +399,7 @@
             }
             [usedRectangleNumberKeys addObject:@(currentKeyNum)];
             NSString *newRectKey =[NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
-            [self addRect:NSMakeRect(floor(p.x), floor(p.y), rectWidth, rectHeight) color:Blue forKey:newRectKey];
+            [self addRect:NSMakeRect(floor(p.x-rectWidth/2), floor(p.y-rectHeight/2), rectWidth, rectHeight) color:Blue forKey:newRectKey];
         }
         
     }

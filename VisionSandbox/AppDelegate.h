@@ -31,11 +31,13 @@
 	IBOutlet NSButton *saveEmptyFrames;
 	IBOutlet NSTextField *frameSkipField;
     IBOutlet NSTextField *frameJumpField;
-
+    bool videoMode;
 	NSString *currentFilePath;
 	int frameNum;
 	int frameSkip;
 	bool isPlaying;
+    NSMutableArray *imagePathArray;
+    NSMutableArray *usedImagePathArray;
 }
 @property (assign) IBOutlet NSWindow *window;
 

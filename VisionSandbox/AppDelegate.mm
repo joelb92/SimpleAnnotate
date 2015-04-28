@@ -5,7 +5,6 @@
 //  Created by Joel Brogan on 22/8/15.
 //  Copyright (c) 2015 Joel Brogan. All rights reserved.
 //
-
 #import "AppDelegate.h"
 @implementation AppDelegate
 
@@ -16,6 +15,7 @@
     rectsForFrames = [[NSMutableDictionary alloc] init];
     frameForFrameNumber = [[NSMutableDictionary alloc] init];
     viewList = [[GLViewList alloc] initWithBackupPath:@""];
+    usedImagePathArray = [[NSMutableArray alloc] init];
     mainGLView.objectList = [[[GLObjectList alloc] initWithBackupPath:@""] autorelease];
     [viewList AddObject:mainGLView ForKeyPath:@"MainView"];
     mainGLOutlineView.viewList = viewList;
@@ -23,6 +23,8 @@
     frameNum = 0;
     frameSkip = 10;
     [frameSkipField setStringValue:@"10"];
+    [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,1000,1000)];
+
 }
 
 -(void)splashSequence
@@ -68,11 +70,15 @@
 }
 
 - (IBAction)PrevFrame:(id)sender {
-    [self GoToFrame:frameNum-frameSkip];
+    int newFrameNum = frameNum-frameSkip;
+    if (!videoMode) newFrameNum = frameNum-1;
+    [self GoToFrame:newFrameNum];
 }
 - (IBAction)NextFrame:(id)sender
 {
-    [self GoToFrame:frameNum+frameSkip];
+    int newFrameNum = frameNum+frameSkip;
+    if (!videoMode) newFrameNum = frameNum+1;
+    [self GoToFrame:newFrameNum];
 }
 
 -(bool)GoToFrame:(int)newFrameNum
@@ -81,38 +87,39 @@
     if (newFrameNum >= 0) {
         
         if (![frameForFrameNumber.allKeys containsObject:@(newFrameNum)]){//we need to get the new frame
-            double currentPos = capture.get(CV_CAP_PROP_POS_FRAMES);
-            std::cout << "CV_CAP_PROP_POS_FRAMES = " << currentPos << std::endl;
-            
-            // position_slider 0 - 100
-            double noFrame = newFrameNum;
-            
-            // solution 1
-//            bool success = capture.set(CV_CAP_PROP_POS_FRAMES, noFrame);
-            // solution 2
-            double frameRate = capture.get(CV_CAP_PROP_FPS);
-            double frameTime = 1000.0 * noFrame / frameRate;
-            bool success = capture.set(CV_CAP_PROP_POS_MSEC, frameTime);
-            cv::Mat frame_aux;
-            if (!success) {
-                std::cout << "Cannot set frame position from video file at " << noFrame << std::endl;
-                stillGood = false;
-            }
-            
-            currentPos = capture.get(CV_CAP_PROP_POS_FRAMES);
-            if (currentPos != noFrame) {
-                std::cout << "Requesting frame " << noFrame << " but current position == " << currentPos << std::endl;
-            }
-            
-            success = capture.read(frame_aux);
-            if (!success) {
-                std::cout << "Cannot get frame from video file " << std::endl;
+            if (videoMode) {
+                double currentPos = capture.get(CV_CAP_PROP_POS_FRAMES);
+                std::cout << "CV_CAP_PROP_POS_FRAMES = " << currentPos << std::endl;
                 
-            }
-
+                // position_slider 0 - 100
+                double noFrame = newFrameNum;
+                
+                // solution 1
+                //            bool success = capture.set(CV_CAP_PROP_POS_FRAMES, noFrame);
+                // solution 2
+                double frameRate = capture.get(CV_CAP_PROP_FPS);
+                double frameTime = 1000.0 * noFrame / frameRate;
+                bool success = capture.set(CV_CAP_PROP_POS_MSEC, frameTime);
+                cv::Mat frame_aux;
+                if (!success) {
+                    std::cout << "Cannot set frame position from video file at " << noFrame << std::endl;
+                    stillGood = false;
+                }
+                
+                currentPos = capture.get(CV_CAP_PROP_POS_FRAMES);
+                if (currentPos != noFrame) {
+                    std::cout << "Requesting frame " << noFrame << " but current position == " << currentPos << std::endl;
+                }
+                
+                success = capture.read(frame_aux);
+                if (!success) {
+                    std::cout << "Cannot get frame from video file " << std::endl;
+                    
+                }
+                
                 cv::Mat frame = frame_aux;
-//                capture.set(CV_CAP_PROP_POS_FRAMES, newFrameNum);
-//                capture >> frame;
+                //                capture.set(CV_CAP_PROP_POS_FRAMES, newFrameNum);
+                //                capture >> frame;
                 cv::cvtColor(frame, frame, CV_BGR2BGRA);
                 if (!frame.empty()) {
                     OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
@@ -125,16 +132,47 @@
                     {
                         [mainGLView.mouseOverController.rectangleTool clearAll];
                     }
+                    [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
                     [GLViewListCommand AddObject:[frameForFrameNumber objectForKey:@(newFrameNum)] ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+//                    [mainGLView.mouseOverController.rectangleTool setCurrentFrame:[(OpenImageHandler *)[frameForFrameNumber objectForKey:@(newFrameNum)] Cv]];
                     [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",newFrameNum,(int)capture.get(CV_CAP_PROP_FRAME_COUNT)]];
                     
                     stillGood = true;
-                
-                
-                
-                
-                
+                }
             }
+            else
+            {
+                cv::Mat frame;
+                int i = newFrameNum;
+                while(frame.empty() && i < imagePathArray.count)
+                {
+                    NSString *filePath =[imagePathArray objectAtIndex:i];
+                    frame = cv::imread([filePath UTF8String]);
+                    if(frame.empty()) NSLog(@"WARNING: Could not load image: %@",filePath.lastPathComponent);
+                    i++;
+                }
+                if (!frame.empty()) {
+                    [usedImagePathArray addObject:[imagePathArray objectAtIndex:i-1]];
+                    OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
+                    [frameForFrameNumber setObject:img forKey:@(newFrameNum)];
+                    [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getRects forKey:@(frameNum)];
+                    if ([[rectsForFrames allKeys] containsObject:@(newFrameNum)]) {
+                        [mainGLView.mouseOverController.rectangleTool setRects:[rectsForFrames objectForKey:@(newFrameNum)]];
+                    }
+                    else
+                    {
+                        [mainGLView.mouseOverController.rectangleTool clearAll];
+                    }
+                    [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
+                    [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+//                    [mainGLView.mouseOverController.rectangleTool setCurrentFrame:[(OpenImageHandler *)[frameForFrameNumber objectForKey:@(newFrameNum)] Cv]];
+                    [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%li",newFrameNum+1,imagePathArray.count]];
+                    
+                    stillGood = true;
+                }
+
+            }
+            
         }
         else //this frame already exists in our cached frame list
         {
@@ -142,8 +180,17 @@
             if ([[rectsForFrames allKeys] containsObject:@(newFrameNum)]) {
                 [mainGLView.mouseOverController.rectangleTool setRects:[rectsForFrames objectForKey:@(newFrameNum)]]; //load new rects for next frame
             }
-            [GLViewListCommand AddObject:[frameForFrameNumber objectForKey:@(newFrameNum)] ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
-            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",newFrameNum,(int)capture.get(CV_CAP_PROP_FRAME_COUNT)]];
+            OpenImageHandler *img = [frameForFrameNumber objectForKey:@(newFrameNum)];
+            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
+            [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+//            [mainGLView.mouseOverController.rectangleTool setCurrentFrame:[(OpenImageHandler *)[frameForFrameNumber objectForKey:@(newFrameNum)] Cv]];
+            int finalVal =(int)capture.get(CV_CAP_PROP_FRAME_COUNT);
+            int displayFrameNum = newFrameNum;
+            if (!videoMode){
+                finalVal = imagePathArray.count;
+                displayFrameNum = newFrameNum+1;
+            }
+            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",displayFrameNum,finalVal]];
             stillGood = true;
         }
     }
@@ -159,19 +206,46 @@
 
 - (bool)loadNewFrame:(int)skipAmount
 {
-    if (capture.isOpened()) {
+    if (videoMode) {
+        if (capture.isOpened()) {
+            cv::Mat frame;
+            for(int i  = 0; i < skipAmount; i++)capture.grab();
+            capture >> frame;
+            
+            cv::cvtColor(frame, frame, CV_BGR2BGRA);
+            if (!frame.empty()) {
+                OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
+                [frameForFrameNumber setObject:img forKey:@(frameNum)];
+                [allFrames addObject:img];
+//                [mainGLView.mouseOverController.rectangleTool setCurrentFrame:frame];
+                
+                return true;
+            }
+        }
+        return false;
+    }
+    else
+    {
         cv::Mat frame;
-        for(int i  = 0; i < skipAmount; i++)capture.grab();
-        capture >> frame;
-        cv::cvtColor(frame, frame, CV_BGR2BGRA);
+        int i = 0;
+        while(frame.empty() && i < imagePathArray.count)
+        {
+            NSString *filePath =[imagePathArray objectAtIndex:i];
+            frame = cv::imread([filePath UTF8String]);
+            if(frame.empty()) NSLog(@"WARNING: Could not load image: %@",filePath.lastPathComponent);
+            i++;
+        }
         if (!frame.empty()) {
+            [usedImagePathArray addObject:[imagePathArray objectAtIndex:i-1]];
             OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
-            [frameForFrameNumber setObject:img forKey:@(frameNum)];
+            [frameForFrameNumber setObject:img forKey:@(0)];
             [allFrames addObject:img];
+//            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
+//            [mainGLView.mouseOverController.rectangleTool setCurrentFrame:frame];
             return true;
         }
+        return false;
     }
-    return false;
 }
 
 - (IBAction)toggleRectSave:(id)sender
@@ -222,30 +296,84 @@
     return [saveEmptyFrames state];
 }
 - (IBAction)JumpToFrame:(id)sender {
-//    capture.set(CV_CAP_PROP_POS_FRAMES, frameJumpField.intValue);
+    //    capture.set(CV_CAP_PROP_POS_FRAMES, frameJumpField.intValue);
     [self GoToFrame:frameJumpField.intValue];
     
 }
 
 - (IBAction)OpenM:(id)sender
 {
+    NSArray *acceptableImageTypes = @[[NSPredicate predicateWithFormat:@"self ENDSWITH '.jpg'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.png'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.bmp'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.ppm'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.gif'"]];
     NSOpenPanel* openDlg = [NSOpenPanel openPanel];
     [openDlg setCanChooseFiles:YES];
     [openDlg setCanChooseDirectories:YES];
+    [openDlg setAllowsMultipleSelection:YES];
     [openDlg setPrompt:@"Open"];
     if ([openDlg runModalForDirectory:nil file:nil] == NSOKButton )
     {
+        NSFileManager *fm = [NSFileManager defaultManager];
         NSArray* files = [openDlg filenames];
-        if (files.count > 0) {
-            NSString *fileName = [[openDlg filenames] objectAtIndex:0];
-            currentFilePath = [fileName retain];
-            capture.open(fileName.UTF8String);
-            [self loadNewFrame:0];
-            [GLViewListCommand AddObject:[allFrames objectAtIndex:frameNum] ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
-            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",frameNum,(int)capture.get(CV_CAP_PROP_FRAME_COUNT)]];
+        if (files.count == 1) {
+            NSString *fileName = [files objectAtIndex:0];
+            BOOL isDir = NO;
+            
+            if( [fm fileExistsAtPath:fileName isDirectory:&isDir])
+            {
+                if (isDir) {
+                    videoMode =false;
+                    currentFilePath = [fileName retain];
+                    NSArray *dirContents = [fm contentsOfDirectoryAtPath:fileName error:nil];
+                    NSMutableArray *onlyImages = [[NSMutableArray alloc] init];
+                    NSMutableArray *onlyImagesFullPath = [[NSMutableArray alloc] init];
+                    for(NSPredicate *fltr in acceptableImageTypes)
+                    {
+                        NSArray *only =[dirContents filteredArrayUsingPredicate:fltr];
+                        [onlyImages addObjectsFromArray:only];
+                    }
+                    for(int i = 0; i < onlyImages.count; i++)
+                    {
+                        NSString *name = [onlyImages objectAtIndex:i];
+                        NSString *fullPath = [fileName stringByAppendingPathComponent:name];
+                        [onlyImagesFullPath addObject:fullPath];
+                    }
+                    imagePathArray = onlyImagesFullPath;
+                    [self loadNewFrame:0];
+                    OpenImageHandler *img = [allFrames objectAtIndex:frameNum];
+//                    [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
+                    [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+                    [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%li",1,imagePathArray.count]];
+                }
+                else{
+                    videoMode = true;
+                    currentFilePath = [fileName retain];
+                    capture.open(fileName.UTF8String);
+                    [self loadNewFrame:0];
+                    OpenImageHandler *img = [allFrames objectAtIndex:frameNum];
+                    [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
+                    [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+                    [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",frameNum,(int)capture.get(CV_CAP_PROP_FRAME_COUNT)]];
+                }
+                
+                
+            }
+            
         }
-        
-        
+        else if(files.count > 1)
+        {
+            videoMode = false;
+            NSMutableArray *onlyImages = [[NSMutableArray alloc] init];
+            NSMutableArray *onlyImagesFullPath = [[NSMutableArray alloc] init];
+            for(NSPredicate *fltr in acceptableImageTypes)
+            {
+                [onlyImages addObjectsFromArray:[files filteredArrayUsingPredicate:fltr]];
+            }
+            imagePathArray = onlyImages;
+            [self loadNewFrame:0];
+            OpenImageHandler *img = [allFrames objectAtIndex:frameNum];
+//            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
+            [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%li",1,imagePathArray.count]];
+        }
     }
 }
 - (IBAction)save:(id)sender
@@ -297,11 +425,21 @@
                     if (valid) //numeric
                     {
                         int num = key.intValue;
-                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"crop_frame%08d_gID%06d_x%04d_y%04d_w%04d_h%04d",frameNumber,num,cvr.x,cvr.y,cvr.width,cvr.height]] stringByAppendingPathExtension:@"png"];
+                        NSString *formattedName =[NSString stringWithFormat:@"crop_frame%08d_gID%06d_x%04d_y%04d_w%04d_h%04d",frameNumber,num,cvr.x,cvr.y,cvr.width,cvr.height];
+                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
+                        if (!videoMode)
+                        {
+                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"Cropped%i_%@",j,[[usedImagePathArray objectAtIndex:i] lastPathComponent]]] stringByAppendingPathExtension:@"png"];
+                        }
                     }
                     else
                     {
-                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"crop_frame%08d_gID%@_x%04d_y%04d_w%04d_h%04d",frameNumber,key,cvr.x,cvr.y,cvr.width,cvr.height]] stringByAppendingPathExtension:@"png"];
+                        NSString *formattedName = [NSString stringWithFormat:@"crop_frame%08d_gID%@_x%04d_y%04d_w%04d_h%04d",frameNumber,key,cvr.x,cvr.y,cvr.width,cvr.height];
+                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
+                        if (!videoMode)
+                        {
+                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%@",[usedImagePathArray objectAtIndex:i],formattedName]] stringByAppendingPathExtension:@"png"];
+                        }
                     }
                     cv::imwrite(saveImgPath.UTF8String, m);
                     //                    NSLog(@"written %i,%i,%i,%i",x,y,width,height);

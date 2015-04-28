@@ -10,11 +10,11 @@
 
 - (void)setMaxImageSpaceRect:(vector2Rect)maxImageSpaceRect
 {
-	if(maxImageSpaceRect != spaceConverter.ImageRect)
-	{
+//	if(maxImageSpaceRect != spaceConverter.ImageRect)
+//	{
 		spaceConverter.ImageRect = maxImageSpaceRect;
 		MustReshape = true;
-	}
+//	}
 }
 
 //Set some intitial values and start the idle (60 FPS):
