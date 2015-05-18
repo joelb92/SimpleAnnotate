@@ -32,6 +32,7 @@
 	IBOutlet NSTextField *frameSkipField;
     IBOutlet NSTextField *frameJumpField;
     bool videoMode;
+
 	NSString *currentFilePath;
 	int frameNum;
 	int frameSkip;

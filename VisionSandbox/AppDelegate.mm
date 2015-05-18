@@ -24,8 +24,8 @@
     frameSkip = 10;
     [frameSkipField setStringValue:@"10"];
     [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,1000,1000)];
-
 }
+
 
 -(void)splashSequence
 {

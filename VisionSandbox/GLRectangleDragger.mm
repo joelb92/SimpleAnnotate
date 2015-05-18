@@ -9,6 +9,7 @@
 #import "GLRectangleDragger.h"
 @implementation GLRectangleDragger
 @synthesize currentKey,mousedOverRectIndex,rectWidth,rectHeight,rectPositionsForKeys;
+@synthesize linkedDims;
 - (id)initWithOutputView:(InfoOutputController *)inf
 {
     self = [super init];
@@ -306,6 +307,7 @@
 {
     point.x = floor(point.x);
     point.y = floor(point.y);
+    float ratio = rectWidth/rectHeight;
     if(!point.isNull() && mousedOverPointIndex>=0)
     {
         int rectIndex = mousedOverPointIndex%4;
@@ -314,27 +316,47 @@
             yDifference = points[mousedOverPointIndex].y-point.y;
             draggingDiffIsSet = true;
         }
-        points[mousedOverPointIndex].x = point.x+xDifference;
-        points[mousedOverPointIndex].y = point.y+yDifference;
+        if (rectIndex == 1 || rectIndex == 3) {
+            ratio = -ratio;
+        }
+        float newYPoint = point.y+yDifference;
+        float newXPoint = point.x+xDifference;
+        if (!dragStarted) {
+            dragStartPoint = Vector2(newXPoint,newYPoint);
+            dragStarted = true;
+        }
+        if (linkedDims) {
+            Vector2 changeVect = Vector2(newXPoint,newYPoint)-dragStartPoint;
+            if (abs(changeVect.x) > abs(changeVect.y)) {
+                newYPoint = changeVect.x/ratio+dragStartPoint.y;
+            }
+            else
+            {
+                newXPoint = changeVect.y*ratio+dragStartPoint.x;
+            }
+//            newYPoint = newXPoint/ratio;
+        }
+        points[mousedOverPointIndex].x = newXPoint;
+        points[mousedOverPointIndex].y = newYPoint;
         if(rectIndex == 0) //top left corner
         {
-            points[mousedOverPointIndex+1].y = point.y+yDifference;
-            points[mousedOverPointIndex+3].x = point.x+xDifference;
+            points[mousedOverPointIndex+1].y = newYPoint;
+            points[mousedOverPointIndex+3].x = newXPoint;
         }
         if (rectIndex == 1)
         {
-            points[mousedOverPointIndex-1].y = point.y+yDifference;
-            points[mousedOverPointIndex+1].x = point.x+xDifference;
+            points[mousedOverPointIndex-1].y = newYPoint;
+            points[mousedOverPointIndex+1].x = newXPoint;
         }
         if (rectIndex == 2)
         {
-            points[mousedOverPointIndex-1].x = point.x+xDifference;
-            points[mousedOverPointIndex+1].y = point.y+yDifference;
+            points[mousedOverPointIndex-1].x = newXPoint;
+            points[mousedOverPointIndex+1].y = newYPoint;
         }
         if (rectIndex == 3)
         {
-            points[mousedOverPointIndex-1].y = point.y+yDifference;
-            points[mousedOverPointIndex-3].x = point.x+xDifference;
+            points[mousedOverPointIndex-1].y = newYPoint;
+            points[mousedOverPointIndex-3].x = newXPoint;
         }
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
     }
@@ -451,6 +473,7 @@
 
 - (void)StopDragging
 {
+    dragStarted = false;
     draggingDiffIsSet = false;
     [self reOrderPointArray];
     dragRectBegin = false;

@@ -83,6 +83,8 @@
 		5D55C5811995F36700D9F78A /* FunctionVisualParametersView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D55C5801995F36700D9F78A /* FunctionVisualParametersView.mm */; };
 		5D7BF1501AA4E8AD00AC2DBE /* ROTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D7BF14F1AA4E8AD00AC2DBE /* ROTableView.m */; };
 		5D7BF1561AA9521200AC2DBE /* mainIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 5D7BF1551AA9521200AC2DBE /* mainIcon.iconset */; };
+		5D8D80311B045E47002A1EC6 /* link.png in Resources */ = {isa = PBXBuildFile; fileRef = 5D8D802F1B045E47002A1EC6 /* link.png */; };
+		5D8D80321B045E47002A1EC6 /* unlink.png in Resources */ = {isa = PBXBuildFile; fileRef = 5D8D80301B045E47002A1EC6 /* unlink.png */; };
 		5D94B565199C185300E080E5 /* SliderView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D94B564199C185300E080E5 /* SliderView.mm */; };
 		5D94B568199C313500E080E5 /* ComboView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D94B567199C313500E080E5 /* ComboView.mm */; };
 		5D94B56B199C318400E080E5 /* RadioView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D94B56A199C318400E080E5 /* RadioView.mm */; };
@@ -272,6 +274,8 @@
 		5D7BF14E1AA4E8AD00AC2DBE /* ROTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ROTableView.h; sourceTree = "<group>"; };
 		5D7BF14F1AA4E8AD00AC2DBE /* ROTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ROTableView.m; sourceTree = "<group>"; };
 		5D7BF1551AA9521200AC2DBE /* mainIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = mainIcon.iconset; sourceTree = SOURCE_ROOT; };
+		5D8D802F1B045E47002A1EC6 /* link.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = link.png; sourceTree = "<group>"; };
+		5D8D80301B045E47002A1EC6 /* unlink.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unlink.png; sourceTree = "<group>"; };
 		5D94B563199C185300E080E5 /* SliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderView.h; sourceTree = "<group>"; };
 		5D94B564199C185300E080E5 /* SliderView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SliderView.mm; sourceTree = "<group>"; };
 		5D94B566199C313500E080E5 /* ComboView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComboView.h; sourceTree = "<group>"; };
@@ -605,6 +609,8 @@
 				5DC59E1B1AA9567C00F80674 /* LogoTransparent.gif */,
 				5DC59E1D1AA9568800F80674 /* LogoBoardered.png */,
 				5DC59E1F1AA9575A00F80674 /* NDLogo.png */,
+				5D8D802F1B045E47002A1EC6 /* link.png */,
+				5D8D80301B045E47002A1EC6 /* unlink.png */,
 				5D55C5741995C63400D9F78A /* Images */,
 				5D55C56F1995BFCF00D9F78A /* View Sublcasses */,
 				5D2897A61991E2300036CFD6 /* MainMenu.xib */,
@@ -760,11 +766,13 @@
 				5D2897A21991E2300036CFD6 /* Credits.rtf in Resources */,
 				5DC59E1C1AA9567C00F80674 /* LogoTransparent.gif in Resources */,
 				5DC59E1E1AA9568800F80674 /* LogoBoardered.png in Resources */,
+				5D8D80321B045E47002A1EC6 /* unlink.png in Resources */,
 				5D2897A81991E2300036CFD6 /* MainMenu.xib in Resources */,
 				5DD4C76219990F470066DFE1 /* ListViewIcon.png in Resources */,
 				5DECC67D1AA96F6F009C2183 /* dsa_pub.pem in Resources */,
 				5DC59E201AA9575A00F80674 /* NDLogo.png in Resources */,
 				5D55C56619948EFC00D9F78A /* FolderIcon.png in Resources */,
+				5D8D80311B045E47002A1EC6 /* link.png in Resources */,
 				5DD4C76519991A2B0066DFE1 /* GearIcon.png in Resources */,
 				5D7BF1561AA9521200AC2DBE /* mainIcon.iconset in Resources */,
 			);

@@ -29,9 +29,22 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UpdateOutput) name:@"MouseOverToolValueChanged" object:nil];
 //		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OpenSegmentationAssistant) name:@"Open Segmentation Assistant!" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setSelectedTableRow:) name:@"SelectionChanged" object:nil];
+        linkImg = [NSImage imageNamed:@"link.png"];
+        unlinkImg = [NSImage imageNamed:@"unlink.png"];
+        rectangleTool.linkedDims = true;
     }
     
     return self;
+}
+- (IBAction)linkDimsToggle:(id)sender {
+    if (rectangleTool.linkedDims) {
+        rectangleTool.linkedDims = false;
+        [linkDimsButton setImage:unlinkImg];
+    }
+    else{
+        rectangleTool.linkedDims = true;
+        [linkDimsButton setImage:linkImg];
+    }
 }
 - (void)UpdateOutput
 {
@@ -48,6 +61,7 @@
 	[[NSBezierPath bezierPathWithRect:dirtyRect] fill];
 	[[NSBezierPath bezierPathWithRect:NSInsetRect([self bounds], 1, 1)] stroke];
 }
+
 
 - (void)controlTextDidChange:(NSNotification *)notification {
 }

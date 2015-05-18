@@ -35,7 +35,10 @@
     IBOutlet NSTextField *testLabel;
 	IBOutlet InfoOutputController *infoOutput;
     IBOutlet ROTableView *mainTableView;
-    
+    IBOutlet NSButton *linkDimsButton;
+    NSImage *linkImg;
+    NSImage *unlinkImg;
+
 }
 @property (assign) GLRectangleDragger *rectangleTool;
 @property (assign) NSTextField *RectKey;

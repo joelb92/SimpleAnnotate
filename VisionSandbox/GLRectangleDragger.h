@@ -25,8 +25,11 @@
 	bool madeNewRect;
 	bool dragRectBegin;
 	Vector2 initialDragDistances[4];
+    Vector2 dragStartPoint;
+    bool dragStarted;
     int rectWidth;
     int rectHeight;
+    bool linkedDims;
     int xDifference;
     int yDifference;
     bool draggingDiffIsSet;
@@ -37,6 +40,7 @@
 @property int mousedOverRectIndex;
 @property int rectWidth;
 @property int rectHeight;
+@property bool linkedDims;
 @property NSMutableDictionary *rectPositionsForKeys;
 - (id)initWithOutputView:(InfoOutputController *)infoOutput;
 -(void)addRect:(NSRect)r color:(Color)c forKey:(NSString *)key;
