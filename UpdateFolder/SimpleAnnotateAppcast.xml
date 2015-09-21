@@ -23,5 +23,14 @@
             <enclosure url="http://www.joelbrogan.com/SimpleAnnotate/SimpleAnnotate_1.1.3.zip" sparkle:version="3" length="16074465" type="application/octet-stream" sparkle:dsaSignature="MC4CFQC0z9aXibI+l6O1rG/4B/4/Z2hzxQIVAPl/t5rZc7/xbzUHLsZxjjlGRiAV" />
             <sparkle:minimumSystemVersion>10.8</sparkle:minimumSystemVersion>
         </item>
+        <item>
+            <title>Version 1.1.4 (1 bugs fixed, 1 feature added; )</title>
+            <sparkle:releaseNotesLink>
+                http://www.joelbrogan.com/SimpleAnnotate/1.1.4.html
+            </sparkle:releaseNotesLink>
+            <pubDate>Tue, 19 May 2015 19:52:00 +0000</pubDate>
+            <enclosure url="http://www.joelbrogan.com/SimpleAnnotate/SimpleAnnotate_1.1.3.zip" sparkle:version="1.1.4" length="16079195" type="application/octet-stream" sparkle:dsaSignature="MC4CFQDNDRUm0A+0P8lCzPnYt6AXEs4LXQIVAPApLF4I6diDu3QD1X7R2BRSS88/" />
+            <sparkle:minimumSystemVersion>10.8</sparkle:minimumSystemVersion>
+        </item>
     </channel>
 </rss>

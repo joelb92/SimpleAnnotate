@@ -8,7 +8,7 @@
 
 #import "GLRectangleDragger.h"
 @implementation GLRectangleDragger
-@synthesize currentKey,mousedOverRectIndex,rectWidth,rectHeight,rectPositionsForKeys;
+@synthesize currentKey,mousedOverRectIndex,rectWidth,rectHeight,rectPositionsForKeys,camShiftTrackers,rectTrackingForRectsWithKeys;
 @synthesize linkedDims;
 - (id)initWithOutputView:(InfoOutputController *)inf
 {
@@ -16,6 +16,7 @@
     if(self)
     {
         mousedOverLineIndex = mousedOverPointIndex = mousedOverRectIndex = -1;
+        camShiftTrackers = [[NSMutableArray alloc] init];
         initialized = false;
         points = Vector2Arr();
         segColors = [[colorArr alloc] init];
@@ -24,6 +25,7 @@
         skippedRects = intArr();
         infoOutput = inf;
         rectPositionsForKeys = [[NSMutableDictionary alloc] init];
+        rectTrackingForRectsWithKeys = [[NSMutableArray alloc] init];
         usedRectangleNumberKeys = [[NSMutableArray alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
     }
@@ -172,6 +174,8 @@
             pointsArr[3]= spaceConverter.ImageToCameraVector(points[i+3]-Vector2(.5,.5));
             for (int j = 0; j < 4; j++) {
                 int jmod = (j+1)%4;
+                if ([rectTrackingForRectsWithKeys containsObject:[keys objectAtIndex:i/4]])
+                    [self SetCurrentColor:Color(255, 0, 255)];
                 if (mousedOverRectIndex == i/4 || (mousedOverPointIndex > 0  &&mousedOverPointIndex/4 == i/4)) {
                     [self SetCurrentColor:Green];
                     glVertex3f(pointsArr[j].x, pointsArr[j].y, minZ);
@@ -307,9 +311,13 @@
 {
     point.x = floor(point.x);
     point.y = floor(point.y);
-    float ratio = rectWidth/rectHeight;
+    float ratio = 1;
+    if (rectHeight != 0) {
+        ratio = (rectWidth+0.0)/(rectHeight+0.0);
+    }
     if(!point.isNull() && mousedOverPointIndex>=0)
     {
+        
         int rectIndex = mousedOverPointIndex%4;
         if(!draggingDiffIsSet){
             xDifference = points[mousedOverPointIndex].x-point.x;
@@ -334,7 +342,6 @@
             {
                 newXPoint = changeVect.y*ratio+dragStartPoint.x;
             }
-//            newYPoint = newXPoint/ratio;
         }
         points[mousedOverPointIndex].x = newXPoint;
         points[mousedOverPointIndex].y = newYPoint;
@@ -425,11 +432,27 @@
         }
         
     }
+
     if ([event modifierFlags] & NSShiftKeyMask) {
         if (mousedOverRectIndex >= 0) {
             [self removeRectAtIndex:mousedOverRectIndex];
         }
     }
+    if ([event modifierFlags] & NSFunctionKeyMask) {
+        if (mousedOverRectIndex >= 0) {
+            if (![rectTrackingForRectsWithKeys containsObject:[keys objectAtIndex:mousedOverRectIndex]]) {
+                [rectTrackingForRectsWithKeys addObject:[keys objectAtIndex:mousedOverRectIndex]];
+            }
+            else
+            {
+                [rectTrackingForRectsWithKeys removeObject:[keys objectAtIndex:mousedOverRectIndex]];
+            }
+        }
+    }
+//    NSLog([event characters]);
+//    if ([[[event characters] componentsSeparatedByString:@""] containsObject:@"t"]) {
+//        
+//    }
 }
 - (bool)StartDragging:(NSUInteger)withKeys
 {

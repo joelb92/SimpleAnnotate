@@ -3,6 +3,20 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "-[AppDelegate fixFiles:]:AppDelegate.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "onlyCropsFullPath">
+            </PersistentString>
+            <PersistentString
+               value = "acceptableImageTypes">
+            </PersistentString>
+            <PersistentString
+               value = "frameNumbers">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "-[KernelEditorController sizeChanged:]:KernelEditorController.mm">
          <PersistentStrings>
             <PersistentString
@@ -14,29 +28,29 @@
          contextName = "-[GLRectangleDragger reOrderRectangle:]:GLRectangleDragger.mm">
       </ContextState>
       <ContextState
-         contextName = "-[AppDelegate GoToFrame:]:AppDelegate.mm">
-         <PersistentStrings>
-            <PersistentString
-               value = "frameForFrameNumber">
-            </PersistentString>
-         </PersistentStrings>
+         contextName = "-[AppDelegate NextFrame:]:AppDelegate.mm">
       </ContextState>
       <ContextState
          contextName = "-[GLRectangleDragger getRects]:GLRectangleDragger.mm">
          <PersistentStrings>
-            <PersistentString
-               value = "points[i+2]">
-            </PersistentString>
             <PersistentString
                value = "points[i]">
             </PersistentString>
             <PersistentString
                value = "points[i+1]">
             </PersistentString>
+            <PersistentString
+               value = "points[i+2]">
+            </PersistentString>
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "-[AppDelegate NextFrame:]:AppDelegate.mm">
+         contextName = "-[AppDelegate GoToFrame:]:AppDelegate.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "frameForFrameNumber">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
    </ContextStates>
 </VariablesViewState>

@@ -19,10 +19,12 @@
     self = [super initWithFrame:frame];
     if(self)
 	{
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"TableReload" object:nil];
 		rulerTool = [[GLRuler alloc] init];
 		protractorTool = [[GLProtractor alloc] init];
 		rectangleTool = [[GLRectangleDragger alloc] initWithOutputView:infoOutput];
+        
         labelFields = [[NSMutableDictionary alloc] init];
 //		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
 		currentTool = rectangleTool;
@@ -36,6 +38,7 @@
     
     return self;
 }
+
 - (IBAction)linkDimsToggle:(id)sender {
     if (rectangleTool.linkedDims) {
         rectangleTool.linkedDims = false;
@@ -53,6 +56,10 @@
 - (void)awakeFromNib
 {
 	rectangleTool.infoOutput = infoOutput;
+    rectangleTool.rectWidth = defaultRectWidthField.intValue;
+    rectangleTool.rectHeight = defaultRectHeightField.intValue;
+    [self linkDimsToggle:nil];
+
 }
 - (void)drawRect:(NSRect)dirtyRect
 {

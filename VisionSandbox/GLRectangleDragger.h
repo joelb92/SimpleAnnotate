@@ -8,6 +8,12 @@
 
 #import "GLViewTool.h"
 #import "GL2DGeometryDrawer.h"
+#include <dlib/image_processing.h>
+#include "opencv2/opencv.hpp"
+#include <dlib/gui_widgets.h>
+#include <dlib/image_io.h>
+#include <dlib/dir_nav.h>
+#include <dlib/opencv/cv_image.h>
 @interface GLRectangleDragger : GLViewTool
 {
 	bool initialized;
@@ -35,13 +41,17 @@
     bool draggingDiffIsSet;
     NSMutableDictionary *rectPositionsForKeys;
     NSMutableArray *usedRectangleNumberKeys;
+    NSMutableArray *camShiftTrackers;
+    NSMutableArray *rectTrackingForRectsWithKeys;
 }
 @property NSString *currentKey;
 @property int mousedOverRectIndex;
+@property NSMutableArray *camShiftTrackers;
 @property int rectWidth;
 @property int rectHeight;
 @property bool linkedDims;
 @property NSMutableDictionary *rectPositionsForKeys;
+@property NSMutableArray *rectTrackingForRectsWithKeys;
 - (id)initWithOutputView:(InfoOutputController *)infoOutput;
 -(void)addRect:(NSRect)r color:(Color)c forKey:(NSString *)key;
 -(void)removeRectAtIndex:(int)i;
