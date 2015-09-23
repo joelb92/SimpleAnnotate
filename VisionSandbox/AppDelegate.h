@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Joel Brogan. All rights reserved.
 //
 
-#include "opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
 #import <Cocoa/Cocoa.h>
 #import "GLOutlineViewController.h"
 #import "GL2DView.h"

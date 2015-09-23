@@ -4,7 +4,7 @@
 //  The contents of this file are implicitly included at the beginning of every source file.
 //
 #ifdef __cplusplus
-#import "opencv2/opencv.hpp"
+#import <opencv2/opencv.hpp>
 #endif
 
 #ifdef __OBJC__
