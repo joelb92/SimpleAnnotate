@@ -5,7 +5,7 @@
 #include <string>
 
 #include "opencv2/opencv.hpp"
-//#include "opencv2/legacy/legacy.hpp"
+#include "opencv2/legacy/legacy.hpp"
 
 #include "ImageSource.h"
 #include "Regions.h"

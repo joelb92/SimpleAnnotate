@@ -94,6 +94,7 @@
 		5DB2C7ED1A718A0700A1F815 /* GL2DGeometryDrawer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5DB2C7EC1A718A0700A1F815 /* GL2DGeometryDrawer.mm */; };
 		5DB2C7F01A720F2E00A1F815 /* InfoOutputController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5DB2C7EF1A720F2E00A1F815 /* InfoOutputController.mm */; };
 		5DB8DFC71D106E0A001372EB /* source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DB8DFC61D106E0A001372EB /* source.cpp */; };
+		5DB8DFF91D107BB5001372EB /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D8229831BB1ABCC00F90A68 /* opencv2.framework */; };
 		5DC59E1C1AA9567C00F80674 /* LogoTransparent.gif in Resources */ = {isa = PBXBuildFile; fileRef = 5DC59E1B1AA9567C00F80674 /* LogoTransparent.gif */; };
 		5DC59E1E1AA9568800F80674 /* LogoBoardered.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DC59E1D1AA9568800F80674 /* LogoBoardered.png */; };
 		5DC59E201AA9575A00F80674 /* NDLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DC59E1F1AA9575A00F80674 /* NDLogo.png */; };
@@ -293,7 +294,6 @@
 		5D7BF14E1AA4E8AD00AC2DBE /* ROTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ROTableView.h; sourceTree = "<group>"; };
 		5D7BF14F1AA4E8AD00AC2DBE /* ROTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ROTableView.m; sourceTree = "<group>"; };
 		5D7BF1551AA9521200AC2DBE /* mainIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = mainIcon.iconset; sourceTree = SOURCE_ROOT; };
-		5D82297F1BAFC7A100F90A68 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = opencv2.framework; path = ../../../../../Library/Frameworks/opencv2.framework; sourceTree = "<group>"; };
 		5D8229831BB1ABCC00F90A68 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = opencv2.framework; path = ../../../../../Library/Frameworks/opencv2.framework; sourceTree = "<group>"; };
 		5D8D802F1B045E47002A1EC6 /* link.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = link.png; sourceTree = "<group>"; };
 		5D8D80301B045E47002A1EC6 /* unlink.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unlink.png; sourceTree = "<group>"; };
@@ -371,6 +371,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DB8DFF91D107BB5001372EB /* opencv2.framework in Frameworks */,
 				5DF2E0941B8CB3E100873B9D /* CoreMedia.framework in Frameworks */,
 				5D2897D11991F92B0036CFD6 /* AVFoundation.framework in Frameworks */,
 				5D2897CF1991F9250036CFD6 /* QTKit.framework in Frameworks */,
@@ -416,7 +417,6 @@
 		5D2897901991E2300036CFD6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				5D82297F1BAFC7A100F90A68 /* opencv2.framework */,
 				5DF2E0931B8CB3E100873B9D /* CoreMedia.framework */,
 				5DECC6791AA95DD5009C2183 /* Sparkle.framework */,
 				5D2897D01991F92B0036CFD6 /* AVFoundation.framework */,
@@ -1091,8 +1091,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -1132,8 +1132,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -1170,43 +1170,32 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
-					"@loader_path/../Frameworks",
-					"$(PROJECT_DIR)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "VisionSandbox/SimpleAnnotate-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/usr/local/include,
-					/opt/local/include,
 					"/Users/joel/Documents/dlib-18.18",
 					/opt/X11/include,
-					/usr/include,
-					/opt/include,
-					/opt/local/include/eigen3,
-					"/opt/local/include/vtk-5.10",
+					/opt/local/include,
 				);
 				INFOPLIST_FILE = "VisionSandbox/SimpleAnnotate-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/opt/local/lib,
-					"/opt/local/lib/**",
-					"/usr/local/lib/**",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/SimpleAnnotate-gcwvkrehvzyfvmfidiznzihzbvth/Build/Products/Debug/SimpleAnnotate.app/Contents/Resources",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/SimpleAnnotate-gcwvkrehvzyfvmfidiznzihzbvth/Build/Products/Debug/SimpleAnnotate.app/Contents/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
-					"-Wl,-rpath,@loader_path/../Frameworks",
-					"-L/usr/X11/lib",
 					"-lX11",
+					"-L/usr/X11/lib",
 				);
 				PRODUCT_NAME = SimpleAnnotate;
 				SDKROOT = macosx10.8;
@@ -1222,43 +1211,31 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
-					"@loader_path/../Frameworks",
-					"$(PROJECT_DIR)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "VisionSandbox/SimpleAnnotate-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/usr/local/include,
-					/opt/local/include,
 					"/Users/joel/Documents/dlib-18.18",
 					/opt/X11/include,
-					/usr/include,
-					/opt/include,
-					/opt/local/include/eigen3,
-					"/opt/local/include/vtk-5.10",
+					/opt/local/include,
 				);
 				INFOPLIST_FILE = "VisionSandbox/SimpleAnnotate-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/opt/local/lib,
-					"/opt/local/lib/**",
-					"/usr/local/lib/**",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/SimpleAnnotate-gcwvkrehvzyfvmfidiznzihzbvth/Build/Products/Debug/SimpleAnnotate.app/Contents/Resources",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/SimpleAnnotate-gcwvkrehvzyfvmfidiznzihzbvth/Build/Products/Debug/SimpleAnnotate.app/Contents/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
-					"-Wl,-rpath,@loader_path/../Frameworks",
-					"-L/usr/X11/lib",
 					"-lX11",
+					"-L/usr/X11/lib",
 				);
 				PRODUCT_NAME = SimpleAnnotate;
 				SDKROOT = macosx10.8;
