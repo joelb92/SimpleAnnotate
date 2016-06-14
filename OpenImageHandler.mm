@@ -144,7 +144,7 @@ std::map<int, GLenum> CVtoGLtype(CVtoGLtypes,
 		color = c;
 		
 		cv = image;
-		Cv = cv::Mat(image);
+		Cv = cv::cvarrToMat(image);
 		ownsAnIPL = true;
 		binary = b;
 		
@@ -1194,7 +1194,7 @@ float absf(float val)
 	ownsAnIPL = true;
 	
 	cv = cvIPL;
-	Cv = cv::Mat(cvIPL);
+	Cv = cv::cvarrToMat(cvIPL);
 	
 	if(cv!=NULL)
 	{
