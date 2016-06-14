@@ -1187,10 +1187,16 @@
 					"/Users/joel/Documents/dlib-18.18",
 					/opt/X11/include,
 					/opt/local/include,
+					/usr/local/include,
+					/usr/X11/include,
 				);
 				INFOPLIST_FILE = "VisionSandbox/SimpleAnnotate-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/lib,
+					/opt/local/lib,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
@@ -1227,10 +1233,16 @@
 					"/Users/joel/Documents/dlib-18.18",
 					/opt/X11/include,
 					/opt/local/include,
+					/usr/local/include,
+					/usr/X11/include,
 				);
 				INFOPLIST_FILE = "VisionSandbox/SimpleAnnotate-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/lib,
+					/opt/local/lib,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (

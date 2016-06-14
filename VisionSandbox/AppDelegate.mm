@@ -13,12 +13,9 @@ using namespace std;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    //    [self eigenFaceDetectTest];
     lock = [[NSLock alloc] init ];
 
-//    testVLC();
     [self splashSequence];
-//    runTracking();
     lock = [[NSLock alloc] init];
     matchedScenes = [[NSMutableIndexSet alloc] init];
     trackers = [[NSMutableDictionary alloc] init];
@@ -845,20 +842,23 @@ Mat norm_0_255(InputArray _src) {
                         int num = key.intValue;
                         NSString *formattedName =[NSString stringWithFormat:@"crop_frame%08d_gID%06d_x%04d_y%04d_w%04d_h%04d",frameNumber,num,cvr.x,cvr.y,cvr.width,cvr.height];
                         saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
-                        if (!videoMode)
+                        if (false or !videoMode)
                         {
-                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"Cropped%i_%@",j,[[framePathForFrameNum objectForKey:@(frameNumber)] lastPathComponent]]] stringByAppendingPathExtension:@"png"];
+//                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"Cropped%i_%@",j,[[framePathForFrameNum objectForKey:@(frameNumber)] lastPathComponent]]] stringByAppendingPathExtension:@"png"];
+                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
                         }
                     }
                     else //named without numbers
                     {
                         NSString *formattedName = [NSString stringWithFormat:@"crop_frame%08d_gID%@_x%04d_y%04d_w%04d_h%04d",frameNumber,key,cvr.x,cvr.y,cvr.width,cvr.height];
                         saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
-                        if (!videoMode)
+                        if (false or !videoMode)
                         {
-                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%@",[framePathForFrameNum objectForKey:@(frameNumber)],formattedName]] stringByAppendingPathExtension:@"png"];
+//                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%@",[framePathForFrameNum objectForKey:@(frameNumber)],formattedName]] stringByAppendingPathExtension:@"png"];
+                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
                         }
                     }
+                    
                     [rectOutputLog appendFormat:@"%i,%@,%i,%i,%i,%i,%@\n",frameNumber,key,(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height,saveImgPath.lastPathComponent];
                     cv::imwrite(saveImgPath.UTF8String, m);
                     //                    NSLog(@"written %i,%i,%i,%i",x,y,width,height);
