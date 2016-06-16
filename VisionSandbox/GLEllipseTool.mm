@@ -7,7 +7,6 @@
 //
 
 #import "GLEllipseTool.h"
-#define DEG2RAD 3.14159/180.0
 @implementation GLEllipseTool
 @synthesize currentKey,mousedOverRectIndex,rectWidth,rectHeight,rectPositionsForKeys,camShiftTrackers,rectTrackingForRectsWithKeys;
 @synthesize linkedDims;
@@ -47,15 +46,15 @@
     t2 = -t1;
     t3 = t0;
     EllipseVis e;
-    e.imagePoints = std::vector<cv::Point>(360/6);
+    e.imagePoints = std::vector<cv::Point>(360/3);
     
     //Draw the ellipse
-    for(int j=0; j<360; j+=6)
+    for(int j=0; j<360; j+=3)
     {
         float rad = j*DEG2RAD;
         Vector2 v = Vector2(cos(rad)*axis.x,sin(rad)*axis.y);
         v = Vector2(v.x*t0+v.y*t2+point.x,v.x*t1+v.y*t3+point.y);
-        e.imagePoints[j/6] = v.AsCvPoint();
+        e.imagePoints[j/3] = v.AsCvPoint();
     }
     
     //Draw ellipse drag handles if within the correct area
@@ -63,7 +62,15 @@
         e.bottomAnchor = -e.topAnchor;
         e.leftAnchor = Vector2(cos(-angle)*axis.x,sin(-angle)*axis.x);
         e.rightAnchor = -e.leftAnchor;
-        e.rotationAnchor = Vector2(cos(-angle)*(axis.x+15),sin(-angle)*(axis.x+15));
+        e.rotationAnchor = Vector2(cos(-angle)*(axis.x+15),sin(-angle)*(axis.x+15))+point;
+    e.topAnchor+=point;
+    e.bottomAnchor+=point;
+    e.rightAnchor+=point;
+    e.leftAnchor+=point;
+    e.center = point;
+    e.axis = axis;
+    e.angle = 0;
+    ellipses.push_back(e);
     
 }
 
@@ -164,6 +171,7 @@
 
 - (void)GraphUsingSpaceConverter:(SpaceConverter)spaceConverter
 {
+    bool ismousedover = false;
     Vector2 mousePoint = spaceConverter.ScreenToImageVector(mousePos);
     previousColor = Color(NAN,NAN,NAN);
     [lock lock];
@@ -172,11 +180,11 @@
     glPointSize(15);
 
     {
-        for(int i=0; i<points.Length; i++)
+        for(int i=0; i<ellipses.size(); i++)
         {
             
             [self SetCurrentColor:[segColors elementAtIndex:i]];
-            
+            EllipseVis e = ellipses[i];
             Vector2 point = points[i];
             Vector2 cameraPoint = spaceConverter.ImageToCameraVector(point);
             Vector2 axis = majorMinorAxis[i];
@@ -192,33 +200,23 @@
             glLineWidth(2);
             glBegin(GL_LINE_LOOP);
             [self SetCurrentColor:Yellow];
-            std::vector<cv::Point> elPoints(360/6);
             //Draw the ellipse
-            for(int j=0; j<360; j+=6)
+            for(int j=0; j<e.imagePoints.size(); j++)
             {
-                float rad = j*DEG2RAD;
-                Vector2 v = Vector2(cos(rad)*axis.x,sin(rad)*axis.y);
-                v = Vector2(v.x*t0+v.y*t2+point.x,v.x*t1+v.y*t3+point.y);
-                elPoints[j/6] = v.AsCvPoint();
-                v = spaceConverter.ImageToCameraVector(v);
+                Vector2 v = spaceConverter.ImageToCameraVector(e.imagePoints[j]);
                 glVertex3d(v.x, v.y, minZ);
             }
             [self SetCurrentColor:[segColors elementAtIndex:i]];
             glEnd();
             
             //Draw ellipse drag handles if within the correct area
-            if (cv::pointPolygonTest(elPoints, mousePoint.AsCvPoint(), true) > -30) {
-                mousedOverEllipseIndex = i;
-                Vector2 topAnchor= Vector2(sin(angle)*axis.y,cos(angle)*axis.y);
-                Vector2 bottomAnchor = -topAnchor;
-                Vector2 leftAnchor = Vector2(cos(-angle)*axis.x,sin(-angle)*axis.x);
-                Vector2 rightAnchor = -leftAnchor;
-                Vector2 rotateAnchor = Vector2(cos(-angle)*(axis.x+15),sin(-angle)*(axis.x+15));
-                topAnchor = spaceConverter.ImageToCameraVector(topAnchor+point);
-                bottomAnchor = spaceConverter.ImageToCameraVector(bottomAnchor+point);
-                leftAnchor = spaceConverter.ImageToCameraVector(leftAnchor+point);
-                rightAnchor= spaceConverter.ImageToCameraVector(rightAnchor+point);
-                rotateAnchor = spaceConverter.ImageToCameraVector(rotateAnchor+point);
+            if (i == mousedOverEllipseIndex) {
+                Vector2 topAnchor= spaceConverter.ImageToCameraVector(e.topAnchor);
+                Vector2 bottomAnchor= spaceConverter.ImageToCameraVector(e.bottomAnchor);
+                Vector2 leftAnchor= spaceConverter.ImageToCameraVector(e.leftAnchor);
+                Vector2 rightAnchor= spaceConverter.ImageToCameraVector(e.rightAnchor);
+                Vector2 rotateAnchor= spaceConverter.ImageToCameraVector(e.rotationAnchor);
+                ismousedover = true;
                 glPointSize(10);
                 glBegin(GL_POINTS);
                 //draw anchor points
@@ -239,7 +237,6 @@
                 
                 
             }
-            
 
 
         }
@@ -269,116 +266,174 @@
 }
 - (void)SetMousePosition:(Vector2)mouseP UsingSpaceConverter:(SpaceConverter)spaceConverter
 {
+    Vector2 imagePoint = spaceConverter.ScreenToImageVector(mouseP);
+    bool inCont;
     [super SetMousePosition:mouseP UsingSpaceConverter:spaceConverter];
-    
+    for(int i=0; i < ellipses.size(); i++)
+    {
+        
+        EllipseVis e = ellipses[i];
+        float distval = cv::pointPolygonTest(e.imagePoints, imagePoint.AsCvPoint(), true);
+        if (distval > -30) {
+            inCont = true;
+            mousedOverEllipseIndex = i;
+            int mindist = 3*3;
+            if(e.topAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 1;
+            else if(e.bottomAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 2;
+            else if(e.leftAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 3;
+            else if(e.rightAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 4;
+            else if(e.rotationAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 5;
+            else{
+                mousedOverPointIndex = -1;
+            }
+            if(distval >= 0)
+            {
+                [infoOutput.xCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)e.center.x]];
+                [infoOutput.yCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)e.center.y]];
+                [infoOutput.widthLabel setStringValue:[NSString stringWithFormat:@"%i",(int)e.axis.x]];
+                [infoOutput.heightLabel	setStringValue:[NSString stringWithFormat:@"%i",(int)e.axis.y]];
+                [infoOutput.trackNumberLabel setStringValue:[keys objectAtIndex:mousedOverEllipseIndex]];
+                currentKey = [keys objectAtIndex:mousedOverEllipseIndex];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
+                
+            }
+            break;
+        }
+
+    }
+    if (!inCont) {
+        currentKey = @"nil";
+        mousedOverRectIndex = -1;
+        [infoOutput.xCoordRectLabel setStringValue:@"NA"];
+        [infoOutput.yCoordRectLabel setStringValue:@"NA"];
+        [infoOutput.widthLabel setStringValue:@"NA"];
+        [infoOutput.heightLabel	setStringValue:@"NA"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
+        mousedOverEllipseIndex = -1;
+
+    }
     if(!initialized) [self InitializeWithSpaceConverter:spaceConverter];
     
     Ray3 ray = spaceConverter.RayFromScreenPoint(mousePos);
-    Vector2 imagePoint = ray.origin.AsVector2();
-     
+    
 }
 - (void)DragTo:(Vector3)point Event:(NSEvent *)event
 {
     point.x = floor(point.x);
     point.y = floor(point.y);
-    float ratio = 1;
-    if (rectHeight != 0) {
-        ratio = (rectWidth+0.0)/(rectHeight+0.0);
-    }
-    if(!point.isNull() && mousedOverPointIndex>=0)
+
+    if(!point.isNull() && mousedOverEllipseIndex>=0 && mousedOverPointIndex >= 0)
     {
         
-        int rectIndex = mousedOverPointIndex%4;
-        if(!draggingDiffIsSet){
-            xDifference = points[mousedOverPointIndex].x-point.x;
-            yDifference = points[mousedOverPointIndex].y-point.y;
-            draggingDiffIsSet = true;
-        }
-        if (rectIndex == 1 || rectIndex == 3) {
-            ratio = -ratio;
-        }
-        float newYPoint = point.y+yDifference;
-        float newXPoint = point.x+xDifference;
-        if (!dragStarted) {
-            dragStartPoint = Vector2(newXPoint,newYPoint);
-            dragStarted = true;
-        }
-        if (linkedDims) {
-            Vector2 changeVect = Vector2(newXPoint,newYPoint)-dragStartPoint;
-            if (abs(changeVect.x) > abs(changeVect.y)) {
-                newYPoint = changeVect.x/ratio+dragStartPoint.y;
-            }
-            else
+        int elIndex = mousedOverEllipseIndex;
+        EllipseVis ellipse = ellipses[mousedOverEllipseIndex];
+        if (mousedOverPointIndex == 5) { //rotation!
+            float currentmouseangle = atan2(point.y-ellipse.center.y, point.x-ellipse.center.x);
+//            if( currentmouseangle < 0) currentmouseangle +=M_PI*2;
+            if(!draggingDiffIsSet)
             {
-                newXPoint = changeVect.y*ratio+dragStartPoint.x;
+            angleDifference = ellipse.angle-currentmouseangle;
+            draggingDiffIsSet = true;
             }
-        }
-        points[mousedOverPointIndex].x = newXPoint;
-        points[mousedOverPointIndex].y = newYPoint;
-        if(rectIndex == 0) //top left corner
-        {
-            points[mousedOverPointIndex+1].y = newYPoint;
-            points[mousedOverPointIndex+3].x = newXPoint;
-        }
-        if (rectIndex == 1)
-        {
-            points[mousedOverPointIndex-1].y = newYPoint;
-            points[mousedOverPointIndex+1].x = newXPoint;
-        }
-        if (rectIndex == 2)
-        {
-            points[mousedOverPointIndex-1].x = newXPoint;
-            points[mousedOverPointIndex+1].y = newYPoint;
-        }
-        if (rectIndex == 3)
-        {
-            points[mousedOverPointIndex-1].y = newYPoint;
-            points[mousedOverPointIndex-3].x = newXPoint;
-        }
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
-    }
-    else if(mousedOverRectIndex >= 0)
-    {
-        if (!dragRectBegin)//We are just beginning the rect drag, store initial mouse position
-        {
-            dragRectBegin = true;
-            Vector2 p1 = points[mousedOverRectIndex*4];
-            Vector2 p2 = points[mousedOverRectIndex*4+1];
-            Vector2 p3 = points[mousedOverRectIndex*4+2];
-            Vector2 p4 = points[mousedOverRectIndex*4+3];
-            initialDragDistances[0] = (point-p1);
-            initialDragDistances[1] = (point-p2);
-            initialDragDistances[2] = (point-p3);
-            initialDragDistances[3] = (point-p4);
-        }
-        else
-        {
-            points[mousedOverRectIndex*4]   = point-initialDragDistances[0];
-            points[mousedOverRectIndex*4+1] = point-initialDragDistances[1];
-            points[mousedOverRectIndex*4+2] = point-initialDragDistances[2];
-            points[mousedOverRectIndex*4+3] = point-initialDragDistances[3];
-        }
-    }
-    else if(!point.isNull() && draggedIndex < 0 && [event modifierFlags] & NSCommandKeyMask)
-    {
-        if (!madeNewRect) {
-            int currentKeyNum =points.Length/4;
-            while ([usedRectangleNumberKeys containsObject:@(currentKeyNum)]) {
-                currentKeyNum++;
+            float newAngle = currentmouseangle+angleDifference;
+            if(!dragStarted)
+            {
+                dragStartAngle = newAngle;
+                dragStarted = true;
             }
-            [usedRectangleNumberKeys addObject:@(currentKeyNum)];
-            NSString *newRectKey =[NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
-            NSRect r = NSMakeRect(point.x, point.y, 1, 1);
-            [self addRect:r color:Blue forKey:newRectKey];
-            //            [keys addObject:newRectKey];
-            mousedOverPointIndex = points.Length-4;
-            madeNewRect = true;
-            [self DragTo:point Event:event];
+            ellipse.setAngle(newAngle);
+            NSLog(@"New angle: %f",ellipse.angle);
         }
         
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
-    
+//        if(!draggingDiffIsSet){
+//            xDifference = ellipse.center.x-point.x;
+//            yDifference = ellipse.center.y-point.y;
+//            draggingDiffIsSet = true;
+//        }
+//
+//        float newYPoint = point.y+yDifference;
+//        float newXPoint = point.x+xDifference;
+//        if (!dragStarted) {
+//            dragStartPoint = Vector2(newXPoint,newYPoint);
+//            dragStarted = true;
+//        }
+//        if (linkedDims) {
+//            Vector2 changeVect = Vector2(newXPoint,newYPoint)-dragStartPoint;
+//            if (abs(changeVect.x) > abs(changeVect.y)) {
+//                newYPoint = changeVect.x/ratio+dragStartPoint.y;
+//            }
+//            else
+//            {
+//                newXPoint = changeVect.y*ratio+dragStartPoint.x;
+//            }
+//        }
+//        points[mousedOverPointIndex].x = newXPoint;
+//        points[mousedOverPointIndex].y = newYPoint;
+//        if(rectIndex == 0) //top left corner
+//        {
+//            points[mousedOverPointIndex+1].y = newYPoint;
+//            points[mousedOverPointIndex+3].x = newXPoint;
+//        }
+//        if (rectIndex == 1)
+//        {
+//            points[mousedOverPointIndex-1].y = newYPoint;
+//            points[mousedOverPointIndex+1].x = newXPoint;
+//        }
+//        if (rectIndex == 2)
+//        {
+//            points[mousedOverPointIndex-1].x = newXPoint;
+//            points[mousedOverPointIndex+1].y = newYPoint;
+//        }
+//        if (rectIndex == 3)
+//        {
+//            points[mousedOverPointIndex-1].y = newYPoint;
+//            points[mousedOverPointIndex-3].x = newXPoint;
+//        }
+//        [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
+//    }
+//    else if(mousedOverRectIndex >= 0)
+//    {
+//        if (!dragRectBegin)//We are just beginning the rect drag, store initial mouse position
+//        {
+//            dragRectBegin = true;
+//            Vector2 p1 = points[mousedOverRectIndex*4];
+//            Vector2 p2 = points[mousedOverRectIndex*4+1];
+//            Vector2 p3 = points[mousedOverRectIndex*4+2];
+//            Vector2 p4 = points[mousedOverRectIndex*4+3];
+//            initialDragDistances[0] = (point-p1);
+//            initialDragDistances[1] = (point-p2);
+//            initialDragDistances[2] = (point-p3);
+//            initialDragDistances[3] = (point-p4);
+//        }
+//        else
+//        {
+//            points[mousedOverRectIndex*4]   = point-initialDragDistances[0];
+//            points[mousedOverRectIndex*4+1] = point-initialDragDistances[1];
+//            points[mousedOverRectIndex*4+2] = point-initialDragDistances[2];
+//            points[mousedOverRectIndex*4+3] = point-initialDragDistances[3];
+//        }
+//    }
+//    else if(!point.isNull() && draggedIndex < 0 && [event modifierFlags] & NSCommandKeyMask)
+//    {
+//        if (!madeNewRect) {
+//            int currentKeyNum =points.Length/4;
+//            while ([usedRectangleNumberKeys containsObject:@(currentKeyNum)]) {
+//                currentKeyNum++;
+//            }
+//            [usedRectangleNumberKeys addObject:@(currentKeyNum)];
+//            NSString *newRectKey =[NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
+//            NSRect r = NSMakeRect(point.x, point.y, 1, 1);
+//            [self addRect:r color:Blue forKey:newRectKey];
+//            //            [keys addObject:newRectKey];
+//            mousedOverPointIndex = points.Length-4;
+//            madeNewRect = true;
+//            [self DragTo:point Event:event];
+//        }
+//        
+//    }
+//    [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
+//    
 }
 
 
@@ -398,6 +453,7 @@
             }
             [usedRectangleNumberKeys addObject:@(currentKeyNum)];
             NSString *newRectKey =[NSString stringWithFormat:@"Ellipse %i",currentKeyNum];
+            [self addEllipse:NSMakeRect(p.x, p.y, rectWidth, rectHeight) color:Blue forKey:newRectKey];
             [self addRect:NSMakeRect(p.x, p.y, rectWidth, rectHeight) color:Blue forKey:newRectKey];
         }
         

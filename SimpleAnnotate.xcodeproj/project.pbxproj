@@ -95,7 +95,6 @@
 		5DB2C7EA1A7189D200A1F815 /* GLRectangleDragger.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5DB2C7E91A7189D200A1F815 /* GLRectangleDragger.mm */; };
 		5DB2C7ED1A718A0700A1F815 /* GL2DGeometryDrawer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5DB2C7EC1A718A0700A1F815 /* GL2DGeometryDrawer.mm */; };
 		5DB2C7F01A720F2E00A1F815 /* InfoOutputController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5DB2C7EF1A720F2E00A1F815 /* InfoOutputController.mm */; };
-		5DB8DFC71D106E0A001372EB /* source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DB8DFC61D106E0A001372EB /* source.cpp */; };
 		5DB8DFF91D107BB5001372EB /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D8229831BB1ABCC00F90A68 /* opencv2.framework */; };
 		5DC59E1C1AA9567C00F80674 /* LogoTransparent.gif in Resources */ = {isa = PBXBuildFile; fileRef = 5DC59E1B1AA9567C00F80674 /* LogoTransparent.gif */; };
 		5DC59E1E1AA9568800F80674 /* LogoBoardered.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DC59E1D1AA9568800F80674 /* LogoBoardered.png */; };
@@ -127,6 +126,7 @@
 		5DF2E0971B8CC3D900873B9D /* objectTracker.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5DF2E0961B8CC3D900873B9D /* objectTracker.mm */; };
 		5DF796AB199B2229003D7930 /* ColorTableCellView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5DF796AA199B2229003D7930 /* ColorTableCellView.mm */; };
 		5DF796AE199B2B4D003D7930 /* VisualFunctionViewHolder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5DF796AD199B2B4D003D7930 /* VisualFunctionViewHolder.mm */; };
+		D8D4FC8A1D13176C00A652BD /* source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8D4FC891D13176C00A652BD /* source.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -319,7 +319,6 @@
 		5DB2C7EC1A718A0700A1F815 /* GL2DGeometryDrawer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GL2DGeometryDrawer.mm; sourceTree = "<group>"; };
 		5DB2C7EE1A720F2E00A1F815 /* InfoOutputController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoOutputController.h; sourceTree = "<group>"; };
 		5DB2C7EF1A720F2E00A1F815 /* InfoOutputController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InfoOutputController.mm; sourceTree = "<group>"; };
-		5DB8DFC61D106E0A001372EB /* source.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = source.cpp; path = "../../../dlib-18.18/dlib/all/source.cpp"; sourceTree = "<group>"; };
 		5DC59E1B1AA9567C00F80674 /* LogoTransparent.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = LogoTransparent.gif; sourceTree = SOURCE_ROOT; };
 		5DC59E1D1AA9568800F80674 /* LogoBoardered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LogoBoardered.png; sourceTree = SOURCE_ROOT; };
 		5DC59E1F1AA9575A00F80674 /* NDLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NDLogo.png; sourceTree = SOURCE_ROOT; };
@@ -370,6 +369,7 @@
 		5DF796AA199B2229003D7930 /* ColorTableCellView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ColorTableCellView.mm; sourceTree = "<group>"; };
 		5DF796AC199B2B4D003D7930 /* VisualFunctionViewHolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualFunctionViewHolder.h; sourceTree = "<group>"; };
 		5DF796AD199B2B4D003D7930 /* VisualFunctionViewHolder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VisualFunctionViewHolder.mm; sourceTree = "<group>"; };
+		D8D4FC891D13176C00A652BD /* source.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = source.cpp; path = "../../../../dlib-18.18/dlib/all/source.cpp"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -449,8 +449,8 @@
 		5D2897971991E2300036CFD6 /* VisionSandbox */ = {
 			isa = PBXGroup;
 			children = (
-				5DB8DFC61D106E0A001372EB /* source.cpp */,
 				5D2897A31991E2300036CFD6 /* AppDelegate.h */,
+				D8D4FC891D13176C00A652BD /* source.cpp */,
 				5D2897A41991E2300036CFD6 /* AppDelegate.mm */,
 				5DB2C7EE1A720F2E00A1F815 /* InfoOutputController.h */,
 				5DB2C7EF1A720F2E00A1F815 /* InfoOutputController.mm */,
@@ -960,7 +960,6 @@
 				5D94B574199D416400E080E5 /* SliderDoubleView.mm in Sources */,
 				5D28984B1991FA890036CFD6 /* GLViewList.mm in Sources */,
 				5DB2C7EA1A7189D200A1F815 /* GLRectangleDragger.mm in Sources */,
-				5DB8DFC71D106E0A001372EB /* source.cpp in Sources */,
 				5D2898891992022E0036CFD6 /* AvVector2.mm in Sources */,
 				5D55C53419933FAD00D9F78A /* SpaceConverter.mm in Sources */,
 				5D55C5631994556D00D9F78A /* NSImage+OpenCV.mm in Sources */,
@@ -981,6 +980,7 @@
 				5D2898491991FA890036CFD6 /* GLOutlineViewController.mm in Sources */,
 				5D2898611991FF8E0036CFD6 /* GLViewMouseOverController.mm in Sources */,
 				5D55C53A199340DA00D9F78A /* Color.mm in Sources */,
+				D8D4FC8A1D13176C00A652BD /* source.cpp in Sources */,
 				5D2898BE199202710036CFD6 /* colorArr.mm in Sources */,
 				5D2898C7199202710036CFD6 /* CvSeqArr.mm in Sources */,
 				5D2898BB199202710036CFD6 /* boolArr.mm in Sources */,
@@ -1106,6 +1106,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_LINK_OBJC_RUNTIME = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -1147,6 +1148,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_LINK_OBJC_RUNTIME = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -1183,6 +1185,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_LINK_OBJC_RUNTIME = NO;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -1215,6 +1218,10 @@
 				OTHER_LDFLAGS = (
 					"-lX11",
 					"-L/usr/X11/lib",
+					"-Xlinker",
+					"-U",
+					"-Xlinker",
+					_objc_readClassPair,
 				);
 				PRODUCT_NAME = SimpleAnnotate;
 				SDKROOT = macosx10.8;
@@ -1231,6 +1238,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_LINK_OBJC_RUNTIME = NO;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1262,6 +1270,10 @@
 				OTHER_LDFLAGS = (
 					"-lX11",
 					"-L/usr/X11/lib",
+					"-Xlinker",
+					"-U",
+					"-Xlinker",
+					_objc_readClassPair,
 				);
 				PRODUCT_NAME = SimpleAnnotate;
 				SDKROOT = macosx10.8;
