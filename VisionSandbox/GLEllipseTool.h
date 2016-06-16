@@ -17,10 +17,9 @@ struct EllipseVis
     std::vector<cv::Point> imagePoints;
     float angle;
     Vector2 leftAnchor,rightAnchor,topAnchor,bottomAnchor,rotationAnchor,center,axis;
-//    Vector2 leftAnchorCamera,rightAnchorCamera,topAnchorCamera,bottomAnchorCamera;
-    void setAngle(float a)
+    void recalc()
     {
-        angle = a;
+        float a = angle;
         float t0,t1,t2,t3;
         t0 = cos(a);
         t1 = -sin(a);
@@ -42,9 +41,26 @@ struct EllipseVis
         rightAnchor = -leftAnchor;
         this->rotationAnchor = Vector2(cos(-a)*(this->axis.x+15),sin(-a)*(this->axis.x+15))+this->center;
         this->topAnchor+= this->center;
-         this->bottomAnchor+=this->center;
-         this->rightAnchor+=this->center;
-         this->leftAnchor+=this->center;
+        this->bottomAnchor+=this->center;
+        this->rightAnchor+=this->center;
+        this->leftAnchor+=this->center;
+
+    }
+//    Vector2 leftAnchorCamera,rightAnchorCamera,topAnchorCamera,bottomAnchorCamera;
+    void setAngle(float a)
+    {
+        angle = a;
+        recalc();
+    }
+    void setxaxis(float xa)
+    {
+        axis.x = xa;
+        recalc();
+    }
+    void setyaxis(float ya)
+    {
+        axis.y = ya;
+        recalc();
     }
 };
 
@@ -78,6 +94,7 @@ struct EllipseVis
     int xDifference;
     int yDifference;
     float angleDifference;
+    float axisDifference;
     bool draggingDiffIsSet;
     NSMutableDictionary *rectPositionsForKeys;
     NSMutableArray *usedRectangleNumberKeys;

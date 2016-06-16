@@ -344,8 +344,19 @@
             ellipse.setAngle(newAngle);
             ellipses[mousedOverEllipseIndex] = ellipse;
         }
+        else{
+            if (mousedOverPointIndex == 1) { //top anchor
+                Vector2 currentMouseAxisLength = (point.AsVector2()-ellipse.center).ProjectOnto(ellipse.topAnchor-ellipse.center);
+                float newAxisLength = sqrtf(currentMouseAxisLength.SqMagnitude());
+                if (!dragStarted) {
+                    dragStartAngle = newAxisLength;
+                    dragStarted = true;
+                }
+            }
+        }
         
     }
+    
 //        if(!draggingDiffIsSet){
 //            xDifference = ellipse.center.x-point.x;
 //            yDifference = ellipse.center.y-point.y;
