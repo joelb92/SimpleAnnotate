@@ -83,6 +83,8 @@
 		5D55C5811995F36700D9F78A /* FunctionVisualParametersView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D55C5801995F36700D9F78A /* FunctionVisualParametersView.mm */; };
 		5D7BF1501AA4E8AD00AC2DBE /* ROTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D7BF14F1AA4E8AD00AC2DBE /* ROTableView.m */; };
 		5D7BF1561AA9521200AC2DBE /* mainIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 5D7BF1551AA9521200AC2DBE /* mainIcon.iconset */; };
+		5D890E0D1D109CF90097F3E0 /* FrameHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D890E0C1D109CF90097F3E0 /* FrameHandler.mm */; };
+		5D890E131D11C5450097F3E0 /* GLEllipseTool.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D890E121D11C5450097F3E0 /* GLEllipseTool.mm */; };
 		5D8D80311B045E47002A1EC6 /* link.png in Resources */ = {isa = PBXBuildFile; fileRef = 5D8D802F1B045E47002A1EC6 /* link.png */; };
 		5D8D80321B045E47002A1EC6 /* unlink.png in Resources */ = {isa = PBXBuildFile; fileRef = 5D8D80301B045E47002A1EC6 /* unlink.png */; };
 		5D94B565199C185300E080E5 /* SliderView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D94B564199C185300E080E5 /* SliderView.mm */; };
@@ -295,6 +297,10 @@
 		5D7BF14F1AA4E8AD00AC2DBE /* ROTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ROTableView.m; sourceTree = "<group>"; };
 		5D7BF1551AA9521200AC2DBE /* mainIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = mainIcon.iconset; sourceTree = SOURCE_ROOT; };
 		5D8229831BB1ABCC00F90A68 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = opencv2.framework; path = ../../../../../Library/Frameworks/opencv2.framework; sourceTree = "<group>"; };
+		5D890E0B1D109CF90097F3E0 /* FrameHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameHandler.h; sourceTree = "<group>"; };
+		5D890E0C1D109CF90097F3E0 /* FrameHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FrameHandler.mm; sourceTree = "<group>"; };
+		5D890E111D11C5450097F3E0 /* GLEllipseTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLEllipseTool.h; sourceTree = "<group>"; };
+		5D890E121D11C5450097F3E0 /* GLEllipseTool.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLEllipseTool.mm; sourceTree = "<group>"; };
 		5D8D802F1B045E47002A1EC6 /* link.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = link.png; sourceTree = "<group>"; };
 		5D8D80301B045E47002A1EC6 /* unlink.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unlink.png; sourceTree = "<group>"; };
 		5D94B563199C185300E080E5 /* SliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderView.h; sourceTree = "<group>"; };
@@ -450,8 +456,12 @@
 				5DB2C7EF1A720F2E00A1F815 /* InfoOutputController.mm */,
 				5DF2E0951B8CC3D900873B9D /* objectTracker.h */,
 				5DF2E0961B8CC3D900873B9D /* objectTracker.mm */,
+				5D890E111D11C5450097F3E0 /* GLEllipseTool.h */,
+				5D890E121D11C5450097F3E0 /* GLEllipseTool.mm */,
 				5DB2C7E81A7189D200A1F815 /* GLRectangleDragger.h */,
 				5DB2C7E91A7189D200A1F815 /* GLRectangleDragger.mm */,
+				5D890E0B1D109CF90097F3E0 /* FrameHandler.h */,
+				5D890E0C1D109CF90097F3E0 /* FrameHandler.mm */,
 				5D3F3F0E1B711AC500C9C001 /* CamShiftTracker.h */,
 				5D3F3F0F1B711AC500C9C001 /* CamShiftTracker.mm */,
 				5DB2C7EB1A718A0700A1F815 /* GL2DGeometryDrawer.h */,
@@ -995,7 +1005,9 @@
 				5D2898B9199202710036CFD6 /* PlaneArr.mm in Sources */,
 				5DB2C7ED1A718A0700A1F815 /* GL2DGeometryDrawer.mm in Sources */,
 				5DEA6CB21B71FE89009D240B /* SemiBoostingTracker.cpp in Sources */,
+				5D890E0D1D109CF90097F3E0 /* FrameHandler.mm in Sources */,
 				5DEA6CF41B724989009D240B /* StrongClassifierStandard.cpp in Sources */,
+				5D890E131D11C5450097F3E0 /* GLEllipseTool.mm in Sources */,
 				5DEA6CF31B724989009D240B /* StrongClassifierDirectSelection.cpp in Sources */,
 				5D2898621991FF8E0036CFD6 /* GLViewTool.mm in Sources */,
 				5D28984C1991FA890036CFD6 /* GLViewListCommand.mm in Sources */,

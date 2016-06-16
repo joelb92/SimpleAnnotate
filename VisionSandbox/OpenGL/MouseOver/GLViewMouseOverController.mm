@@ -24,10 +24,11 @@
 		rulerTool = [[GLRuler alloc] init];
 		protractorTool = [[GLProtractor alloc] init];
 		rectangleTool = [[GLRectangleDragger alloc] initWithOutputView:infoOutput];
+        ellipseTool = [[GLEllipseTool alloc] initWithOutputView:infoOutput];
         
         labelFields = [[NSMutableDictionary alloc] init];
 //		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
-		currentTool = rectangleTool;
+		currentTool = ellipseTool;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UpdateOutput) name:@"MouseOverToolValueChanged" object:nil];
 //		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OpenSegmentationAssistant) name:@"Open Segmentation Assistant!" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setSelectedTableRow:) name:@"SelectionChanged" object:nil];
@@ -86,6 +87,8 @@
 {
     rectangleTool.rectWidth = defaultRectWidthField.intValue;
     rectangleTool.rectHeight = defaultRectHeightField.intValue;
+    ellipseTool.rectWidth = defaultRectWidthField.intValue;;
+    ellipseTool.rectHeight = defaultRectHeightField.intValue;
     NSRect newframe  = NSMakeRect(SP.x, SP.y, testLabel.frame.size.width, testLabel.frame.size.height);
     [testLabel setFrame:newframe];
 	[currentTool mouseClickedAtPoint:p withEvent:event];

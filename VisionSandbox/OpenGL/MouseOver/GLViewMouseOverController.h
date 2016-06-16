@@ -8,12 +8,15 @@
 #import "GLRuler.h"
 #import "GLProtractor.h"
 #import "GLRectangleDragger.h"
+#import "GLEllipseTool.h"
 #import "ROTableView.h"
 @interface GLViewMouseOverController : DragableSubView <NSTabViewDelegate,NSTableViewDataSource,NSTextFieldDelegate>
 {
 	GLRuler*rulerTool;
 	GLProtractor*protractorTool;
+    GLEllipseTool*ellipseTool;
 	GLViewTool*currentTool;
+    
 	GLRectangleDragger *rectangleTool;
     IBOutlet NSTextField *defaultRectHeightField;
     IBOutlet NSTextField *defaultRectWidthField;
