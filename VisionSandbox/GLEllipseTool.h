@@ -10,16 +10,28 @@
 #import "GL2DGeometryDrawer.h"
 #include <dlib/image_processing.h>
 #include "opencv2/opencv.hpp"
+
+struct EllipseVis
+{
+    std::vector<cv::Point> imagePoints;
+    Vector2Arr cameraPoints;
+    Vector2 leftAnchor,rightAnchor,topAnchor,bottomAnchor,rotationAnchor;
+//    Vector2 leftAnchorCamera,rightAnchorCamera,topAnchorCamera,bottomAnchorCamera;
+    
+};
+
 @interface GLEllipseTool : GLViewTool
 {
+    float a;
     bool initialized;
     int draggedIndex;
     int mousedOverPointIndex;
     int mousedOverLineIndex;
-    int mousedOverRectIndex;
+    int mousedOverEllipseIndex;
     bool isVertical;
     colorArr*segColors;
     Vector2Arr points;
+    std::vector<EllipseVis> ellipses;
     std::vector<float>angles;
     Vector2Arr majorMinorAxis;
     Color previousColor;
@@ -39,8 +51,7 @@
     bool draggingDiffIsSet;
     NSMutableDictionary *rectPositionsForKeys;
     NSMutableArray *usedRectangleNumberKeys;
-    NSMutableArray *camShiftTrackers;
-    NSMutableArray *rectTrackingForRectsWithKeys;
+
 }
 @property NSString *currentKey;
 @property int mousedOverRectIndex;

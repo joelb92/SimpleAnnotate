@@ -1200,6 +1200,7 @@
 					/opt/X11/include,
 					/opt/local/include,
 					/usr/local/include,
+					"/dlib-18.18",
 					/usr/X11/include,
 				);
 				INFOPLIST_FILE = "VisionSandbox/SimpleAnnotate-Info.plist";
@@ -1246,6 +1247,7 @@
 					/opt/X11/include,
 					/opt/local/include,
 					/usr/local/include,
+					"/dlib-18.18",
 					/usr/X11/include,
 				);
 				INFOPLIST_FILE = "VisionSandbox/SimpleAnnotate-Info.plist";
