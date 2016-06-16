@@ -21,3 +21,6 @@ opencv/files/patch-install_name.diff
 opencv/files/patch-modules_core_src_parallel.cpp.diff
 opencv/files/patch-modules_java_CMakeLists.txt.diff
 opencv/files/patch-modules_python_CMakeLists.txt.diff
+SimpleAnnotate.xcodeproj/project.xcworkspace/xcuserdata/bog.xcuserdatad/UserInterfaceState.xcuserstate
+SimpleAnnotate.xcodeproj/xcuserdata/bog.xcuserdatad/xcschemes/VisionSandbox.xcscheme
+SimpleAnnotate.xcodeproj/xcuserdata/bog.xcuserdatad/xcschemes/xcschememanagement.plist
