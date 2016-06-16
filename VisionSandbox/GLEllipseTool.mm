@@ -277,7 +277,7 @@
         if (distval > -30) {
             inCont = true;
             mousedOverEllipseIndex = i;
-            int mindist = 3*3;
+            int mindist = 5*5;
             if(e.topAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 1;
             else if(e.bottomAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 2;
             else if(e.leftAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 3;
@@ -335,14 +335,14 @@
             angleDifference = ellipse.angle-currentmouseangle;
             draggingDiffIsSet = true;
             }
-            float newAngle = currentmouseangle+angleDifference;
+            float newAngle = -(currentmouseangle+angleDifference);
             if(!dragStarted)
             {
                 dragStartAngle = newAngle;
                 dragStarted = true;
             }
             ellipse.setAngle(newAngle);
-            NSLog(@"New angle: %f",ellipse.angle);
+            ellipses[mousedOverEllipseIndex] = ellipse;
         }
         
     }

@@ -16,7 +16,6 @@ struct EllipseVis
 {
     std::vector<cv::Point> imagePoints;
     float angle;
-    Vector2Arr cameraPoints;
     Vector2 leftAnchor,rightAnchor,topAnchor,bottomAnchor,rotationAnchor,center,axis;
 //    Vector2 leftAnchorCamera,rightAnchorCamera,topAnchorCamera,bottomAnchorCamera;
     void setAngle(float a)
@@ -33,7 +32,7 @@ struct EllipseVis
             float rad = j*DEG2RAD;
             Vector2 v = Vector2(cos(rad)*axis.x,sin(rad)*axis.y);
             v = Vector2(v.x*t0+v.y*t2+this->center.x,v.x*t1+v.y*t3+center.y);
-            imagePoints[j/3] = v.AsCvPoint();
+            this->imagePoints[j/3] = v.AsCvPoint();
         }
         
         //Draw ellipse drag handles if within the correct area
