@@ -8,8 +8,7 @@
 
 #import "GLRectangleDragger.h"
 @implementation GLRectangleDragger
-@synthesize currentKey,mousedOverRectIndex,rectWidth,rectHeight,rectPositionsForKeys,camShiftTrackers,rectTrackingForRectsWithKeys;
-@synthesize linkedDims;
+@synthesize mousedOverRectIndex,rectPositionsForKeys,camShiftTrackers,rectTrackingForRectsWithKeys;
 - (id)initWithOutputView:(InfoOutputController *)inf
 {
     self = [super init];
@@ -32,7 +31,7 @@
     return self;
 }
 
--(void)addRect:(NSRect)r color:(Color)c forKey:(NSString *)key
+-(void)addElement:(NSRect)r color:(Color)c forKey:(NSString *)key
 {
     Vector2 p1,p2,p3,p4;
     p1 =Vector2(r.origin.x, r.origin.y);
@@ -52,7 +51,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 
--(void)removeRectAtIndex:(int)i
+-(void)removeElementAtIndex:(int)i
 {
     if (i < points.Length/4) {
         [keys removeObjectAtIndex:i];
@@ -74,7 +73,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 
--(void)setRectKey:(NSString *)key forIndex:(int)i
+-(void)setElementKey:(NSString *)key forIndex:(int)i
 {
     if (i < keys.count) {
         [keys replaceObjectAtIndex:i withObject:key];
@@ -90,7 +89,7 @@
     }
 }
 
--(NSDictionary *)getRects
+-(NSDictionary *)getElements
 {
     NSMutableDictionary *rectDict = [NSMutableDictionary dictionaryWithCapacity:points.Length/4];
     for(int i = 0; i < points.Length; i+=4)
@@ -100,14 +99,14 @@
     return rectDict;
 }
 
--(void)setRects:(NSDictionary *)rects
+-(void)setElements:(NSDictionary *)rects
 {
     [self clearAll];
     for(int i = 0; i < rects.count; i++)
     {
         NSObject *key = [rects.allKeys objectAtIndex:i];
         NSRect r = [[rects objectForKey:key] rectValue];
-        [self addRect:r color:Blue forKey:key];
+        [self addElement:r color:Blue forKey:key];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
@@ -115,6 +114,24 @@
 -(NSMutableArray *)getKeys
 {
     return keys;
+}
+
+-(NSUInteger)count
+{
+    return keys.count;
+}
+
+- (NSString *) stringForKey:(NSObject *)key
+{
+    int i = (int)[keys indexOfObject:key];
+    return [self stringForIndex:i];
+}
+
+-(NSString *)stringForIndex:(int)i
+{
+    NSRect r = NSMakeRect(points[i].x, points[i].y, points[i+1].x-points[i].x, points[i+2].y-points[i].y);
+    NSString *s =  [NSString stringWithFormat:@"%i,%i,%i,%i",(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height];
+    return s;
 }
 
 -(void)clearAll
@@ -312,8 +329,8 @@
     point.x = floor(point.x);
     point.y = floor(point.y);
     float ratio = 1;
-    if (rectHeight != 0) {
-        ratio = (rectWidth+0.0)/(rectHeight+0.0);
+    if (defaultHeight != 0) {
+        ratio = (defaultWidth+0.0)/(defaultHeight+0.0);
     }
     if(!point.isNull() && mousedOverPointIndex>=0)
     {
@@ -399,7 +416,7 @@
             [usedRectangleNumberKeys addObject:@(currentKeyNum)];
             NSString *newRectKey =[NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
             NSRect r = NSMakeRect(point.x, point.y, 1, 1);
-            [self addRect:r color:Blue forKey:newRectKey];
+            [self addElement:r color:Blue forKey:newRectKey];
 //            [keys addObject:newRectKey];
             mousedOverPointIndex = points.Length-4;
             madeNewRect = true;
@@ -428,14 +445,14 @@
             }
             [usedRectangleNumberKeys addObject:@(currentKeyNum)];
             NSString *newRectKey =[NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
-            [self addRect:NSMakeRect(floor(p.x-rectWidth/2), floor(p.y-rectHeight/2), rectWidth, rectHeight) color:Blue forKey:newRectKey];
+            [self addElement:NSMakeRect(floor(p.x-defaultWidth/2), floor(p.y-defaultHeight/2), defaultWidth, defaultHeight) color:Blue forKey:newRectKey];
         }
         
     }
 
     if ([event modifierFlags] & NSShiftKeyMask) {
         if (mousedOverRectIndex >= 0) {
-            [self removeRectAtIndex:mousedOverRectIndex];
+            [self removeElementAtIndex:mousedOverRectIndex];
         }
     }
     if ([event modifierFlags] & NSFunctionKeyMask) {

@@ -8,8 +8,7 @@
 
 #import "GLEllipseTool.h"
 @implementation GLEllipseTool
-@synthesize currentKey,mousedOverRectIndex,rectWidth,rectHeight,rectPositionsForKeys,camShiftTrackers,rectTrackingForRectsWithKeys;
-@synthesize linkedDims;
+@synthesize mousedOverRectIndex,rectPositionsForKeys,camShiftTrackers,rectTrackingForRectsWithKeys;
 - (id)initWithOutputView:(InfoOutputController *)inf
 {
     self = [super init];
@@ -71,7 +70,11 @@
     e.axis = axis;
     e.angle = 0;
     ellipses.push_back(e);
-    
+    [keys addObject:key];
+    [segColors addElement:c];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
+
 }
 
 -(void)addRect:(NSRect)r color:(Color)c forKey:(NSString *)key
@@ -149,9 +152,25 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 
+-(NSString *)stringForKey:(NSObject *)key
+{
+    return [self stringForIndex:[keys indexOfObject:key]];
+}
+
+-(NSString *)stringForIndex:(int)i
+{
+    EllipseVis e = ellipses[i];
+    NSString * s = [NSString stringWithFormat:@"c: %i,%i w: %i h:%i r:%f",(int)e.center.x,(int)e.center.y,(int)e.axis.x,(int)e.axis.y,e.angle];
+    return s;
+}
+
 -(NSMutableArray *)getKeys
 {
     return keys;
+}
+
+-(NSUInteger)count{
+    return ellipses.size();
 }
 
 -(void)clearAll
@@ -185,18 +204,6 @@
             
             [self SetCurrentColor:[segColors elementAtIndex:i]];
             EllipseVis e = ellipses[i];
-            Vector2 point = points[i];
-            Vector2 cameraPoint = spaceConverter.ImageToCameraVector(point);
-            Vector2 axis = majorMinorAxis[i];
-            axis.y = 40;
-            Vector2Arr circlePoints = Vector2Arr();
-            //Calculate ellipse angle transform
-            float angle = angles[i];
-            float t0,t1,t2,t3;
-            t0 = cos(angle);
-            t1 = -sin(angle);
-            t2 = -t1;
-            t3 = t0;
             glLineWidth(2);
             glBegin(GL_LINE_LOOP);
             [self SetCurrentColor:Yellow];
@@ -314,7 +321,7 @@
     }
     if(!initialized) [self InitializeWithSpaceConverter:spaceConverter];
     
-    Ray3 ray = spaceConverter.RayFromScreenPoint(mousePos);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverEllipseIndex)];
     
 }
 - (void)DragTo:(Vector3)point Event:(NSEvent *)event
@@ -347,19 +354,19 @@
         }
         else{
             Vector2 anc,offsetanc;
-            if (mousedOverPointIndex == 1) { //top anchor
+            if (mousedOverPointIndex == 1) {
                 anc = ellipse.topAnchor;
                 offsetanc = ellipse.rightAnchor;
             }
-            if (mousedOverPointIndex == 2) { //top anchor
+            if (mousedOverPointIndex == 2) {
                 anc = ellipse.bottomAnchor;
                 offsetanc = ellipse.rightAnchor;
             }
-            if (mousedOverPointIndex == 3) { //top anchor
+            if (mousedOverPointIndex == 3) {
                 anc = ellipse.leftAnchor;
                 offsetanc = ellipse.topAnchor;
             }
-            if (mousedOverPointIndex == 4) { //top anchor
+            if (mousedOverPointIndex == 4) {
                 anc = ellipse.rightAnchor;
                 offsetanc = ellipse.topAnchor;
             }
@@ -369,7 +376,6 @@
             
             currentmouseangle = atan2(point.y-ellipse.center.y, point.x-ellipse.center.x)-atan2(anc.y-ellipse.center.y,anc.x-ellipse.center.x);
             if (fabs(currentmouseangle) < M_PI/10 || fabs(M_PI-currentmouseangle) < M_PI/10){
-                NSLog(@"smallAngle");
                 point.x += offsetanc.x*2;
                 point.y += offsetanc.y*2;
                 currentmouseangle = atan2(point.y-ellipse.center.y, point.x-ellipse.center.x)-atan2(anc.y-ellipse.center.y,anc.x-ellipse.center.x);
@@ -408,6 +414,8 @@
             ellipses[elIndex] = ellipse;
         }
     }
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
+
 }
 
 
@@ -427,8 +435,7 @@
             }
             [usedRectangleNumberKeys addObject:@(currentKeyNum)];
             NSString *newRectKey =[NSString stringWithFormat:@"Ellipse %i",currentKeyNum];
-            [self addEllipse:NSMakeRect(p.x, p.y, rectWidth, rectHeight) color:Blue forKey:newRectKey];
-            [self addRect:NSMakeRect(p.x, p.y, rectWidth, rectHeight) color:Blue forKey:newRectKey];
+            [self addEllipse:NSMakeRect(p.x, p.y, defaultWidth, defaultHeight) color:Blue forKey:newRectKey];
         }
         
     }

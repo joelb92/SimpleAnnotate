@@ -12,16 +12,30 @@
 	Vector2 previousMousePos;
 	Vector2 startMousePos;
 	Vector2 stopMousePos;
+    int defaultWidth;
+    int defaultHeight;
 	bool dragging;
 	bool shiftHeld;
 	InfoOutputController *infoOutput;
+    bool linkedDims;
+    NSString *currentKey;
 }
 @property (readonly) bool dragging;
 @property (readonly) bool shiftHeld;
+@property (readwrite) bool linkedDims;
+@property (readwrite) int defaultWidth;
+@property (readwrite) int defaultHeight;
+@property (readwrite) NSString *currentKey;
 @property InfoOutputController *infoOutput;
 - (void)DragTo:(Vector3)point Event:(NSEvent *)event;
 - (void)SetMousePosition:(Vector2)mouseP UsingSpaceConverter:(SpaceConverter)spaceConverter;
 - (bool)StartDragging:(NSUInteger)withKeys;
 - (void)StopDragging;
 - (void)mouseClickedAtPoint:(Vector2)p withEvent:(NSEvent *)event;
+- (NSMutableArray *)getKeys;
+- (NSString *) stringForKey:(NSObject *)key;
+- (NSString *)stringForIndex:(int)i;
+- (NSUInteger)count;
+-(void)clearAll;
+
 @end

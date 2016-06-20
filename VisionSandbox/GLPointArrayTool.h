@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "GLViewTool.h"
 
-@interface GLPointArrayTool : NSObject
+@interface GLPointArrayTool : GLViewTool
 
 @end

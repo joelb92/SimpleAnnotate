@@ -80,7 +80,6 @@ struct EllipseVis
     Vector2Arr majorMinorAxis;
     Color previousColor;
     NSMutableArray *keys;
-    NSString *currentKey;
     intArr skippedRects;
     bool madeNewRect;
     bool dragRectBegin;
@@ -88,9 +87,6 @@ struct EllipseVis
     Vector2 dragStartPoint;
     float dragStartAngle;
     bool dragStarted;
-    int rectWidth;
-    int rectHeight;
-    bool linkedDims;
     int xDifference;
     int yDifference;
     float angleDifference;

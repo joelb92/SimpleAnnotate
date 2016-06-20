@@ -28,7 +28,7 @@
         
         labelFields = [[NSMutableDictionary alloc] init];
 //		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
-		currentTool = ellipseTool;
+		currentTool = rectangleTool;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UpdateOutput) name:@"MouseOverToolValueChanged" object:nil];
 //		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OpenSegmentationAssistant) name:@"Open Segmentation Assistant!" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setSelectedTableRow:) name:@"SelectionChanged" object:nil];
@@ -41,24 +41,24 @@
 }
 
 - (IBAction)linkDimsToggle:(id)sender {
-    if (rectangleTool.linkedDims) {
-        rectangleTool.linkedDims = false;
+    if (currentTool.linkedDims) {
+        currentTool.linkedDims = false;
         [linkDimsButton setImage:unlinkImg];
     }
     else{
-        rectangleTool.linkedDims = true;
+        currentTool.linkedDims = true;
         [linkDimsButton setImage:linkImg];
     }
 }
 - (void)UpdateOutput
 {
-		[RectKey setStringValue:[NSString stringWithString:rectangleTool.currentKey]];
+		[RectKey setStringValue:[NSString stringWithString:currentTool.currentKey]];
 }
 - (void)awakeFromNib
 {
-	rectangleTool.infoOutput = infoOutput;
-    rectangleTool.rectWidth = defaultRectWidthField.intValue;
-    rectangleTool.rectHeight = defaultRectHeightField.intValue;
+	currentTool.infoOutput = infoOutput;
+    currentTool.defaultWidth = defaultRectWidthField.intValue;
+    currentTool.defaultHeight = defaultRectHeightField.intValue;
     [self linkDimsToggle:nil];
 
 }
@@ -78,9 +78,9 @@
     int row = (int)mainTableView.selectedRow;
     int column =mainTableView.selectedColumn;
     if (row >= 0) {
-        NSString *currentKey = [rectangleTool.getKeys objectAtIndex:row];
+        NSString *currentKey = [currentTool.getKeys objectAtIndex:row];
         NSString *newKey = [(NSTextField *)obj.object stringValue];
-        [[rectangleTool getKeys] setObject:newKey atIndexedSubscript:row];
+        [[currentTool getKeys] setObject:newKey atIndexedSubscript:row];
     }
 }
 -(void)mouseClickedAtPoint:(Vector2)p SuperViewPoint:(Vector2)SP withEvent:(NSEvent *)event
@@ -124,7 +124,7 @@
 
 -(NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
-    return rectangleTool.getRects.count;
+    return currentTool.count;
 }
 - (NSView *)tableView:(NSTableView *)tableView
    viewForTableColumn:(NSTableColumn *)tableColumn
@@ -133,13 +133,12 @@
     NSTextField *result;
     result = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, tableColumn.width, 21)];
     if ([tableColumn.identifier isEqualToString:@"Location"]) {
-        NSRect r =[[[rectangleTool getRects] objectForKey:[[rectangleTool getKeys] objectAtIndex:row]] rectValue];
-        result.stringValue =  [NSString stringWithFormat:@"%i,%i,%i,%i",(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height];
+               result.stringValue = [currentTool stringForIndex:row];
         [result setEditable:NO];
         [result setSelectable:NO];
     }
     else{
-        result.stringValue = [rectangleTool.getKeys objectAtIndex:row];
+        result.stringValue = [currentTool.getKeys objectAtIndex:row];
         
     }
     [result setDelegate:self];

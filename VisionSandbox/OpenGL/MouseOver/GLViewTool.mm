@@ -7,7 +7,7 @@
 #import "GLViewTool.h"
 
 @implementation GLViewTool
-@synthesize dragging,infoOutput;
+@synthesize dragging,infoOutput,linkedDims,defaultWidth,defaultHeight,currentKey;
 
 - (id)init
 {
@@ -46,5 +46,24 @@
 {
 	dragging = false;
 	stopMousePos = mousePos;
+}
+
+- (NSMutableArray *)getKeys
+{
+    return nil;
+}
+
+- (NSString *) stringForKey:(NSObject *)key;
+{
+    return nil;
+}
+
+-(NSString *)stringForIndex:(int)i
+{
+    return nil;
+}
+
+-(NSUInteger)count{
+    return 0;
 }
 @end

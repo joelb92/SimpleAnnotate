@@ -26,7 +26,6 @@
 	Vector2Arr points;
 	Color previousColor;
 	NSMutableArray *keys;
-	NSString *currentKey;
 	intArr skippedRects;
 	bool madeNewRect;
 	bool dragRectBegin;
@@ -35,7 +34,6 @@
     bool dragStarted;
     int rectWidth;
     int rectHeight;
-    bool linkedDims;
     int xDifference;
     int yDifference;
     bool draggingDiffIsSet;
