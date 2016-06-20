@@ -58,11 +58,11 @@
     }
     
     //Draw ellipse drag handles if within the correct area
-        e.topAnchor= Vector2(sin(angle)*axis.y,cos(angle)*axis.y);
-        e.bottomAnchor = -e.topAnchor;
-        e.leftAnchor = Vector2(cos(-angle)*axis.x,sin(-angle)*axis.x);
-        e.rightAnchor = -e.leftAnchor;
-        e.rotationAnchor = Vector2(cos(-angle)*(axis.x+15),sin(-angle)*(axis.x+15))+point;
+    e.topAnchor= Vector2(sin(angle)*axis.y,cos(angle)*axis.y);
+    e.bottomAnchor = -e.topAnchor;
+    e.leftAnchor = Vector2(cos(-angle)*axis.x,sin(-angle)*axis.x);
+    e.rightAnchor = -e.leftAnchor;
+    e.rotationAnchor = Vector2(cos(-angle)*(axis.x+15),sin(-angle)*(axis.x+15))+point;
     e.topAnchor+=point;
     e.bottomAnchor+=point;
     e.rightAnchor+=point;
@@ -84,7 +84,7 @@
     angles.push_back(a*DEG2RAD);
     a+=10;
     [segColors addElement:c];
-
+    
     [keys addObject:key];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
@@ -178,7 +178,7 @@
     glEnable(GL_POINT_SMOOTH);
     glLineWidth(3);
     glPointSize(15);
-
+    
     {
         for(int i=0; i<ellipses.size(); i++)
         {
@@ -237,11 +237,11 @@
                 
                 
             }
-
-
+            
+            
         }
     }
-
+    
     
     [lock unlock];
 }
@@ -299,7 +299,7 @@
             }
             break;
         }
-
+        
     }
     if (!inCont) {
         currentKey = @"nil";
@@ -310,7 +310,7 @@
         [infoOutput.heightLabel	setStringValue:@"NA"];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
         mousedOverEllipseIndex = -1;
-
+        
     }
     if(!initialized) [self InitializeWithSpaceConverter:spaceConverter];
     
@@ -321,7 +321,7 @@
 {
     point.x = floor(point.x);
     point.y = floor(point.y);
-
+    
     if(!point.isNull() && mousedOverEllipseIndex>=0 && mousedOverPointIndex >= 0)
     {
         
@@ -329,122 +329,85 @@
         EllipseVis ellipse = ellipses[mousedOverEllipseIndex];
         if (mousedOverPointIndex == 5) { //rotation!
             float currentmouseangle = atan2(point.y-ellipse.center.y, point.x-ellipse.center.x);
-//            if( currentmouseangle < 0) currentmouseangle +=M_PI*2;
+            //            if( currentmouseangle < 0) currentmouseangle +=M_PI*2;
             if(!draggingDiffIsSet)
             {
-            angleDifference = ellipse.angle-currentmouseangle;
-            draggingDiffIsSet = true;
+                angleDifference = ellipse.angle-currentmouseangle;
+                draggingDiffIsSet = true;
             }
             float newAngle = -(currentmouseangle+angleDifference);
             if(!dragStarted)
             {
                 dragStartAngle = newAngle;
+                
                 dragStarted = true;
             }
             ellipse.setAngle(newAngle);
             ellipses[mousedOverEllipseIndex] = ellipse;
         }
         else{
+            Vector2 anc,offsetanc;
             if (mousedOverPointIndex == 1) { //top anchor
-                Vector2 currentMouseAxisLength = (point.AsVector2()-ellipse.center).ProjectOnto(ellipse.topAnchor-ellipse.center);
-                float newAxisLength = sqrtf(currentMouseAxisLength.SqMagnitude());
-                if (!dragStarted) {
-                    dragStartAngle = newAxisLength;
-                    dragStarted = true;
-                }
+                anc = ellipse.topAnchor;
+                offsetanc = ellipse.rightAnchor;
             }
+            if (mousedOverPointIndex == 2) { //top anchor
+                anc = ellipse.bottomAnchor;
+                offsetanc = ellipse.rightAnchor;
+            }
+            if (mousedOverPointIndex == 3) { //top anchor
+                anc = ellipse.leftAnchor;
+                offsetanc = ellipse.topAnchor;
+            }
+            if (mousedOverPointIndex == 4) { //top anchor
+                anc = ellipse.rightAnchor;
+                offsetanc = ellipse.topAnchor;
+            }
+            offsetanc -= ellipse.center;
+            float currentmouseangle,mouseDistance;
+            
+            
+            currentmouseangle = atan2(point.y-ellipse.center.y, point.x-ellipse.center.x)-atan2(anc.y-ellipse.center.y,anc.x-ellipse.center.x);
+            if (fabs(currentmouseangle) < M_PI/10 || fabs(M_PI-currentmouseangle) < M_PI/10){
+                NSLog(@"smallAngle");
+                point.x += offsetanc.x*2;
+                point.y += offsetanc.y*2;
+                currentmouseangle = atan2(point.y-ellipse.center.y, point.x-ellipse.center.x)-atan2(anc.y-ellipse.center.y,anc.x-ellipse.center.x);
+            }
+            mouseDistance = sqrt((point.AsVector2()-anc).SqMagnitude())*cos(currentmouseangle);
+            
+            //                NSLog(@"New axis: %f, %f",mouseDistance, ellipse.topAnchor.y- point.AsVector2().y);
+            if (!dragStarted) {
+                dragStartAngle = mouseDistance;
+                dragStarted = true;
+            }
+            if (mousedOverPointIndex == 1 || mousedOverPointIndex == 2) {
+                ellipse.setyaxis(mouseDistance);
+            }
+            if (mousedOverPointIndex == 3 || mousedOverPointIndex == 4) {
+                ellipse.setxaxis(mouseDistance);
+            }
+            ellipses[mousedOverEllipseIndex] = ellipse;
+            
         }
         
     }
-    
-//        if(!draggingDiffIsSet){
-//            xDifference = ellipse.center.x-point.x;
-//            yDifference = ellipse.center.y-point.y;
-//            draggingDiffIsSet = true;
-//        }
-//
-//        float newYPoint = point.y+yDifference;
-//        float newXPoint = point.x+xDifference;
-//        if (!dragStarted) {
-//            dragStartPoint = Vector2(newXPoint,newYPoint);
-//            dragStarted = true;
-//        }
-//        if (linkedDims) {
-//            Vector2 changeVect = Vector2(newXPoint,newYPoint)-dragStartPoint;
-//            if (abs(changeVect.x) > abs(changeVect.y)) {
-//                newYPoint = changeVect.x/ratio+dragStartPoint.y;
-//            }
-//            else
-//            {
-//                newXPoint = changeVect.y*ratio+dragStartPoint.x;
-//            }
-//        }
-//        points[mousedOverPointIndex].x = newXPoint;
-//        points[mousedOverPointIndex].y = newYPoint;
-//        if(rectIndex == 0) //top left corner
-//        {
-//            points[mousedOverPointIndex+1].y = newYPoint;
-//            points[mousedOverPointIndex+3].x = newXPoint;
-//        }
-//        if (rectIndex == 1)
-//        {
-//            points[mousedOverPointIndex-1].y = newYPoint;
-//            points[mousedOverPointIndex+1].x = newXPoint;
-//        }
-//        if (rectIndex == 2)
-//        {
-//            points[mousedOverPointIndex-1].x = newXPoint;
-//            points[mousedOverPointIndex+1].y = newYPoint;
-//        }
-//        if (rectIndex == 3)
-//        {
-//            points[mousedOverPointIndex-1].y = newYPoint;
-//            points[mousedOverPointIndex-3].x = newXPoint;
-//        }
-//        [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
-//    }
-//    else if(mousedOverRectIndex >= 0)
-//    {
-//        if (!dragRectBegin)//We are just beginning the rect drag, store initial mouse position
-//        {
-//            dragRectBegin = true;
-//            Vector2 p1 = points[mousedOverRectIndex*4];
-//            Vector2 p2 = points[mousedOverRectIndex*4+1];
-//            Vector2 p3 = points[mousedOverRectIndex*4+2];
-//            Vector2 p4 = points[mousedOverRectIndex*4+3];
-//            initialDragDistances[0] = (point-p1);
-//            initialDragDistances[1] = (point-p2);
-//            initialDragDistances[2] = (point-p3);
-//            initialDragDistances[3] = (point-p4);
-//        }
-//        else
-//        {
-//            points[mousedOverRectIndex*4]   = point-initialDragDistances[0];
-//            points[mousedOverRectIndex*4+1] = point-initialDragDistances[1];
-//            points[mousedOverRectIndex*4+2] = point-initialDragDistances[2];
-//            points[mousedOverRectIndex*4+3] = point-initialDragDistances[3];
-//        }
-//    }
-//    else if(!point.isNull() && draggedIndex < 0 && [event modifierFlags] & NSCommandKeyMask)
-//    {
-//        if (!madeNewRect) {
-//            int currentKeyNum =points.Length/4;
-//            while ([usedRectangleNumberKeys containsObject:@(currentKeyNum)]) {
-//                currentKeyNum++;
-//            }
-//            [usedRectangleNumberKeys addObject:@(currentKeyNum)];
-//            NSString *newRectKey =[NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
-//            NSRect r = NSMakeRect(point.x, point.y, 1, 1);
-//            [self addRect:r color:Blue forKey:newRectKey];
-//            //            [keys addObject:newRectKey];
-//            mousedOverPointIndex = points.Length-4;
-//            madeNewRect = true;
-//            [self DragTo:point Event:event];
-//        }
-//        
-//    }
-//    [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
-//    
+    else if (!point.isNull() && mousedOverEllipseIndex >= 0)
+    {
+        int elIndex = mousedOverEllipseIndex;
+        EllipseVis ellipse = ellipses[mousedOverEllipseIndex];
+        if(!dragRectBegin)
+        {
+            dragRectBegin = true;
+            initialDragDistances[0] = (point.AsVector2()-Vector2(ellipse.center));
+        }
+        else
+        {
+            ellipse.center = point-initialDragDistances[0];
+            ellipse.recalc();
+            ellipses[elIndex] = ellipse;
+        }
+    }
 }
 
 
