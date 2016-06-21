@@ -94,7 +94,9 @@
     NSMutableDictionary *rectDict = [NSMutableDictionary dictionaryWithCapacity:points.Length/4];
     for(int i = 0; i < points.Length; i+=4)
     {
-        [rectDict setObject:[NSValue valueWithRect:NSMakeRect(points[i].x, points[i].y, points[i+1].x-points[i].x, points[i+2].y-points[i].y)] forKey:[keys objectAtIndex:i/4]];
+        NSRect r = NSMakeRect(points[i].x, points[i].y, points[i+1].x-points[i].x, points[i+2].y-points[i].y);
+        NSDictionary *d = [NSDictionary dictionaryWithObjects:@[@(r.origin.x),@(r.origin.y),@(r.size.width),@(r.size.height)] forKeys:@[@"x coord",@"y coord",@"widht",@"height"]];
+        [rectDict setObject:d forKey:[keys objectAtIndex:i/4]];
     }
     return rectDict;
 }
@@ -105,8 +107,9 @@
     for(int i = 0; i < rects.count; i++)
     {
         NSObject *key = [rects.allKeys objectAtIndex:i];
-        NSRect r = [[rects objectForKey:key] rectValue];
-        [self addElement:r color:Blue forKey:key];
+        NSDictionary *d = [rects objectForKey:key];
+        NSRect r = NSMakeRect([[d objectForKey:@"x coord"] floatValue], [[d objectForKey:@"y coord"] floatValue], [[d objectForKey:@"width"] floatValue], [[d objectForKey:@"height"] floatValue]);
+        [self addElement:r color:Blue forKey:(NSString *)key];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }

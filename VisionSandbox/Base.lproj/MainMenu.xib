@@ -837,7 +837,7 @@ CA
                                         </textFieldCell>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="avw-BH-bln">
-                                        <rect key="frame" x="13" y="428" width="148" height="17"/>
+                                        <rect key="frame" x="13" y="418" width="148" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Default Rectangle Size:" id="0hJ-ZB-TF9">
                                             <font key="font" metaFont="system"/>
@@ -855,7 +855,7 @@ CA
                                         </textFieldCell>
                                     </textField>
                                     <textField verticalHuggingPriority="750" id="KoR-HF-AZ8">
-                                        <rect key="frame" x="166" y="428" width="51" height="22"/>
+                                        <rect key="frame" x="166" y="418" width="51" height="22"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="20" drawsBackground="YES" id="dgn-Y8-2xp">
                                             <font key="font" metaFont="system"/>
@@ -864,7 +864,7 @@ CA
                                         </textFieldCell>
                                     </textField>
                                     <textField verticalHuggingPriority="750" id="6EI-9a-VfX">
-                                        <rect key="frame" x="255" y="428" width="54" height="22"/>
+                                        <rect key="frame" x="255" y="418" width="54" height="22"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="20" drawsBackground="YES" id="Cd4-Wg-amE">
                                             <font key="font" metaFont="system"/>
@@ -933,7 +933,7 @@ CA
                                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                             <prototypeCellViews>
                                                                 <tableCellView id="Tfw-bB-x47">
-                                                                    <rect key="frame" x="152" y="1" width="184" height="21"/>
+                                                                    <rect key="frame" x="104" y="1" width="184" height="21"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="cLS-rR-MCt">
@@ -975,9 +975,9 @@ CA
                                         </tableHeaderView>
                                     </scrollView>
                                     <button id="Xrd-Na-poF">
-                                        <rect key="frame" x="224" y="427" width="24" height="23"/>
+                                        <rect key="frame" x="224" y="417" width="24" height="23"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="link" imagePosition="only" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2JA-Re-zwR">
+                                        <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="unlink" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2JA-Re-zwR">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1022,6 +1022,21 @@ CA
                                             <action selector="JumpToFrame:" target="494" id="sig-Ct-XDf"/>
                                         </connections>
                                     </button>
+                                    <segmentedControl verticalHuggingPriority="750" id="Vyw-7D-e33">
+                                        <rect key="frame" x="29" y="441" width="91" height="24"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="VZF-B2-d7W">
+                                            <font key="font" metaFont="system"/>
+                                            <segments>
+                                                <segment label="■" selected="YES"/>
+                                                <segment label="●" tag="1"/>
+                                                <segment label="x"/>
+                                            </segments>
+                                        </segmentedCell>
+                                        <connections>
+                                            <action selector="toolSelection:" target="thH-ug-6pU" id="ptd-kP-LaE"/>
+                                        </connections>
+                                    </segmentedControl>
                                 </subviews>
                                 <shadow key="shadow" blurRadius="2">
                                     <size key="offset" width="0.0" height="-1"/>
@@ -1212,6 +1227,7 @@ CA
                 <outlet property="infoOutput" destination="zmC-49-3s7" id="weR-hH-nZZ"/>
                 <outlet property="linkDimsButton" destination="Xrd-Na-poF" id="kst-Fp-cOd"/>
                 <outlet property="mainTableView" destination="Uuo-1m-Dhq" id="jP8-gp-41F"/>
+                <outlet property="toolMenu" destination="Vyw-7D-e33" id="Frt-va-Vwh"/>
             </connections>
         </customObject>
         <window title="Simple Annotate - About" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="zdB-yp-Ggp" userLabel="About">
@@ -1458,6 +1474,6 @@ By hitting command+S, you save your project.  All cropped images, along with a a
         <image name="LogoTransparent" width="230" height="90"/>
         <image name="NDLogo" width="218.37037658691406" height="185.48147583007812"/>
         <image name="OpenGL View Icon" width="1600" height="1024"/>
-        <image name="link" width="24" height="23"/>
+        <image name="unlink" width="24" height="23"/>
     </resources>
 </document>

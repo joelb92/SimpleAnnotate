@@ -8,7 +8,7 @@
 
 #import "GLEllipseTool.h"
 @implementation GLEllipseTool
-@synthesize mousedOverRectIndex,rectPositionsForKeys,camShiftTrackers,rectTrackingForRectsWithKeys;
+@synthesize mousedOverRectIndex,rectPositionsForKeys,camShiftTrackers;
 - (id)initWithOutputView:(InfoOutputController *)inf
 {
     self = [super init];
@@ -16,24 +16,19 @@
     {
         a=0;
         mousedOverLineIndex = mousedOverPointIndex = mousedOverRectIndex = -1;
-        camShiftTrackers = [[NSMutableArray alloc] init];
         initialized = false;
-        points = Vector2Arr();
-        majorMinorAxis = Vector2Arr();
         segColors = [[colorArr alloc] init];
         keys = [[NSMutableArray alloc] init];
         currentKey = @"nil";
         skippedRects = intArr();
         infoOutput = inf;
         rectPositionsForKeys = [[NSMutableDictionary alloc] init];
-        rectTrackingForRectsWithKeys = [[NSMutableArray alloc] init];
-        usedRectangleNumberKeys = [[NSMutableArray alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
     }
     return self;
 }
 
--(void)addEllipse:(NSRect)er color:(Color)c forKey:(NSString *)key
+-(void)addElement:(NSRect)er color:(Color)c forKey:(NSString *)key
 {
     //Calculate ellipse angle transform
     float angle = 0;
@@ -77,44 +72,18 @@
 
 }
 
--(void)addRect:(NSRect)r color:(Color)c forKey:(NSString *)key
-{
-    Vector2 p1,p2,p3,p4;
-    p1 =Vector2(r.origin.x, r.origin.y);
-    p2 = Vector2(r.size.width,r.size.height);
-    points.AddItemToEnd(p1);
-    majorMinorAxis.AddItemToEnd(p2);
-    angles.push_back(a*DEG2RAD);
-    a+=10;
-    [segColors addElement:c];
-    
-    [keys addObject:key];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
-}
 
--(void)removeRectAtIndex:(int)i
+-(void)removeElementAtIndex:(int)i
 {
-    if (i < points.Length/4) {
+    if (i < ellipses.size() && i >=0) {
         [keys removeObjectAtIndex:i];
-        i*=4;
-        Vector2Arr newArr = Vector2Arr();
-        for (int j = 0; j < points.Length; j++)
-        {
-            if (!(j >= i && j <i+4))
-            {
-                newArr.AddItemToEnd(points[j]);
-            }
-        }
-        points = newArr;
-        mousedOverRectIndex = -1;
-        mousedOverLineIndex = -1;
-        skippedRects.AddItemToBegining(i);
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverRectIndex)];
+        ellipses.erase(ellipses.begin()+i);
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverEllipseIndex)];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 
--(void)setRectKey:(NSString *)key forIndex:(int)i
+-(void)setElementKey:(NSString *)key forIndex:(int)i
 {
     if (i < keys.count) {
         [keys replaceObjectAtIndex:i withObject:key];
@@ -130,31 +99,34 @@
     }
 }
 
--(NSDictionary *)getRects
+-(NSDictionary *)getElements
 {
-    NSMutableDictionary *rectDict = [NSMutableDictionary dictionaryWithCapacity:points.Length/4];
-    for(int i = 0; i < points.Length; i+=4)
+    NSMutableDictionary *rectDict = [NSMutableDictionary dictionaryWithCapacity:ellipses.size()];
+    for(int i = 0; i < ellipses.size(); i++)
     {
-        [rectDict setObject:[NSValue valueWithRect:NSMakeRect(points[i].x, points[i].y, points[i+1].x-points[i].x, points[i+2].y-points[i].y)] forKey:[keys objectAtIndex:i/4]];
+        EllipseVis e = ellipses[i];
+        NSDictionary * d = [NSDictionary dictionaryWithObjects:@[@(e.center.x),@(e.center.y),@(e.axis.x),@(e.axis.y),@(e.angle)] forKeys:@[@"x coord",@"y coord",@"width",@"height",@"rotation"]];
+        [rectDict setValue:d forKey:[keys objectAtIndex:i]];
     }
     return rectDict;
 }
 
--(void)setRects:(NSDictionary *)rects
+-(void)setElements:(NSDictionary *)rects
 {
     [self clearAll];
     for(int i = 0; i < rects.count; i++)
     {
         NSObject *key = [rects.allKeys objectAtIndex:i];
-        NSRect r = [[rects objectForKey:key] rectValue];
-        [self addRect:r color:Blue forKey:key];
+        NSDictionary *d = [rects objectForKey:key];
+        NSRect r = NSMakeRect([[d objectForKey:@"x coord"] floatValue], [[d objectForKey:@"y coord"] floatValue], [[d objectForKey:@"width"] floatValue], [[d objectForKey:@"height"] floatValue]);
+        [self addElement:r color:Blue forKey:(NSString *)key];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 
 -(NSString *)stringForKey:(NSObject *)key
 {
-    return [self stringForIndex:[keys indexOfObject:key]];
+    return [self stringForIndex:(int)[keys indexOfObject:key]];
 }
 
 -(NSString *)stringForIndex:(int)i
@@ -175,15 +147,15 @@
 
 -(void)clearAll
 {
-    mousedOverLineIndex = mousedOverPointIndex = mousedOverRectIndex = -1;
+    mousedOverLineIndex = mousedOverPointIndex = mousedOverRectIndex = mousedOverEllipseIndex = -1;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverRectIndex)];
-    points = Vector2Arr();
     if (segColors) {
     }
     if (keys) {
     }
     segColors = [[colorArr alloc] init];
     keys = [[NSMutableArray alloc] init];
+    ellipses.clear();
     currentKey = @"nil";
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
@@ -191,7 +163,6 @@
 - (void)GraphUsingSpaceConverter:(SpaceConverter)spaceConverter
 {
     bool ismousedover = false;
-    Vector2 mousePoint = spaceConverter.ScreenToImageVector(mousePos);
     previousColor = Color(NAN,NAN,NAN);
     [lock lock];
     glEnable(GL_POINT_SMOOTH);
@@ -206,14 +177,14 @@
             EllipseVis e = ellipses[i];
             glLineWidth(2);
             glBegin(GL_LINE_LOOP);
-            [self SetCurrentColor:Yellow];
             //Draw the ellipse
+            
             for(int j=0; j<e.imagePoints.size(); j++)
             {
                 Vector2 v = spaceConverter.ImageToCameraVector(e.imagePoints[j]);
                 glVertex3d(v.x, v.y, minZ);
             }
-            [self SetCurrentColor:[segColors elementAtIndex:i]];
+            [self SetCurrentColor:Red];
             glEnd();
             
             //Draw ellipse drag handles if within the correct area
@@ -231,9 +202,25 @@
                 glVertex3d(bottomAnchor.x, bottomAnchor.y, minZ);
                 glVertex3d(leftAnchor.x, leftAnchor.y, minZ);
                 glVertex3d(rightAnchor.x, rightAnchor.y, minZ);
-                
-                
+                if(mousedOverPointIndex == 1){
+                    [self SetCurrentColor:Yellow];
+                     glVertex3d(topAnchor.x, topAnchor.y, minZ);
+                }
+                if(mousedOverPointIndex == 2){
+                    [self SetCurrentColor:Yellow];
+                    glVertex3d(bottomAnchor.x, bottomAnchor.y, minZ);
+                }
+                if(mousedOverPointIndex == 3){
+                    [self SetCurrentColor:Yellow];
+                    glVertex3d(leftAnchor.x, leftAnchor.y, minZ);
+                }
+                if(mousedOverPointIndex == 4){
+                    [self SetCurrentColor:Yellow];
+                    glVertex3d(rightAnchor.x, rightAnchor.y, minZ);
+                }
+                [self SetCurrentColor:Red];
                 //draw rotation anchor
+                if(mousedOverPointIndex == 5) [self SetCurrentColor:Yellow];
                 glVertex3d(rotateAnchor.x, rotateAnchor.y, minZ);
                 glEnd();
                 glLineWidth(3);
@@ -241,6 +228,8 @@
                 glVertex3d(leftAnchor.x, leftAnchor.y, minZ);
                 glVertex3d(rotateAnchor.x, rotateAnchor.y, minZ);
                 glEnd();
+                [self SetCurrentColor:[segColors elementAtIndex:i]];
+
                 
                 
             }
@@ -342,7 +331,7 @@
                 angleDifference = ellipse.angle-currentmouseangle;
                 draggingDiffIsSet = true;
             }
-            float newAngle = -(currentmouseangle+angleDifference);
+            float newAngle = -(currentmouseangle);
             if(!dragStarted)
             {
                 dragStartAngle = newAngle;
@@ -353,7 +342,8 @@
             ellipses[mousedOverEllipseIndex] = ellipse;
         }
         else{
-            Vector2 anc,offsetanc;
+            Vector2 anc,offsetanc, oppositenac;
+            float ratio = ellipse.axis.x/ellipse.axis.y;
             if (mousedOverPointIndex == 1) {
                 anc = ellipse.topAnchor;
                 offsetanc = ellipse.rightAnchor;
@@ -381,7 +371,9 @@
                 currentmouseangle = atan2(point.y-ellipse.center.y, point.x-ellipse.center.x)-atan2(anc.y-ellipse.center.y,anc.x-ellipse.center.x);
             }
             mouseDistance = sqrt((point.AsVector2()-anc).SqMagnitude())*cos(currentmouseangle);
-            
+            if (mouseDistance <= 0) {
+                mouseDistance = 1;
+            }
             //                NSLog(@"New axis: %f, %f",mouseDistance, ellipse.topAnchor.y- point.AsVector2().y);
             if (!dragStarted) {
                 dragStartAngle = mouseDistance;
@@ -389,9 +381,11 @@
             }
             if (mousedOverPointIndex == 1 || mousedOverPointIndex == 2) {
                 ellipse.setyaxis(mouseDistance);
+                if (linkedDims) ellipse.setxaxis(ellipse.axis.y*ratio);
             }
             if (mousedOverPointIndex == 3 || mousedOverPointIndex == 4) {
                 ellipse.setxaxis(mouseDistance);
+                if (linkedDims) ellipse.setyaxis(ellipse.axis.x/ratio);
             }
             ellipses[mousedOverEllipseIndex] = ellipse;
             
@@ -435,14 +429,14 @@
             }
             [usedRectangleNumberKeys addObject:@(currentKeyNum)];
             NSString *newRectKey =[NSString stringWithFormat:@"Ellipse %i",currentKeyNum];
-            [self addEllipse:NSMakeRect(p.x, p.y, defaultWidth, defaultHeight) color:Blue forKey:newRectKey];
+            [self addElement:NSMakeRect(p.x, p.y, defaultWidth, defaultHeight) color:Blue forKey:newRectKey];
         }
         
     }
     
     if ([event modifierFlags] & NSShiftKeyMask) {
         if (mousedOverRectIndex >= 0) {
-            [self removeRectAtIndex:mousedOverRectIndex];
+            [self removeElementAtIndex:mousedOverRectIndex];
         }
     }
     if ([event modifierFlags] & NSFunctionKeyMask) {

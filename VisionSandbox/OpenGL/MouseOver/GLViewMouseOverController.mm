@@ -25,6 +25,7 @@
 		protractorTool = [[GLProtractor alloc] init];
 		rectangleTool = [[GLRectangleDragger alloc] initWithOutputView:infoOutput];
         ellipseTool = [[GLEllipseTool alloc] initWithOutputView:infoOutput];
+        allTools = [[NSArray alloc] initWithObjects:rectangleTool,ellipseTool, nil];
         
         labelFields = [[NSMutableDictionary alloc] init];
 //		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
@@ -34,7 +35,9 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setSelectedTableRow:) name:@"SelectionChanged" object:nil];
         linkImg = [NSImage imageNamed:@"link.png"];
         unlinkImg = [NSImage imageNamed:@"unlink.png"];
-        rectangleTool.linkedDims = true;
+        currentTool.linkedDims = false;
+        rectangleTool.linkedDims = false;
+        ellipseTool.linkedDims = false;
     }
     
     return self;
@@ -71,6 +74,12 @@
 }
 
 
+-(IBAction)toolSelection:(id)sender
+{
+    currentTool = [allTools objectAtIndex:toolMenu.selectedSegment];
+    [self reloadTable];
+}
+
 - (void)controlTextDidChange:(NSNotification *)notification {
 }
 -(void)controlTextDidEndEditing:(NSNotification *)obj
@@ -85,10 +94,9 @@
 }
 -(void)mouseClickedAtPoint:(Vector2)p SuperViewPoint:(Vector2)SP withEvent:(NSEvent *)event
 {
-    rectangleTool.rectWidth = defaultRectWidthField.intValue;
-    rectangleTool.rectHeight = defaultRectHeightField.intValue;
-    ellipseTool.rectWidth = defaultRectWidthField.intValue;;
-    ellipseTool.rectHeight = defaultRectHeightField.intValue;
+    currentTool.defaultWidth = defaultRectWidthField.intValue;
+    currentTool.defaultHeight = defaultRectHeightField.intValue;
+
     NSRect newframe  = NSMakeRect(SP.x, SP.y, testLabel.frame.size.width, testLabel.frame.size.height);
     [testLabel setFrame:newframe];
 	[currentTool mouseClickedAtPoint:p withEvent:event];

@@ -21,6 +21,7 @@
     IBOutlet NSTextField *defaultRectHeightField;
     IBOutlet NSTextField *defaultRectWidthField;
 	IBOutlet NSTabView *TabView;
+    NSArray *allTools;
 	
 	//Ruler
 	IBOutlet NSTextField *DistanceOutput;
@@ -39,6 +40,7 @@
 	IBOutlet InfoOutputController *infoOutput;
     IBOutlet ROTableView *mainTableView;
     IBOutlet NSButton *linkDimsButton;
+    IBOutlet NSSegmentedControl *toolMenu;
     NSImage *linkImg;
     NSImage *unlinkImg;
 

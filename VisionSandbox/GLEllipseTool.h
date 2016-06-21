@@ -74,10 +74,7 @@ struct EllipseVis
     int mousedOverEllipseIndex;
     bool isVertical;
     colorArr*segColors;
-    Vector2Arr points;
     std::vector<EllipseVis> ellipses;
-    std::vector<float>angles;
-    Vector2Arr majorMinorAxis;
     Color previousColor;
     NSMutableArray *keys;
     intArr skippedRects;
@@ -98,18 +95,7 @@ struct EllipseVis
 }
 @property NSString *currentKey;
 @property int mousedOverRectIndex;
-@property NSMutableArray *camShiftTrackers;
-@property int rectWidth;
-@property int rectHeight;
-@property bool linkedDims;
-@property NSMutableDictionary *rectPositionsForKeys;
-@property NSMutableArray *rectTrackingForRectsWithKeys;
 - (id)initWithOutputView:(InfoOutputController *)infoOutput;
--(void)addRect:(NSRect)r color:(Color)c forKey:(NSString *)key;
--(void)removeRectAtIndex:(int)i;
--(void)setRectKey:(NSString *)key forIndex:(int)i;
--(NSDictionary *)getRects;
--(void)setRects:(NSDictionary *)rects;
 -(NSMutableArray *)getKeys;
 -(void)clearAll;
 @end

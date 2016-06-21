@@ -142,7 +142,7 @@ using namespace std;
                     }
                     else
                     {
-                        [mainGLView.mouseOverController.rectangleTool clearAll];
+                        [mainGLView.mouseOverController.tool clearAll];
                     }
                     [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
                     [GLViewListCommand AddObject:[frameForFrameNumber objectForKey:@(newFrameNum)] ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
