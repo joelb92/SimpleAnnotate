@@ -71,7 +71,7 @@ public:
 	Vector2 GetAndRemoveFirstElement();
 	Vector2 GetAndRemoveLastElement();
     Vector2Arr PointsForIndices(intArr indices);
-	
+    std::vector<cv::Point2f>  asCVContour();
 	Vector2 CenterOfMass();
 	int ClosestIndexToPoint(Vector2 point);
 	Vector2Arr arrayWithDescription(NSString* description);

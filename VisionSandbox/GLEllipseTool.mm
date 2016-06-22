@@ -8,13 +8,12 @@
 
 #import "GLEllipseTool.h"
 @implementation GLEllipseTool
-@synthesize mousedOverRectIndex,rectPositionsForKeys,camShiftTrackers;
+@synthesize mousedOverRectIndex;
 - (id)initWithOutputView:(InfoOutputController *)inf
 {
     self = [super init];
     if(self)
     {
-        a=0;
         mousedOverLineIndex = mousedOverPointIndex = mousedOverRectIndex = -1;
         initialized = false;
         segColors = [[colorArr alloc] init];
@@ -244,8 +243,10 @@
 
 -(void)tableHoverRect:(NSNotification *)notification
 {
+    [super tableHoverRect:notification];
     id obj = notification.object;
-    mousedOverRectIndex = [(NSNumber *)obj intValue];
+    mousedOverEllipseIndex = [(NSNumber *)obj intValue];
+    
 }
 
 -(void)InitializeWithSpaceConverter:(SpaceConverter)spaceConverter
@@ -439,21 +440,6 @@
             [self removeElementAtIndex:mousedOverRectIndex];
         }
     }
-    if ([event modifierFlags] & NSFunctionKeyMask) {
-        if (mousedOverRectIndex >= 0) {
-            if (![rectTrackingForRectsWithKeys containsObject:[keys objectAtIndex:mousedOverRectIndex]]) {
-                [rectTrackingForRectsWithKeys addObject:[keys objectAtIndex:mousedOverRectIndex]];
-            }
-            else
-            {
-                [rectTrackingForRectsWithKeys removeObject:[keys objectAtIndex:mousedOverRectIndex]];
-            }
-        }
-    }
-    //    NSLog([event characters]);
-    //    if ([[[event characters] componentsSeparatedByString:@""] containsObject:@"t"]) {
-    //
-    //    }
 }
 - (bool)StartDragging:(NSUInteger)withKeys
 {

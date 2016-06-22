@@ -8,7 +8,43 @@
 
 #import <Foundation/Foundation.h>
 #import "GLViewTool.h"
-
+#import "GL2DGeometryDrawer.h"
+#include <dlib/image_processing.h>
+#include "opencv2/opencv.hpp"
 @interface GLPointArrayTool : GLViewTool
-
+{
+bool initialized;
+int draggedIndex;
+int mousedOverPointIndex;
+int mousedOverLineIndex;
+int mousedOverEllipseIndex;
+bool isVertical;
+    NSString *currentAdditionKey;
+colorArr*segColors;
+Color previousColor;
+NSMutableArray *keys;
+intArr skippedRects;
+bool madeNewRect;
+bool dragRectBegin;
+Vector2 initialDragDistances[4];
+Vector2 dragStartPoint;
+float dragStartAngle;
+bool dragStarted;
+int xDifference;
+int yDifference;
+float angleDifference;
+float axisDifference;
+bool draggingDiffIsSet;
+NSMutableDictionary *rectPositionsForKeys;
+NSMutableArray *usedRectangleNumberKeys;
+    std::vector<Vector2Arr> pointSets;
+    Vector2Arr allPoints;
+    NSMutableArray *pointStructureMap;
+    NSMutableArray *pointStructureIndexMap;
+}
+@property NSString *currentKey;
+@property int mousedOverRectIndex;
+- (id)initWithOutputView:(InfoOutputController *)infoOutput;
+-(NSMutableArray *)getKeys;
+-(void)clearAll;
 @end

@@ -66,7 +66,6 @@ struct EllipseVis
 
 @interface GLEllipseTool : GLViewTool
 {
-    float a;
     bool initialized;
     int draggedIndex;
     int mousedOverPointIndex;

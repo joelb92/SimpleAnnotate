@@ -621,6 +621,16 @@ Vector2Arr arrayWithDescription(NSString* description)
 	return output;
 }
 
+std::vector<cv::Point2f>  Vector2Arr::asCVContour()
+{
+    std::vector<cv::Point2f> ret;
+    for(int i = 0; i < Length; i++)
+    {
+        ret.push_back(arr[i].AsCvPoint());
+    }
+    return ret;
+}
+
 //Operators
 Vector2 &Vector2Arr::operator[](int index)
 {

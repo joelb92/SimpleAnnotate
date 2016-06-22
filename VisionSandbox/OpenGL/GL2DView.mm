@@ -95,6 +95,7 @@
 		spaceConverter.FlasherValue = 0;
 	}
 }
+
 - (void)mouseDown:(NSEvent*)event
 {
 	[super mouseDown:event];
@@ -120,6 +121,10 @@
 - (void)mouseUp:(NSEvent*)event
 {
 	[super mouseUp:event];
+}
+
+-(BOOL)acceptsFirstResponder{
+    return YES;
 }
 
 - (void)scrollWheel:(NSEvent*)event

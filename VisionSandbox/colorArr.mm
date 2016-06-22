@@ -95,6 +95,21 @@ const int AddObjectLengthIncrament = 10000;
 	VisableLength--;
 }
 
+- (void) removeElementAtIndex:(int)k
+{
+    if(Length > 0)
+    {
+    Length = elements-1;
+    Color*temp = new Color[Length];
+    int j = 0;
+    for(int i = 0; i<Length; i++)
+    {
+        if(j != k) temp[i] = arr[j];
+        j++;
+    }
+    }
+}
+
 - (int)Length
 {
 	return VisableLength;

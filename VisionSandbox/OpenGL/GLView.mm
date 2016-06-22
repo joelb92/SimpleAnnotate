@@ -268,6 +268,9 @@
         
 	}
 }
+
+
+
 - (void)mouseDown:(NSEvent*)event
 {
 	[self GetMousePositionForEvent:event];

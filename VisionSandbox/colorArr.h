@@ -23,6 +23,7 @@
 - (void)addElement:(Color)element;
 - (void)addElements:(colorArr*)cols;
 - (void)removeLastElement;
+- (void) removeElementAtIndex:(int)k;
 
 - (int)Length;
 

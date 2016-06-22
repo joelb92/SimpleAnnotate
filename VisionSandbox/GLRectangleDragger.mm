@@ -223,6 +223,7 @@
 
 -(void)tableHoverRect:(NSNotification *)notification
 {
+    [super tableHoverRect:notification];
     id obj = notification.object;
     mousedOverRectIndex = [(NSNumber *)obj intValue];
 }

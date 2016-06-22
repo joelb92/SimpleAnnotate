@@ -12,6 +12,7 @@
 	Vector2 previousMousePos;
 	Vector2 startMousePos;
 	Vector2 stopMousePos;
+    int mousedOverElementIndex;
     int defaultWidth;
     int defaultHeight;
 	bool dragging;
@@ -20,6 +21,7 @@
     bool linkedDims;
     NSString *currentKey;
 }
+@property (readwrite) int mousedOverElementIndex;
 @property (readonly) bool dragging;
 @property (readonly) bool shiftHeld;
 @property (readwrite) bool linkedDims;
@@ -36,6 +38,7 @@
 - (NSString *) stringForKey:(NSObject *)key;
 - (NSString *)stringForIndex:(int)i;
 - (NSUInteger)count;
+-(void)tableHoverRect:(NSNotification *)notification;
 -(void)clearAll;
 
 @end

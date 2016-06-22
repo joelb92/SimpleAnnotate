@@ -7,7 +7,7 @@
 #import "GLViewTool.h"
 
 @implementation GLViewTool
-@synthesize dragging,infoOutput,linkedDims,defaultWidth,defaultHeight,currentKey;
+@synthesize dragging,infoOutput,linkedDims,defaultWidth,defaultHeight,currentKey,mousedOverElementIndex;
 
 - (id)init
 {
@@ -17,6 +17,7 @@
 		mousePos = Vector2(NAN,NAN);
 		startMousePos = Vector2(NAN,NAN);
 		dragging = false;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
 	}
 	return self;
 }
@@ -33,6 +34,12 @@
 - (void)DragTo:(Vector3)point Event:(NSEvent *)event
 {
 	
+}
+
+-(void)tableHoverRect:(NSNotification *)notification
+{
+    id obj = notification.object;
+    mousedOverElementIndex = [(NSNumber *)obj intValue];
 }
 
 - (bool)StartDragging:(NSUInteger)withKeys

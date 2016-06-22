@@ -25,7 +25,8 @@
 		protractorTool = [[GLProtractor alloc] init];
 		rectangleTool = [[GLRectangleDragger alloc] initWithOutputView:infoOutput];
         ellipseTool = [[GLEllipseTool alloc] initWithOutputView:infoOutput];
-        allTools = [[NSArray alloc] initWithObjects:rectangleTool,ellipseTool, nil];
+        pointTool = [[GLPointArrayTool alloc] initWithOutputView:infoOutput];
+        allTools = [[NSArray alloc] initWithObjects:rectangleTool,ellipseTool, pointTool, nil];
         
         labelFields = [[NSMutableDictionary alloc] init];
 //		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
