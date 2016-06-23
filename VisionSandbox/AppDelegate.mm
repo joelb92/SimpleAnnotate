@@ -21,12 +21,10 @@ using namespace std;
     trackers = [[NSMutableDictionary alloc] init];
     savingStatusLabel.stringValue = @"";
     matchedTemplates = [[NSMutableIndexSet alloc] init];
-    allFrames = [[NSMutableArray alloc] init];
     rectsForFrames = [[NSMutableDictionary alloc] init];
     frameForFrameNumber = [[NSMutableDictionary alloc] init];
     framePathForFrameNum = [[NSMutableDictionary alloc] init];
     viewList = [[GLViewList alloc] initWithBackupPath:@""];
-    usedImagePathArray = [[NSMutableArray alloc] init];
     mainGLView.objectList = [[[GLObjectList alloc] initWithBackupPath:@""] autorelease];
     [viewList AddObject:mainGLView ForKeyPath:@"MainView"];
     mainGLOutlineView.viewList = viewList;
@@ -34,11 +32,37 @@ using namespace std;
     frameNum = 0;
     frameSkip = 1;
     [frameSkipField setStringValue:@"1"];
+    faceDetector = [[FaceDetectionHandler alloc] initWithShapePredictorFile:@"/Users/bog/SimpleAnnotate/shape_predictor_68_face_landmarks.dat"];
     [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,1000,1000)];
     acceptableImageTypes = @[[NSPredicate predicateWithFormat:@"self ENDSWITH '.jpg'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.png'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.bmp'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.ppm'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.gif'"]];
     NSLog(@"loaded");
 }
 
+-(IBAction)findFacesInCurrentFrame:(id)sender
+{
+    OpenImageHandler *currentImage =[frameForFrameNumber objectForKey:@(frameNum)];
+    [faceDetector detectFacesInImage:currentImage atScale:0];
+    [mainGLView.mouseOverController.rectangleTool setElements:faceDetector.faceRectDict];
+    NSAlert *alert = [[NSAlert alloc] init];
+    [alert addButtonWithTitle:@"Yes"];
+    [alert addButtonWithTitle:@"No"];
+    [alert setMessageText:[NSString stringWithFormat:@"%lu Faces have been detected.  Would you like to split them?",(unsigned long)faceDetector.faceRectDict.count]];
+    [alert setInformativeText:@"This will allow you to work on each individual face separately"];
+    [alert setAlertStyle:NSWarningAlertStyle];
+    if ([alert runModal] == NSAlertFirstButtonReturn) {
+        //split the faces
+        for(int i = 0; i < faceDetector.dets.size(); i++)
+        {
+            NSRect nsr = faceDetector.dets[i];
+            cv::Rect r(nsr.origin.x,nsr.origin.y,nsr.size.width,nsr.size.height);
+            cv::Mat face = currentImage.Cv(r).clone();
+            OpenImageHandler *faceImage = [[OpenImageHandler alloc] initWithCVMat:face Color:Black BinaryImage:false];
+            
+        }
+    }
+
+//    cv::imshow("test", [[frameForFrameNumber objectForKey:@(frameNum)] Cv]);
+}
 
 -(void)splashSequence
 {
@@ -136,7 +160,7 @@ using namespace std;
                 if (!frame.empty()) {
                     OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
                     [frameForFrameNumber setObject:img forKey:@(newFrameNum)];
-                    [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getRects forKey:@(frameNum)];
+                    [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getElements forKey:@(frameNum)];
                     if ([[rectsForFrames allKeys] containsObject:@(newFrameNum)]) {
                         [mainGLView.mouseOverController.rectangleTool setRects:[rectsForFrames objectForKey:@(newFrameNum)]];
                     }
@@ -152,7 +176,7 @@ using namespace std;
                     stillGood = true;
                 }
             }
-            else
+            else //We aren't in video mode
             {
                 cv::Mat frame;
                 int i = newFrameNum;
@@ -164,11 +188,10 @@ using namespace std;
                     i++;
                 }
                 if (!frame.empty()) {
-                    [usedImagePathArray addObject:[imagePathArray objectAtIndex:i-1]];
                     OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
                     [framePathForFrameNum setObject:[imagePathArray objectAtIndex:i-1] forKey:@(newFrameNum)];
                     [frameForFrameNumber setObject:img forKey:@(newFrameNum)];
-                    [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getRects forKey:@(frameNum)];
+                    [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getElements forKey:@(frameNum)];
                     if ([[rectsForFrames allKeys] containsObject:@(newFrameNum)]) {
                         [mainGLView.mouseOverController.rectangleTool setRects:[rectsForFrames objectForKey:@(newFrameNum)]];
                     }
@@ -176,6 +199,8 @@ using namespace std;
                     {
                         [mainGLView.mouseOverController.rectangleTool clearAll];
                     }
+                    [fileNameField setStringValue:[imagePathArray objectAtIndex:i-1]];
+                    [isSubFaceImage setObject:@(NO) forKey:@(newFrameNum)];
                     [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
                     [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
                     //                    [mainGLView.mouseOverController.rectangleTool setCurrentFrame:[(OpenImageHandler *)[frameForFrameNumber objectForKey:@(newFrameNum)] Cv]];
@@ -189,7 +214,7 @@ using namespace std;
         }
         else //this frame already exists in our cached frame list
         {
-            [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getRects forKey:@(frameNum)]; //save current rects for current frame
+            [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getElements forKey:@(frameNum)]; //save current rects for current frame
             if ([[rectsForFrames allKeys] containsObject:@(newFrameNum)]) {
                 [mainGLView.mouseOverController.rectangleTool setRects:[rectsForFrames objectForKey:@(newFrameNum)]]; //load new rects for next frame
             }
@@ -232,7 +257,6 @@ using namespace std;
                 if (!frame.empty()) {
                     OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
                     [frameForFrameNumber setObject:img forKey:@(frameNum)];
-                    [allFrames addObject:img];
                     //                [mainGLView.mouseOverController.rectangleTool setCurrentFrame:frame];
                     
                     return true;
@@ -254,11 +278,11 @@ using namespace std;
             i++;
         }
         if (!frame.empty()) {
-            [usedImagePathArray addObject:[imagePathArray objectAtIndex:i-1]];
             OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
             [framePathForFrameNum setObject:[imagePathArray objectAtIndex:i-1] forKey:@(0)];
             [frameForFrameNumber setObject:img forKey:@(0)];
-            [allFrames addObject:img];
+            [isSubFaceImage setObject:@(NO) forKey:@(0)];
+            [fileNameField setStringValue:[imagePathArray objectAtIndex:i-1]];
             //            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
             //            [mainGLView.mouseOverController.rectangleTool setCurrentFrame:frame];
             return true;
@@ -343,14 +367,14 @@ using namespace std;
                 }
                 
             }
-            [mainGLView.mouseOverController.rectangleTool setRects:newRects]; //load new rects for next frame
+            [mainGLView.mouseOverController.rectangleTool setElements:newRects]; //load new rects for next frame
             return;
         }
     }
 }
 - (IBAction)ClearCurrentRects:(id)sender
 {
-    mainGLView.mouseOverController.rectangleTool.clearAll;
+    [mainGLView.mouseOverController.tool clearAll];
 }
 
 -(bool)shouldStoreRects
@@ -362,7 +386,7 @@ using namespace std;
     //		if (!allEmpty) return false;
     //	}
     //	return  allEmpty;
-    if (mainGLView.mouseOverController.rectangleTool.getRects.count > 0)
+    if (mainGLView.mouseOverController.rectangleTool.getElements.count > 0)
     {
         return true;
     }
@@ -412,8 +436,8 @@ using namespace std;
                     }
                     imagePathArray = onlyImagesFullPath;
                     [self loadNewFrame:0];
-                    OpenImageHandler *img = [allFrames objectAtIndex:frameNum];
-                    //                    [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
+                    OpenImageHandler *img = [frameForFrameNumber objectForKey:@(0)];
+                                        [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
                     [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
                     [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%li",1,imagePathArray.count]];
                 }
@@ -440,7 +464,7 @@ using namespace std;
                         didload = [self loadNewFrame:0];
                         if(didload)
                         {
-                            OpenImageHandler *img = [allFrames objectAtIndex:frameNum];
+                            OpenImageHandler *img = [frameForFrameNumber objectForKey:@(0)];
                             [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
                             [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
                             [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",frameNum,numFrames]];
@@ -474,7 +498,7 @@ using namespace std;
             //            }
             //            imagePathArray = onlyImages;
             //            [self loadNewFrame:0];
-            //            OpenImageHandler *img = [allFrames objectAtIndex:frameNum];
+            //            OpenImageHandler *img = [d objectAtIndex:frameNum];
             //            //            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
             //            [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
             //            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%li",1,imagePathArray.count]];
@@ -790,7 +814,7 @@ Mat norm_0_255(InputArray _src) {
 - (IBAction)save:(id)sender
 {
     savingStatusLabel.stringValue = @"Saving Crops...";
-    if ([self shouldStoreRects]) [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getRects forKey:@(frameNum)];
+    if ([self shouldStoreRects]) [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getElements forKey:@(frameNum)];
     NSMutableString *rectOutputLog = [@"Frame,Rectagle Key,X,Y,Width,Height,FileName\n" mutableCopy];
     NSFileManager *fm = [NSFileManager defaultManager];
     

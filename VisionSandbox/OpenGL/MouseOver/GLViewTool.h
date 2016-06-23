@@ -40,5 +40,10 @@
 - (NSUInteger)count;
 -(void)tableHoverRect:(NSNotification *)notification;
 -(void)clearAll;
+-(void)addElement:(NSRect)r color:(Color)c forKey:(NSString *)key;
+-(void)removeElementAtIndex:(int)i;
+-(void)setElementKey:(NSString *)key forIndex:(int)i;
+-(NSDictionary *)getElements;
+-(void)setElements:(NSDictionary *)rects;
 
 @end

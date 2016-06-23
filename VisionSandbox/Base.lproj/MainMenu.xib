@@ -544,10 +544,10 @@ CA
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <subviews>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="EhA-BS-rDb">
-                                                <rect key="frame" x="62" y="358" width="74" height="25"/>
+                                                <rect key="frame" x="27" y="319" width="53" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Frame:" id="hZr-IC-4n5">
-                                                    <font key="font" metaFont="system" size="21"/>
+                                                    <font key="font" size="15" name=".HelveticaNeueDeskInterface-Regular"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
@@ -562,91 +562,91 @@ CA
                                                 </textFieldCell>
                                             </textField>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="FxP-dU-rz7">
-                                                <rect key="frame" x="42" y="325" width="99" height="25"/>
+                                                <rect key="frame" x="2" y="357" width="340" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="X-Coord:" id="aFZ-3L-Z54">
-                                                    <font key="font" metaFont="system" size="21"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="FileName" id="aFZ-3L-Z54">
+                                                    <font key="font" size="15" name=".HelveticaNeueDeskInterface-Regular"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="PRE-it-JtT">
-                                                <rect key="frame" x="43" y="292" width="98" height="25"/>
+                                                <rect key="frame" x="14" y="279" width="66" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Y-Coord:" id="I34-vY-Ke8">
-                                                    <font key="font" metaFont="system" size="21"/>
+                                                    <font key="font" size="15" name=".HelveticaNeueDeskInterface-Regular"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="4GQ-Mq-qT0">
-                                                <rect key="frame" x="43" y="259" width="98" height="25"/>
+                                                <rect key="frame" x="14" y="259" width="66" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Y-Coord:" id="YG0-zR-340">
-                                                    <font key="font" metaFont="system" size="21"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Red:" id="YG0-zR-340">
+                                                    <font key="font" size="15" name=".HelveticaNeueDeskInterface-Regular"/>
                                                     <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="YBr-wN-dhH">
-                                                <rect key="frame" x="43" y="226" width="98" height="25"/>
+                                                <rect key="frame" x="14" y="239" width="66" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Y-Coord:" id="rMU-eI-cS6">
-                                                    <font key="font" metaFont="system" size="21"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Green:" id="rMU-eI-cS6">
+                                                    <font key="font" size="15" name=".HelveticaNeueDeskInterface-Regular"/>
                                                     <color key="textColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="olJ-O8-bg3">
-                                                <rect key="frame" x="164" y="358" width="178" height="25"/>
+                                                <rect key="frame" x="89" y="319" width="178" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="NA/NA" id="P08-uL-git">
-                                                    <font key="font" metaFont="system" size="21"/>
+                                                    <font key="font" size="15" name=".HelveticaNeueDeskInterface-Regular"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Xhp-7e-FoE">
-                                                <rect key="frame" x="164" y="325" width="178" height="25"/>
+                                                <rect key="frame" x="89" y="299" width="178" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="NA/NA" id="Cc7-hX-c7s">
-                                                    <font key="font" metaFont="system" size="21"/>
+                                                    <font key="font" size="15" name=".HelveticaNeueDeskInterface-Regular"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="39m-3N-2yv">
-                                                <rect key="frame" x="164" y="292" width="178" height="25"/>
+                                                <rect key="frame" x="89" y="279" width="178" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="NA/NA" id="pF8-CY-aEH">
-                                                    <font key="font" metaFont="system" size="21"/>
+                                                    <font key="font" size="15" name=".HelveticaNeueDeskInterface-Regular"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="91q-zk-Q63">
-                                                <rect key="frame" x="164" y="259" width="178" height="25"/>
+                                                <rect key="frame" x="89" y="259" width="178" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="NA/NA" id="j90-QD-zSb">
-                                                    <font key="font" metaFont="system" size="21"/>
+                                                    <font key="font" size="15" name=".HelveticaNeueDeskInterface-Regular"/>
                                                     <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="uqc-tm-hAJ">
-                                                <rect key="frame" x="164" y="226" width="178" height="25"/>
+                                                <rect key="frame" x="90" y="239" width="178" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="NA/NA" id="MU7-g3-9qf">
-                                                    <font key="font" metaFont="system" size="21"/>
+                                                    <font key="font" size="15" name=".HelveticaNeueDeskInterface-Regular"/>
                                                     <color key="textColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="di5-Sy-5GT">
-                                                <rect key="frame" x="164" y="193" width="178" height="25"/>
+                                                <rect key="frame" x="90" y="220" width="178" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="NA/NA" id="bO4-X5-TUO">
-                                                    <font key="font" metaFont="system" size="21"/>
+                                                    <font key="font" size="15" name=".HelveticaNeueDeskInterface-Regular"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
@@ -721,6 +721,13 @@ CA
                                                 <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 <font key="titleFont" metaFont="system"/>
                                             </box>
+                                            <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" id="sGW-yV-hzr">
+                                                <rect key="frame" x="-4" y="358" width="348" height="5"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                                <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                <font key="titleFont" metaFont="system"/>
+                                            </box>
                                             <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" id="uOx-U1-bb3">
                                                 <rect key="frame" x="-6" y="382" width="348" height="5"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
@@ -747,10 +754,10 @@ CA
                                                 </textFieldCell>
                                             </textField>
                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="kdC-9c-WEv">
-                                                <rect key="frame" x="43" y="193" width="98" height="25"/>
+                                                <rect key="frame" x="14" y="220" width="66" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Y-Coord:" id="CbX-ok-TSd">
-                                                    <font key="font" metaFont="system" size="21"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Blue:" id="CbX-ok-TSd">
+                                                    <font key="font" size="15" name=".HelveticaNeueDeskInterface-Regular"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
@@ -760,6 +767,15 @@ CA
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="NA" id="jRx-Ge-Sxo">
                                                     <font key="font" metaFont="system"/>
+                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
+                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="InN-gY-GVO">
+                                                <rect key="frame" x="12" y="299" width="68" height="25"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="X-Coord:" id="b8p-SZ-8dg">
+                                                    <font key="font" size="15" name=".HelveticaNeueDeskInterface-Regular"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
@@ -813,7 +829,7 @@ CA
                                         </connections>
                                     </button>
                                     <textField verticalHuggingPriority="750" id="YuK-lA-FuP">
-                                        <rect key="frame" x="136" y="520" width="117" height="22"/>
+                                        <rect key="frame" x="136" y="535" width="117" height="22"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="8Ch-fb-Chq">
                                             <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" paddingCharacter="*" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" decimalSeparator="." groupingSeparator="," currencyDecimalSeparator="." plusSign="+" minusSign="-" notANumberSymbol="NaN" perMillSymbol="‰" percentSymbol="%" exponentSymbol="E" positivePrefix="" positiveSuffix="" negativePrefix="-" negativeSuffix="" id="hd4-da-fY1">
@@ -828,7 +844,7 @@ CA
                                         </connections>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ppk-d3-4Ht">
-                                        <rect key="frame" x="29" y="520" width="101" height="17"/>
+                                        <rect key="frame" x="29" y="535" width="101" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Frames to Skip:" id="IlB-1G-69N">
                                             <font key="font" metaFont="system"/>
@@ -846,7 +862,7 @@ CA
                                         </textFieldCell>
                                     </textField>
                                     <textField verticalHuggingPriority="750" id="65L-B9-WD1">
-                                        <rect key="frame" x="136" y="492" width="117" height="22"/>
+                                        <rect key="frame" x="136" y="507" width="117" height="22"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="aWf-m3-ZLn">
                                             <font key="font" metaFont="system"/>
@@ -995,7 +1011,7 @@ CA
                                         </textFieldCell>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="mZY-0R-S1B">
-                                        <rect key="frame" x="29" y="495" width="102" height="17"/>
+                                        <rect key="frame" x="29" y="510" width="102" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Jump to Frame:" id="mkA-sB-t0O">
                                             <font key="font" metaFont="system"/>
@@ -1004,7 +1020,7 @@ CA
                                         </textFieldCell>
                                     </textField>
                                     <button id="jno-xO-sAt">
-                                        <rect key="frame" x="29" y="471" width="272" height="18"/>
+                                        <rect key="frame" x="29" y="486" width="272" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Automatically Copy Rects to New Frame" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="fa5-78-G7T">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -1037,6 +1053,17 @@ CA
                                             <action selector="toolSelection:" target="thH-ug-6pU" id="ptd-kP-LaE"/>
                                         </connections>
                                     </segmentedControl>
+                                    <button verticalHuggingPriority="750" id="LxE-ch-Yqj">
+                                        <rect key="frame" x="25" y="459" width="122" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="Detect Faces" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="93E-v3-WLQ">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="findFacesInCurrentFrame:" target="494" id="85P-fk-ZrN"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <shadow key="shadow" blurRadius="2">
                                     <size key="offset" width="0.0" height="-1"/>
@@ -1065,6 +1092,7 @@ CA
             <connections>
                 <outlet property="about" destination="zdB-yp-Ggp" id="g92-On-ApN"/>
                 <outlet property="fileFixerWindow" destination="ZtF-SL-By5" id="d0k-Js-21q"/>
+                <outlet property="fileNameField" destination="FxP-dU-rz7" id="73B-7D-RAp"/>
                 <outlet property="fixCropFolderField" destination="5q0-b3-jaf" id="bB7-QY-KF5"/>
                 <outlet property="fixImageFolderField" destination="Q2x-yk-VBu" id="acV-Uh-m6W"/>
                 <outlet property="fixStatusLabel" destination="EhO-zd-mgw" id="XHb-sK-zoO"/>

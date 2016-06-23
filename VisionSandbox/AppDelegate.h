@@ -12,6 +12,7 @@
 #import "GL2DView.h"
 #import "InfoOutputController.h"
 #import "CamShiftTracker.h"
+#import "FaceDetectionHandler.h"
 #include "SemiBoostingApplication.h"
 #import <AVFoundation/AVFoundation.h>
 #include <dlib/image_processing.h>
@@ -35,23 +36,23 @@
     IBOutlet NSWindow *help;
     IBOutlet NSWindow *fileFixerWindow;
     IBOutlet NSTextField *versionNumber;
-    NSArray *acceptableImageTypes;
-	GLViewList *viewList;
 	IBOutlet InfoOutputController *infoOutput;
 	IBOutlet NSButton *playButton;
-	OpenImageHandler *loadedImg;
-	cv::VideoCapture capture;
-	NSMutableArray *allFrames;
-    NSMutableDictionary *frameForFrameNumber;
-    NSMutableDictionary *framePathForFrameNum;
-	NSMutableDictionary *rectsForFrames;
-	IBOutlet NSButton *saveEmptyFrames;
+    IBOutlet NSButton *saveEmptyFrames;
 	IBOutlet NSTextField *frameSkipField;
     IBOutlet NSTextField *frameJumpField;
     IBOutlet NSTextField *savingStatusLabel;
     IBOutlet NSTextField *fixImageFolderField;
     IBOutlet NSTextField *fixCropFolderField;
     IBOutlet NSTextField *fixStatusLabel;
+    IBOutlet NSTextField *fileNameField;
+    
+    NSArray *acceptableImageTypes;
+    GLViewList *viewList;
+    cv::VideoCapture capture;
+    NSMutableDictionary *frameForFrameNumber;
+    NSMutableDictionary *framePathForFrameNum;
+    NSMutableDictionary *rectsForFrames;
     bool videoMode;
     bool bruteFix;
 	NSString *currentFilePath;
@@ -59,7 +60,6 @@
 	int frameSkip;
 	bool isPlaying;
     NSMutableArray *imagePathArray;
-    NSMutableArray *usedImagePathArray;
     int foundMatches;
     std::vector<cv::Mat> sceneImages,templImages;
     NSIndexSet *matchedTemplates;
@@ -68,7 +68,10 @@
     NSLock *lock;
     bool trackerStarted;
     NSMutableDictionary *trackers;
+    NSMutableDictionary *isSubFaceImage;
     int numFrames;
+    
+    FaceDetectionHandler *faceDetector;
     
 }
 @property (assign) IBOutlet NSWindow *window;

@@ -51,11 +51,6 @@
 @property NSMutableDictionary *rectPositionsForKeys;
 @property NSMutableArray *rectTrackingForRectsWithKeys;
 - (id)initWithOutputView:(InfoOutputController *)infoOutput;
--(void)addRect:(NSRect)r color:(Color)c forKey:(NSString *)key;
--(void)removeRectAtIndex:(int)i;
--(void)setRectKey:(NSString *)key forIndex:(int)i;
--(NSDictionary *)getRects;
--(void)setRects:(NSDictionary *)rects;
 -(NSMutableArray *)getKeys;
 -(void)clearAll;
 @end
