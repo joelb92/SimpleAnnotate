@@ -40,13 +40,11 @@
         p = pointSets[index];
         p.AddItemToEnd(v);
         pointSets[index] = p;
-        allPoints.AddItemToEnd(v);
-        [pointStructureMap addObject:key];
-        [pointStructureIndexMap addObject:@(p.Length-1)];
+
     }
     else
     {
-        Vector2Arr p = Vector2Arr();
+        p = Vector2Arr();
         p.AddItemToEnd(v);
         pointSets.push_back(p);
         [keys addObject:key];
@@ -206,17 +204,21 @@
             glPointSize(10);
             glBegin(GL_POINTS);
             //Draw ellipse drag handles if within the correct area
+
+            [self SetCurrentColor:[segColors elementAtIndex:i]];
+            for(int j=0; j<points.Length; j++)
+            {
+                if (mousedOverPointIndex >= 0 && [[pointStructureMap objectAtIndex:mousedOverPointIndex] isEqualToString:[keys objectAtIndex:i]] && [[pointStructureIndexMap objectAtIndex:mousedOverPointIndex] intValue] == j) {
+                    [self SetCurrentColor:Yellow];
+                }
+                Vector2 v = spaceConverter.ImageToCameraVector(points[j]);
+                glVertex3d(v.x, v.y, minZ);
+                [self SetCurrentColor:[segColors elementAtIndex:i]];
+            }
             if (mousedOverPointIndex >= 0) {
                 [self SetCurrentColor:Yellow];
                 glVertex3d(allPoints[mousedOverPointIndex].x, allPoints[mousedOverPointIndex].y, minZ);
             }
-            [self SetCurrentColor:[segColors elementAtIndex:i]];
-            for(int j=0; j<points.Length; j++)
-            {
-                Vector2 v = spaceConverter.ImageToCameraVector(points[j]);
-                glVertex3d(v.x, v.y, minZ);
-            }
-
             glEnd();
             
             [self SetCurrentColor:[segColors elementAtIndex:i]];
@@ -270,7 +272,10 @@
         if(allPoints[i].SqDistanceTo(imagePoint) <= minDist)
         {
             {
+                
                 mousedOverPointIndex = i;
+                int innerIndex = [[pointStructureIndexMap objectAtIndex:i] intValue];
+//                NSLog(@"inner index: %i",innerIndex);
                 [infoOutput.xCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)allPoints[i].x]];
                 [infoOutput.yCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)allPoints[i].y]];
                 [infoOutput.trackNumberLabel setStringValue:[pointStructureMap objectAtIndex:i]];
