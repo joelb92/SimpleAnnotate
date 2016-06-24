@@ -38,6 +38,7 @@
 	//RectTool
 	IBOutlet NSTextField *RectKey;
 	
+    IBOutlet NSView * mainView;
     NSMutableDictionary *labelFields;
     IBOutlet NSTextField *testLabel;
 	IBOutlet InfoOutputController *infoOutput;

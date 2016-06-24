@@ -27,7 +27,7 @@
         ellipseTool = [[GLEllipseTool alloc] initWithOutputView:infoOutput];
         pointTool = [[GLPointArrayTool alloc] initWithOutputView:infoOutput];
         allTools = [[NSArray alloc] initWithObjects:rectangleTool,ellipseTool, pointTool, nil];
-        
+        rectangleTool.superView = mainView;
         labelFields = [[NSMutableDictionary alloc] init];
 //		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
 		currentTool = rectangleTool;
@@ -63,6 +63,7 @@
 	currentTool.infoOutput = infoOutput;
     currentTool.defaultWidth = defaultRectWidthField.intValue;
     currentTool.defaultHeight = defaultRectHeightField.intValue;
+    rectangleTool.superView = mainView;
     [self linkDimsToggle:nil];
 
 }
@@ -98,9 +99,7 @@
     currentTool.defaultWidth = defaultRectWidthField.intValue;
     currentTool.defaultHeight = defaultRectHeightField.intValue;
 
-    NSRect newframe  = NSMakeRect(SP.x, SP.y, testLabel.frame.size.width, testLabel.frame.size.height);
-    [testLabel setFrame:newframe];
-	[currentTool mouseClickedAtPoint:p withEvent:event];
+	[currentTool mouseClickedAtPoint:p superPoint:SP withEvent:event];
 }
 
 - (bool)ActiveInView:(NSView*)view

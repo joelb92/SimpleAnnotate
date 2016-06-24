@@ -1073,6 +1073,17 @@ CA
                             <customView id="a5b-o1-q5b" userLabel="MainGLView" customClass="GL2DView">
                                 <rect key="frame" x="350" y="0.0" width="1214" height="980"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ddN-Zs-bnG">
+                                        <rect key="frame" x="18" y="20" width="119" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="BLAH BLAH BLAH" id="fT6-2F-ckO">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
                                 <connections>
                                     <outlet property="infoOutput" destination="zmC-49-3s7" id="fy8-5e-sNb"/>
                                     <outlet property="mouseOverController" destination="thH-ug-6pU" id="sqv-IR-wr4"/>
@@ -1255,6 +1266,7 @@ CA
                 <outlet property="infoOutput" destination="zmC-49-3s7" id="weR-hH-nZZ"/>
                 <outlet property="linkDimsButton" destination="Xrd-Na-poF" id="kst-Fp-cOd"/>
                 <outlet property="mainTableView" destination="Uuo-1m-Dhq" id="jP8-gp-41F"/>
+                <outlet property="testLabel" destination="ddN-Zs-bnG" id="caJ-qd-Hk9"/>
                 <outlet property="toolMenu" destination="Vyw-7D-e33" id="Frt-va-Vwh"/>
             </connections>
         </customObject>
@@ -1264,7 +1276,7 @@ CA
             <rect key="contentRect" x="163" y="199" width="626" height="278"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
             <view key="contentView" id="0Ek-b4-Ode">
-                <rect key="frame" x="0.0" y="-1" width="626" height="278"/>
+                <rect key="frame" x="0.0" y="0.0" width="626" height="278"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" setsMaxLayoutWidthAtFirstLayout="YES" id="5Ph-ac-VGV">
@@ -1342,7 +1354,7 @@ CA
             <rect key="contentRect" x="163" y="199" width="449" height="156"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
             <view key="contentView" id="Jrw-vP-Mjo">
-                <rect key="frame" x="0.0" y="-5" width="449" height="156"/>
+                <rect key="frame" x="0.0" y="0.0" width="449" height="156"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField verticalHuggingPriority="750" id="Q2x-yk-VBu">
@@ -1419,7 +1431,7 @@ CA
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="IYI-to-kve" userLabel="Splash" customClass="NSPanel">
             <windowStyleMask key="styleMask" utility="YES"/>
             <rect key="contentRect" x="167" y="107" width="245" height="105"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <value key="minSize" type="size" width="245" height="105"/>
             <value key="maxSize" type="size" width="245" height="105"/>
             <view key="contentView" id="3XR-5M-rTB">
@@ -1494,6 +1506,42 @@ By hitting command+S, you save your project.  All cropped images, along with a a
                 </subviews>
             </view>
             <point key="canvasLocation" x="356" y="-743.5"/>
+        </window>
+        <window title="tootlip" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hasShadow="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="vlk-kG-wP0" userLabel="Tooltip" customClass="NSPanel">
+            <windowStyleMask key="styleMask" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="272" y="172" width="128" height="53"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <view key="contentView" id="Rjz-a0-OFe">
+                <rect key="frame" x="0.0" y="0.0" width="128" height="53"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textField verticalHuggingPriority="750" id="rdz-SO-lkz">
+                        <rect key="frame" x="3" y="28" width="123" height="22"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="Name" drawsBackground="YES" id="iLC-SI-2jc">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <comboBox verticalHuggingPriority="750" id="dUq-gB-9di">
+                        <rect key="frame" x="3" y="0.0" width="126" height="26"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" title="Type" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="s2f-Gs-vrE">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                            <objectValues>
+                                <string>Item 1</string>
+                                <string>Item 2</string>
+                                <string>Item 3</string>
+                            </objectValues>
+                        </comboBoxCell>
+                    </comboBox>
+                </subviews>
+            </view>
+            <point key="canvasLocation" x="196" y="-981.5"/>
         </window>
     </objects>
     <resources>

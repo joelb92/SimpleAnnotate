@@ -24,6 +24,7 @@
         skippedRects = intArr();
         infoOutput = inf;
         rectPositionsForKeys = [[NSMutableDictionary alloc] init];
+        testmenu = [[NSTextField alloc] init];
         rectTrackingForRectsWithKeys = [[NSMutableArray alloc] init];
         usedRectangleNumberKeys = [[NSMutableArray alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
@@ -246,6 +247,15 @@
     
     if(!initialized) [self InitializeWithSpaceConverter:spaceConverter];
     
+    NSRect newframe  = NSMakeRect(mouseP.x, mouseP.y, 100, 30);
+    
+    [testmenu setStringValue:@"this is a test"];
+    [testmenu setFrame:newframe];
+    [superView addSubview:testmenu];
+    [testmenu setHidden:NO];
+    [testmenu display];
+
+
     Ray3 ray = spaceConverter.RayFromScreenPoint(mousePos);
     Vector2 imagePoint = ray.origin.AsVector2();
     //Find closest point to mouse
@@ -439,7 +449,7 @@
     initialized = false;
 }
 
-- (void)mouseClickedAtPoint:(Vector2)p withEvent:(NSEvent *)event
+- (void)mouseClickedAtPoint:(Vector2)p superPoint:(Vector2)SP withEvent:(NSEvent *)event
 {
     if ([event modifierFlags] & NSCommandKeyMask) {
         if (!madeNewRect) {

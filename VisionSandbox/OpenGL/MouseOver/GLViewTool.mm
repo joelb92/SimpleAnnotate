@@ -7,7 +7,7 @@
 #import "GLViewTool.h"
 
 @implementation GLViewTool
-@synthesize dragging,infoOutput,linkedDims,defaultWidth,defaultHeight,currentKey,mousedOverElementIndex;
+@synthesize dragging,infoOutput,linkedDims,defaultWidth,defaultHeight,currentKey,mousedOverElementIndex,elementMenus,testmenu,superView;
 
 - (id)init
 {
@@ -16,6 +16,7 @@
 	{
 		mousePos = Vector2(NAN,NAN);
 		startMousePos = Vector2(NAN,NAN);
+        elementMenus = [[NSMutableArray alloc] init];
 		dragging = false;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
 	}

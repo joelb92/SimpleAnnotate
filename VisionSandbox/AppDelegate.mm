@@ -199,7 +199,7 @@ using namespace std;
                     {
                         [mainGLView.mouseOverController.rectangleTool clearAll];
                     }
-                    [fileNameField setStringValue:[imagePathArray objectAtIndex:i-1]];
+                    [fileNameField setStringValue:[[imagePathArray objectAtIndex:i-1] lastPathComponent]];
                     [isSubFaceImage setObject:@(NO) forKey:@(newFrameNum)];
                     [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
                     [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
@@ -282,7 +282,7 @@ using namespace std;
             [framePathForFrameNum setObject:[imagePathArray objectAtIndex:i-1] forKey:@(0)];
             [frameForFrameNumber setObject:img forKey:@(0)];
             [isSubFaceImage setObject:@(NO) forKey:@(0)];
-            [fileNameField setStringValue:[imagePathArray objectAtIndex:i-1]];
+            [fileNameField setStringValue:[[imagePathArray objectAtIndex:i-1] lastPathComponent]];
             //            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
             //            [mainGLView.mouseOverController.rectangleTool setCurrentFrame:frame];
             return true;
@@ -411,18 +411,26 @@ using namespace std;
     {
         NSFileManager *fm = [NSFileManager defaultManager];
         NSArray* files = [openDlg filenames];
+        
+        NSMutableArray *onlyImages2 = [[NSMutableArray alloc] init];
+        for(NSPredicate *fltr in acceptableImageTypes)
+        {
+            NSArray *only =[files filteredArrayUsingPredicate:fltr];
+            [onlyImages2 addObjectsFromArray:only];
+        }
         if (files.count == 1) {
             NSString *fileName = [files objectAtIndex:0];
             BOOL isDir = NO;
             
             if( [fm fileExistsAtPath:fileName isDirectory:&isDir])
             {
-                if (isDir) {
+                if (isDir || onlyImages2.count > 0) {
                     videoMode =false;
                     currentFilePath = [fileName retain];
                     NSArray *dirContents = [fm contentsOfDirectoryAtPath:fileName error:nil];
                     NSMutableArray *onlyImages = [[NSMutableArray alloc] init];
                     NSMutableArray *onlyImagesFullPath = [[NSMutableArray alloc] init];
+                    if(isDir){
                     for(NSPredicate *fltr in acceptableImageTypes)
                     {
                         NSArray *only =[dirContents filteredArrayUsingPredicate:fltr];
@@ -433,6 +441,12 @@ using namespace std;
                         NSString *name = [onlyImages objectAtIndex:i];
                         NSString *fullPath = [fileName stringByAppendingPathComponent:name];
                         [onlyImagesFullPath addObject:fullPath];
+                    }
+                    }
+                    else
+                    {
+                        onlyImages = onlyImages2;
+                        onlyImagesFullPath = onlyImages;
                     }
                     imagePathArray = onlyImagesFullPath;
                     [self loadNewFrame:0];
@@ -487,7 +501,7 @@ using namespace std;
             }
             
         }
-        else if(files.count > 1)
+        else if(files.count > 1 || onlyImages2.count > 0)
         {
             //            videoMode = false;
             //            NSMutableArray *onlyImages = [[NSMutableArray alloc] init];

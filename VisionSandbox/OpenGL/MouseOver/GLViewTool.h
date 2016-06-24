@@ -20,6 +20,9 @@
 	InfoOutputController *infoOutput;
     bool linkedDims;
     NSString *currentKey;
+    NSMutableArray *elementMenus;
+    NSTextField *testmenu;
+    NSView *superView;
 }
 @property (readwrite) int mousedOverElementIndex;
 @property (readonly) bool dragging;
@@ -27,13 +30,16 @@
 @property (readwrite) bool linkedDims;
 @property (readwrite) int defaultWidth;
 @property (readwrite) int defaultHeight;
+@property (retain) NSTextField *testmenu;
 @property (readwrite) NSString *currentKey;
+@property (assign) NSMutableArray *elementMenus;
+@property (assign) NSView *superView;
 @property InfoOutputController *infoOutput;
 - (void)DragTo:(Vector3)point Event:(NSEvent *)event;
 - (void)SetMousePosition:(Vector2)mouseP UsingSpaceConverter:(SpaceConverter)spaceConverter;
 - (bool)StartDragging:(NSUInteger)withKeys;
 - (void)StopDragging;
-- (void)mouseClickedAtPoint:(Vector2)p withEvent:(NSEvent *)event;
+- (void)mouseClickedAtPoint:(Vector2)p superPoint:(Vector2)SP withEvent:(NSEvent *)event;
 - (NSMutableArray *)getKeys;
 - (NSString *) stringForKey:(NSObject *)key;
 - (NSString *)stringForIndex:(int)i;

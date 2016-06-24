@@ -129,6 +129,7 @@
 		D8081B7A1D1850F9005AC6F4 /* GLPointArrayTool.mm in Sources */ = {isa = PBXBuildFile; fileRef = D8081B791D1850F9005AC6F4 /* GLPointArrayTool.mm */; };
 		D8D4FC8A1D13176C00A652BD /* source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8D4FC891D13176C00A652BD /* source.cpp */; };
 		D8E1BC1D1D1C44570092FB0C /* FaceDetectionHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = D8E1BC1C1D1C44570092FB0C /* FaceDetectionHandler.mm */; };
+		D8E1BC201D1DBCB60092FB0C /* Tooltip.m in Sources */ = {isa = PBXBuildFile; fileRef = D8E1BC1F1D1DBCB60092FB0C /* Tooltip.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -376,6 +377,8 @@
 		D8D4FC891D13176C00A652BD /* source.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = source.cpp; path = "../../../../dlib-18.18/dlib/all/source.cpp"; sourceTree = "<group>"; };
 		D8E1BC1B1D1C44570092FB0C /* FaceDetectionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceDetectionHandler.h; sourceTree = "<group>"; };
 		D8E1BC1C1D1C44570092FB0C /* FaceDetectionHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FaceDetectionHandler.mm; sourceTree = "<group>"; };
+		D8E1BC1E1D1DBCB60092FB0C /* Tooltip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tooltip.h; sourceTree = "<group>"; };
+		D8E1BC1F1D1DBCB60092FB0C /* Tooltip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tooltip.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -551,6 +554,8 @@
 				5D28985B1991FF8E0036CFD6 /* GLViewMouseOverController.mm */,
 				5D28985C1991FF8E0036CFD6 /* GLViewTool.h */,
 				5D28985D1991FF8E0036CFD6 /* GLViewTool.mm */,
+				D8E1BC1E1D1DBCB60092FB0C /* Tooltip.h */,
+				D8E1BC1F1D1DBCB60092FB0C /* Tooltip.m */,
 			);
 			path = MouseOver;
 			sourceTree = "<group>";
@@ -971,6 +976,7 @@
 				5D28984B1991FA890036CFD6 /* GLViewList.mm in Sources */,
 				5DB2C7EA1A7189D200A1F815 /* GLRectangleDragger.mm in Sources */,
 				5D2898891992022E0036CFD6 /* AvVector2.mm in Sources */,
+				D8E1BC201D1DBCB60092FB0C /* Tooltip.m in Sources */,
 				5D55C53419933FAD00D9F78A /* SpaceConverter.mm in Sources */,
 				5D55C5631994556D00D9F78A /* NSImage+OpenCV.mm in Sources */,
 				5D2898B4199202710036CFD6 /* Vector2Arr.mm in Sources */,

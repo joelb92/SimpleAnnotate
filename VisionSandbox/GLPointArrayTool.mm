@@ -345,7 +345,7 @@
     initialized = false;
 }
 
-- (void)mouseClickedAtPoint:(Vector2)p withEvent:(NSEvent *)event
+- (void)mouseClickedAtPoint:(Vector2)p superPoint:(Vector2)SP withEvent:(NSEvent *)event
 {
     
     if (([event modifierFlags] & NSCommandKeyMask) && (([event modifierFlags] & NSAlternateKeyMask)  ||  pointSets.size() == 0)) {
