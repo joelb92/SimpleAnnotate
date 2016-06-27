@@ -8,10 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface Tooltip : NSPanel
+@interface Tooltip : NSView
 {
-    NSComboBox * typeSelectionBox;
-    NSTextField *nameField;
+    IBOutlet NSComboBox * typeSelectionBox;
+    IBOutlet NSTextField *nameField;
 }
 @property  NSComboBox *typeSelectionBox;
 @property NSTextField *nameField;

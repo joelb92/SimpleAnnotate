@@ -14,7 +14,9 @@
 {
     self = [super init];
     if (self) {
-        
+//        typeSelectionBox = [[NSComboBox alloc] init];
+//        nameField = [[NSTextField alloc] init];
+
     }
     return self;
 }

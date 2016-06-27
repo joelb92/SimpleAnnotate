@@ -11,7 +11,8 @@
 #import "GLEllipseTool.h"
 #import "GLPointArrayTool.h"
 #import "ROTableView.h"
-@interface GLViewMouseOverController : DragableSubView <NSTabViewDelegate,NSTableViewDataSource,NSTextFieldDelegate>
+#import "Tooltip.h"
+@interface GLViewMouseOverController : DragableSubView <NSTabViewDelegate,NSTableViewDataSource,NSTextFieldDelegate,NSComboBoxDelegate>
 {
 	GLRuler*rulerTool;
 	GLProtractor*protractorTool;
@@ -21,6 +22,8 @@
     
     
 	GLRectangleDragger *rectangleTool;
+    NSMutableArray *annotationTypes;
+    int currentAnnotationType;
     IBOutlet NSTextField *defaultRectHeightField;
     IBOutlet NSTextField *defaultRectWidthField;
 	IBOutlet NSTabView *TabView;
@@ -39,6 +42,7 @@
 	IBOutlet NSTextField *RectKey;
 	
     IBOutlet NSView * mainView;
+    IBOutlet Tooltip *tooltip;
     NSMutableDictionary *labelFields;
     IBOutlet NSTextField *testLabel;
 	IBOutlet InfoOutputController *infoOutput;

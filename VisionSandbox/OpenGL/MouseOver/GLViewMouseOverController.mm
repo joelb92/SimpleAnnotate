@@ -29,6 +29,7 @@
         allTools = [[NSArray alloc] initWithObjects:rectangleTool,ellipseTool, pointTool, nil];
         rectangleTool.superView = mainView;
         labelFields = [[NSMutableDictionary alloc] init];
+        annotationTypes = [[NSMutableArray alloc] initWithObjects:@"Face",@"Tattoo",@"Piercing",@"None",@"+Add Other", nil];
 //		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
 		currentTool = rectangleTool;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UpdateOutput) name:@"MouseOverToolValueChanged" object:nil];
@@ -54,6 +55,8 @@
         [linkDimsButton setImage:linkImg];
     }
 }
+
+
 - (void)UpdateOutput
 {
 		[RectKey setStringValue:[NSString stringWithString:currentTool.currentKey]];
@@ -63,7 +66,14 @@
 	currentTool.infoOutput = infoOutput;
     currentTool.defaultWidth = defaultRectWidthField.intValue;
     currentTool.defaultHeight = defaultRectHeightField.intValue;
-    rectangleTool.superView = mainView;
+    [tooltip.typeSelectionBox addItemsWithObjectValues:annotationTypes];
+    for(GLViewTool *t in allTools)
+    {
+        [t setSuperView:mainView];
+        [t setTooltip:tooltip];
+        t.currentAnnotationType = @"none";
+    }
+    [rectangleTool setSuperView:mainView];
     [self linkDimsToggle:nil];
 
 }
@@ -82,10 +92,29 @@
     [self reloadTable];
 }
 
+-(void)comboBoxSelectionDidChange:(NSNotification *)notification
+{
+    if ([[(NSComboBox *)notification.object identifier] isEqualToString:@"tooltipCombo"]) {
+        if ([[tooltip.typeSelectionBox.objectValues objectAtIndex:tooltip.typeSelectionBox.indexOfSelectedItem] isEqualToString:@"+Add Other"])
+        {
+            
+        }
+        else
+        {
+            currentAnnotationType = tooltip.typeSelectionBox.indexOfSelectedItem;
+            currentTool.currentAnnotationType = [tooltip.typeSelectionBox.objectValues objectAtIndex:currentAnnotationType];
+            [currentTool setCurrentElementType:currentTool.currentAnnotationType];
+        }
+    }
+}
+
 - (void)controlTextDidChange:(NSNotification *)notification {
 }
 -(void)controlTextDidEndEditing:(NSNotification *)obj
 {
+    if ([[(NSTextField *)obj.object identifier] isEqualToString:@"tooltipName"]) {
+        
+    }
     int row = (int)mainTableView.selectedRow;
     int column =mainTableView.selectedColumn;
     if (row >= 0) {

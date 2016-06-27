@@ -49,6 +49,7 @@
     [segColors addElement:c];
     [segColors addElement:c];
     [keys addObject:key];
+    [elementTypes addObject:currentAnnotationType];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 
@@ -81,6 +82,14 @@
     }
     
 }
+
+-(void)setCurrentElementType:(NSString *) type;
+{
+    if(mousedOverRectIndex >= 0 && mousedOverRectIndex < elementTypes.count){
+        [elementTypes replaceObjectAtIndex:mousedOverRectIndex withObject:type];
+    }
+}
+
 - (void)SetCurrentColor:(Color)C
 {
     if(C!=previousColor)
@@ -246,14 +255,6 @@
     [super SetMousePosition:mouseP UsingSpaceConverter:spaceConverter];
     
     if(!initialized) [self InitializeWithSpaceConverter:spaceConverter];
-    
-    NSRect newframe  = NSMakeRect(mouseP.x, mouseP.y, 100, 30);
-    
-    [testmenu setStringValue:@"this is a test"];
-    [testmenu setFrame:newframe];
-    [superView addSubview:testmenu];
-    [testmenu setHidden:NO];
-    [testmenu display];
 
 
     Ray3 ray = spaceConverter.RayFromScreenPoint(mousePos);
@@ -314,11 +315,37 @@
             [infoOutput.trackNumberLabel setStringValue:[keys objectAtIndex:mousedOverRectIndex]];
             currentKey = [keys objectAtIndex:mousedOverRectIndex];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
+            
+            //display tooltip
+            Vector2 tooltipVect = spaceConverter.ImageToScreenVector(Vector2(points[mousedOverRectIndex*4+1].x,points[mousedOverRectIndex*4+1].y));
+            NSRect newframe  = NSMakeRect(tooltipVect.x, tooltipVect.y, tooltip.frame.size.width, tooltip.frame.size.height);
+            
+            [tooltip.nameField setStringValue:[keys objectAtIndex:mousedOverRectIndex] ];
+            [tooltip setFrame:newframe];
+            [superView addSubview:tooltip];
+            [tooltip setHidden:NO];
+            [testmenu display];
             inCont = true;
             continue;
         }
         
     }
+    //check if mouse is in the tooltip
+    std::vector<cv::Point>cont;
+    int border = 10;
+    Vector2 topleft(tooltip.frame.origin.x-border,tooltip.frame.origin.y-border);
+    Vector2 topRight(topleft.x+tooltip.frame.size.width+border,topleft.y);
+    Vector2 bottomRight(topRight.x,topRight.y+tooltip.frame.size.height+border);
+    Vector2 bottomLeft(topleft.x,bottomRight.y);
+    cont.push_back(topleft.AsCvPoint());
+    cont.push_back(topRight.AsCvPoint());
+    cont.push_back(bottomRight.AsCvPoint());
+    cont.push_back(bottomLeft.AsCvPoint());
+    float dist = cv::pointPolygonTest(cont, mouseP.AsCvPoint(), true);
+    if (dist >= 0) {
+        inCont = true;
+    }
+    
     if (!inCont) {
         currentKey = @"nil";
         mousedOverRectIndex = -1;
@@ -326,7 +353,7 @@
         [infoOutput.yCoordRectLabel setStringValue:@"NA"];
         [infoOutput.widthLabel setStringValue:@"NA"];
         [infoOutput.heightLabel	setStringValue:@"NA"];
-        
+        [tooltip setHidden:YES];
         
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
     }

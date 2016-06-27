@@ -1266,8 +1266,10 @@ CA
                 <outlet property="infoOutput" destination="zmC-49-3s7" id="weR-hH-nZZ"/>
                 <outlet property="linkDimsButton" destination="Xrd-Na-poF" id="kst-Fp-cOd"/>
                 <outlet property="mainTableView" destination="Uuo-1m-Dhq" id="jP8-gp-41F"/>
+                <outlet property="mainView" destination="a5b-o1-q5b" id="oCt-r5-hHN"/>
                 <outlet property="testLabel" destination="ddN-Zs-bnG" id="caJ-qd-Hk9"/>
                 <outlet property="toolMenu" destination="Vyw-7D-e33" id="Frt-va-Vwh"/>
+                <outlet property="tooltip" destination="Mnr-5j-LY0" id="rce-z9-9Zo"/>
             </connections>
         </customObject>
         <window title="Simple Annotate - About" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="zdB-yp-Ggp" userLabel="About">
@@ -1507,42 +1509,41 @@ By hitting command+S, you save your project.  All cropped images, along with a a
             </view>
             <point key="canvasLocation" x="356" y="-743.5"/>
         </window>
-        <window title="tootlip" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hasShadow="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="vlk-kG-wP0" userLabel="Tooltip" customClass="NSPanel">
-            <windowStyleMask key="styleMask" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
-            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="272" y="172" width="128" height="53"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
-            <view key="contentView" id="Rjz-a0-OFe">
-                <rect key="frame" x="0.0" y="0.0" width="128" height="53"/>
-                <autoresizingMask key="autoresizingMask"/>
-                <subviews>
-                    <textField verticalHuggingPriority="750" id="rdz-SO-lkz">
-                        <rect key="frame" x="3" y="28" width="123" height="22"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="Name" drawsBackground="YES" id="iLC-SI-2jc">
-                            <font key="font" metaFont="system"/>
-                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
-                    <comboBox verticalHuggingPriority="750" id="dUq-gB-9di">
-                        <rect key="frame" x="3" y="0.0" width="126" height="26"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" title="Type" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="s2f-Gs-vrE">
-                            <font key="font" metaFont="system"/>
-                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                            <objectValues>
-                                <string>Item 1</string>
-                                <string>Item 2</string>
-                                <string>Item 3</string>
-                            </objectValues>
-                        </comboBoxCell>
-                    </comboBox>
-                </subviews>
-            </view>
-            <point key="canvasLocation" x="196" y="-981.5"/>
-        </window>
+        <customView id="Mnr-5j-LY0" customClass="Tooltip">
+            <rect key="frame" x="0.0" y="0.0" width="120" height="40"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField verticalHuggingPriority="750" id="cvU-0H-5bM">
+                    <rect key="frame" x="0.0" y="18" width="120" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" identifier="tooltipName" placeholderString="Name" drawsBackground="YES" id="l9j-Qn-91u">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <outlet property="delegate" destination="thH-ug-6pU" id="E9R-O6-Tz4"/>
+                    </connections>
+                </textField>
+                <comboBox verticalHuggingPriority="750" id="8va-DB-36c">
+                    <rect key="frame" x="0.0" y="-4" width="123" height="26"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" identifier="tooltipCombo" placeholderString="Type" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="rXp-ia-qBj">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </comboBoxCell>
+                    <connections>
+                        <outlet property="delegate" destination="thH-ug-6pU" id="OZz-zD-RhD"/>
+                    </connections>
+                </comboBox>
+            </subviews>
+            <connections>
+                <outlet property="nameField" destination="cvU-0H-5bM" id="eNA-mn-CeJ"/>
+                <outlet property="typeSelectionBox" destination="8va-DB-36c" id="Dac-LF-4Ve"/>
+            </connections>
+            <point key="canvasLocation" x="-21" y="-432"/>
+        </customView>
     </objects>
     <resources>
         <image name="FolderIcon" width="1024" height="1024"/>

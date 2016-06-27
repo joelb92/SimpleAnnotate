@@ -6,6 +6,7 @@
 
 #import "GLObject.h"
 #import "InfoOutputController.h"
+#import "Tooltip.h"
 @interface GLViewTool : GLObject
 {
 	Vector2 mousePos;
@@ -20,9 +21,11 @@
 	InfoOutputController *infoOutput;
     bool linkedDims;
     NSString *currentKey;
-    NSMutableArray *elementMenus;
+    NSMutableArray *elementTypes;
     NSTextField *testmenu;
     NSView *superView;
+    Tooltip *tooltip;
+    NSString *currentAnnotationType;
 }
 @property (readwrite) int mousedOverElementIndex;
 @property (readonly) bool dragging;
@@ -33,7 +36,9 @@
 @property (retain) NSTextField *testmenu;
 @property (readwrite) NSString *currentKey;
 @property (assign) NSMutableArray *elementMenus;
-@property (assign) NSView *superView;
+@property (retain) NSView *superView;
+@property (assign) Tooltip *tooltip;
+@property (readwrite) NSString *currentAnnotationType;
 @property InfoOutputController *infoOutput;
 - (void)DragTo:(Vector3)point Event:(NSEvent *)event;
 - (void)SetMousePosition:(Vector2)mouseP UsingSpaceConverter:(SpaceConverter)spaceConverter;
@@ -49,6 +54,8 @@
 -(void)addElement:(NSRect)r color:(Color)c forKey:(NSString *)key;
 -(void)removeElementAtIndex:(int)i;
 -(void)setElementKey:(NSString *)key forIndex:(int)i;
+-(void)setCurrentElementKey:(NSString *) key;
+-(void)setCurrentElementType:(NSString *) type;
 -(NSDictionary *)getElements;
 -(void)setElements:(NSDictionary *)rects;
 
