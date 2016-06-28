@@ -27,7 +27,6 @@
         ellipseTool = [[GLEllipseTool alloc] initWithOutputView:infoOutput];
         pointTool = [[GLPointArrayTool alloc] initWithOutputView:infoOutput];
         allTools = [[NSArray alloc] initWithObjects:rectangleTool,ellipseTool, pointTool, nil];
-        rectangleTool.superView = mainView;
         labelFields = [[NSMutableDictionary alloc] init];
         annotationTypes = [[NSMutableArray alloc] initWithObjects:@"Face",@"Tattoo",@"Piercing",@"None",@"+Add Other", nil];
 //		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
@@ -73,7 +72,6 @@
         [t setTooltip:tooltip];
         t.currentAnnotationType = @"none";
     }
-    [rectangleTool setSuperView:mainView];
     [self linkDimsToggle:nil];
 
 }
@@ -89,9 +87,25 @@
 -(IBAction)toolSelection:(id)sender
 {
     currentTool = [allTools objectAtIndex:toolMenu.selectedSegment];
+    
     [self reloadTable];
 }
 
+-(void)comboBoxWillPopUp:(NSNotification *)notification
+{
+    for(GLViewTool *t in allTools)
+    {
+        t.comboBoxIsOpen = true;
+    }
+}
+
+-(void)comboBoxWillDismiss:(NSNotification *)notification
+{
+    for(GLViewTool *t in allTools)
+    {
+        t.comboBoxIsOpen = false;
+    }
+}
 -(void)comboBoxSelectionDidChange:(NSNotification *)notification
 {
     if ([[(NSComboBox *)notification.object identifier] isEqualToString:@"tooltipCombo"]) {
@@ -104,17 +118,29 @@
             currentAnnotationType = tooltip.typeSelectionBox.indexOfSelectedItem;
             currentTool.currentAnnotationType = [tooltip.typeSelectionBox.objectValues objectAtIndex:currentAnnotationType];
             [currentTool setCurrentElementType:currentTool.currentAnnotationType];
+            currentTool.currentAnnotationTypeIndex = currentAnnotationType;
         }
     }
+    [self reloadTable];
 }
 
 - (void)controlTextDidChange:(NSNotification *)notification {
 }
 -(void)controlTextDidEndEditing:(NSNotification *)obj
 {
-    if ([[(NSTextField *)obj.object identifier] isEqualToString:@"tooltipName"]) {
-        
+    if([[(NSTextField *)obj.object identifier] isEqualToString:@"tooltipCombo"])
+    {
+        NSString *test = tooltip.typeSelectionBox.objectValue;
+        if (![annotationTypes containsObject:tooltip.typeSelectionBox.objectValueOfSelectedItem] &&( tooltip.typeSelectionBox.indexOfSelectedItem >= 0 || tooltip.typeSelectionBox.objectValueOfSelectedItem != nil || ![tooltip.typeSelectionBox.objectValue isEqualToString:@""]) && ![tooltip.typeSelectionBox.objectValues containsObject:test]) {
+            [annotationTypes insertObject:tooltip.typeSelectionBox.objectValue atIndex:annotationTypes.count-1];
+            [tooltip.typeSelectionBox removeAllItems];
+            [tooltip.typeSelectionBox addItemsWithObjectValues:annotationTypes];
+            [tooltip.typeSelectionBox selectItemAtIndex:annotationTypes.count-1];
+            [self comboBoxSelectionDidChange:obj];
+        }
     }
+    else
+    {
     int row = (int)mainTableView.selectedRow;
     int column =mainTableView.selectedColumn;
     if (row >= 0) {
@@ -122,6 +148,8 @@
         NSString *newKey = [(NSTextField *)obj.object stringValue];
         [[currentTool getKeys] setObject:newKey atIndexedSubscript:row];
     }
+    }
+    [self reloadTable];
 }
 -(void)mouseClickedAtPoint:(Vector2)p SuperViewPoint:(Vector2)SP withEvent:(NSEvent *)event
 {

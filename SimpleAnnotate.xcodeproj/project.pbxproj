@@ -900,7 +900,7 @@
 		5D2897861991E2300036CFD6 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "University of Notre Dame";
 				TargetAttributes = {
 					5D2897AE1991E2300036CFD6 = {

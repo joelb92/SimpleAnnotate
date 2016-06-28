@@ -22,49 +22,49 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "VisionSandbox/OpenGL/MouseOver/GLViewMouseOverController.h"
-            timestampString = "488749133.242235"
+            filePath = "VisionSandbox/OpenGL/MouseOver/GLViewMouseOverController.mm"
+            timestampString = "488835742.164637"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "45"
-            endingLineNumber = "45"
-            landmarkName = "@interface GLViewMouseOverController"
-            landmarkType = "2">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[GLViewMouseOverController rectangleTool]"
-                  moduleName = "SimpleAnnotate"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bog/SimpleAnnotate/VisionSandbox/OpenGL/MouseOver/GLViewMouseOverController.h"
-                  timestampString = "488759602.757857"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "56"
-                  endingLineNumber = "56"
-                  offsetFromSymbolStart = "12">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[GLViewMouseOverController setRectangleTool:]"
-                  moduleName = "SimpleAnnotate"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bog/SimpleAnnotate/VisionSandbox/OpenGL/MouseOver/GLViewMouseOverController.h"
-                  timestampString = "488759602.757977"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "56"
-                  endingLineNumber = "56"
-                  offsetFromSymbolStart = "16">
-               </Location>
-            </Locations>
+            startingLineNumber = "111"
+            endingLineNumber = "111"
+            landmarkName = "-comboBoxSelectionDidChange:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "VisionSandbox/GLRectangleDragger.mm"
+            timestampString = "488839349.420519"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "292"
+            endingLineNumber = "292"
+            landmarkName = "-SetMousePosition:UsingSpaceConverter:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "VisionSandbox/OpenGL/MouseOver/GLViewMouseOverController.mm"
+            timestampString = "488835742.164637"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "118"
+            endingLineNumber = "118"
+            landmarkName = "-comboBoxSelectionDidChange:"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

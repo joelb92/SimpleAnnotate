@@ -8,13 +8,12 @@
 
 #import "GLEllipseTool.h"
 @implementation GLEllipseTool
-@synthesize mousedOverRectIndex;
 - (id)initWithOutputView:(InfoOutputController *)inf
 {
     self = [super init];
     if(self)
     {
-        mousedOverLineIndex = mousedOverPointIndex = mousedOverRectIndex = -1;
+        mousedOverElementIndex = mousedOverPointIndex = -1;
         initialized = false;
         segColors = [[colorArr alloc] init];
         keys = [[NSMutableArray alloc] init];
@@ -66,7 +65,7 @@
     ellipses.push_back(e);
     [keys addObject:key];
     [segColors addElement:c];
-
+    [elementTypes addObject:currentAnnotationType];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 
 }
@@ -76,26 +75,11 @@
 {
     if (i < ellipses.size() && i >=0) {
         [keys removeObjectAtIndex:i];
+        [elementTypes removeObjectAtIndex:i];
         ellipses.erase(ellipses.begin()+i);
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverEllipseIndex)];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
-}
-
--(void)setElementKey:(NSString *)key forIndex:(int)i
-{
-    if (i < keys.count) {
-        [keys replaceObjectAtIndex:i withObject:key];
-    }
-    
-}
-- (void)SetCurrentColor:(Color)C
-{
-    if(C!=previousColor)
-    {
-        previousColor = C;
-        glColor3f(C.r/255.0, C.g/255.0, C.b/255.0);
-    }
 }
 
 -(NSDictionary *)getElements
@@ -135,19 +119,10 @@
     return s;
 }
 
--(NSMutableArray *)getKeys
-{
-    return keys;
-}
-
--(NSUInteger)count{
-    return ellipses.size();
-}
-
 -(void)clearAll
 {
-    mousedOverLineIndex = mousedOverPointIndex = mousedOverRectIndex = mousedOverEllipseIndex = -1;
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverRectIndex)];
+    mousedOverPointIndex = mousedOverElementIndex = -1;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
     if (segColors) {
     }
     if (keys) {
@@ -155,6 +130,7 @@
     segColors = [[colorArr alloc] init];
     keys = [[NSMutableArray alloc] init];
     ellipses.clear();
+    [elementTypes removeAllObjects];
     currentKey = @"nil";
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
@@ -187,7 +163,7 @@
             glEnd();
             
             //Draw ellipse drag handles if within the correct area
-            if (i == mousedOverEllipseIndex) {
+            if (i == mousedOverElementIndex) {
                 Vector2 topAnchor= spaceConverter.ImageToCameraVector(e.topAnchor);
                 Vector2 bottomAnchor= spaceConverter.ImageToCameraVector(e.bottomAnchor);
                 Vector2 leftAnchor= spaceConverter.ImageToCameraVector(e.leftAnchor);
@@ -245,7 +221,7 @@
 {
     [super tableHoverRect:notification];
     id obj = notification.object;
-    mousedOverEllipseIndex = [(NSNumber *)obj intValue];
+    mousedOverElementIndex = [(NSNumber *)obj intValue];
     
 }
 
@@ -273,7 +249,7 @@
         float distval = cv::pointPolygonTest(e.imagePoints, imagePoint.AsCvPoint(), true);
         if (distval > -30) {
             inCont = true;
-            mousedOverEllipseIndex = i;
+            mousedOverElementIndex = i;
             int mindist = 5*5;
             if(e.topAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 1;
             else if(e.bottomAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 2;
@@ -283,35 +259,63 @@
             else{
                 mousedOverPointIndex = -1;
             }
-            if(distval >= 0)
-            {
+            //display tooltip
+            cv::Rect er = cv::boundingRect(e.imagePoints);
+            Vector2 tooltipVect = spaceConverter.ImageToScreenVector(Vector2(e.rotationAnchor.x+3,e.rotationAnchor.y+3));
+            int corner = 0; // bottom left
+            if(e.angle <= M_PI and e.angle > M_PI/2) corner = 1; //anchor at bottom right
+            if(e.angle <= -M_PI/2) corner = 2;//anchor at top right
+            if(e.angle < 0 && e.angle >= -M_PI/2) corner = 3; //anchor at top left
+                [self drawToolTipAtPosition:tooltipVect Corner:corner];
+            
                 [infoOutput.xCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)e.center.x]];
                 [infoOutput.yCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)e.center.y]];
                 [infoOutput.widthLabel setStringValue:[NSString stringWithFormat:@"%i",(int)e.axis.x]];
                 [infoOutput.heightLabel	setStringValue:[NSString stringWithFormat:@"%i",(int)e.axis.y]];
-                [infoOutput.trackNumberLabel setStringValue:[keys objectAtIndex:mousedOverEllipseIndex]];
-                currentKey = [keys objectAtIndex:mousedOverEllipseIndex];
+                [infoOutput.trackNumberLabel setStringValue:[keys objectAtIndex:mousedOverElementIndex]];
+                currentKey = [keys objectAtIndex:mousedOverElementIndex];
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
-                
-            }
             break;
         }
         
     }
+    //check if mouse is in the tooltip
+    
+    std::vector<cv::Point>cont;
+    int border = 20;
+    Vector2 bottomLeft(tooltip.frame.origin.x-border,tooltip.frame.origin.y-border);
+    Vector2 bottomRight(bottomLeft.x+tooltip.frame.size.width+border*2,bottomLeft.y);
+    Vector2 topRight(bottomRight.x,bottomRight.y+tooltip.frame.size.height+border*2);
+    Vector2 topLeft(bottomLeft.x,topRight.y);
+    if (comboBoxIsOpen) {
+        bottomRight.y -= tooltip.typeSelectionBox.itemHeight*tooltip.typeSelectionBox.objectValues.count;
+        bottomLeft.y -= tooltip.typeSelectionBox.itemHeight*tooltip.typeSelectionBox.objectValues.count;
+    }
+    cont.push_back(topLeft.AsCvPoint());
+    cont.push_back(topRight.AsCvPoint());
+    cont.push_back(bottomRight.AsCvPoint());
+    cont.push_back(bottomLeft.AsCvPoint());
+    float dist = cv::pointPolygonTest(cont, mouseP.AsCvPoint(), true);
+    if (dist >= 0) {
+        inCont = true;
+    }
+
+    
     if (!inCont) {
         currentKey = @"nil";
-        mousedOverRectIndex = -1;
         [infoOutput.xCoordRectLabel setStringValue:@"NA"];
         [infoOutput.yCoordRectLabel setStringValue:@"NA"];
         [infoOutput.widthLabel setStringValue:@"NA"];
         [infoOutput.heightLabel	setStringValue:@"NA"];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
-        mousedOverEllipseIndex = -1;
+        mousedOverElementIndex = -1;
+        [tooltip setHidden:YES];
         
     }
+    
     if(!initialized) [self InitializeWithSpaceConverter:spaceConverter];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverEllipseIndex)];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
     
 }
 - (void)DragTo:(Vector3)point Event:(NSEvent *)event
@@ -319,11 +323,11 @@
     point.x = floor(point.x);
     point.y = floor(point.y);
     
-    if(!point.isNull() && mousedOverEllipseIndex>=0 && mousedOverPointIndex >= 0)
+    if(!point.isNull() && mousedOverElementIndex>=0 && mousedOverPointIndex >= 0)
     {
         
-        int elIndex = mousedOverEllipseIndex;
-        EllipseVis ellipse = ellipses[mousedOverEllipseIndex];
+        int elIndex = mousedOverElementIndex;
+        EllipseVis ellipse = ellipses[mousedOverElementIndex];
         if (mousedOverPointIndex == 5) { //rotation!
             float currentmouseangle = atan2(point.y-ellipse.center.y, point.x-ellipse.center.x);
             //            if( currentmouseangle < 0) currentmouseangle +=M_PI*2;
@@ -340,7 +344,7 @@
                 dragStarted = true;
             }
             ellipse.setAngle(newAngle);
-            ellipses[mousedOverEllipseIndex] = ellipse;
+            ellipses[mousedOverElementIndex] = ellipse;
         }
         else{
             Vector2 anc,offsetanc, oppositenac;
@@ -388,15 +392,15 @@
                 ellipse.setxaxis(mouseDistance);
                 if (linkedDims) ellipse.setyaxis(ellipse.axis.x/ratio);
             }
-            ellipses[mousedOverEllipseIndex] = ellipse;
+            ellipses[mousedOverElementIndex] = ellipse;
             
         }
         
     }
-    else if (!point.isNull() && mousedOverEllipseIndex >= 0)
+    else if (!point.isNull() && mousedOverElementIndex >= 0)
     {
-        int elIndex = mousedOverEllipseIndex;
-        EllipseVis ellipse = ellipses[mousedOverEllipseIndex];
+        int elIndex = mousedOverElementIndex;
+        EllipseVis ellipse = ellipses[mousedOverElementIndex];
         if(!dragRectBegin)
         {
             dragRectBegin = true;
@@ -436,21 +440,21 @@
     }
     
     if ([event modifierFlags] & NSShiftKeyMask) {
-        if (mousedOverRectIndex >= 0) {
-            [self removeElementAtIndex:mousedOverRectIndex];
+        if (mousedOverElementIndex >= 0) {
+            [self removeElementAtIndex:mousedOverElementIndex];
         }
     }
 }
 - (bool)StartDragging:(NSUInteger)withKeys
 {
-    if (mousedOverRectIndex >=0) {
-        draggedIndex = mousedOverRectIndex;
+    if (mousedOverElementIndex >=0) {
+        draggedIndex = mousedOverElementIndex;
         return [super StartDragging:withKeys];
     }
     
     else
     {
-        if(mousedOverRectIndex<0)
+        if(mousedOverElementIndex<0)
         {
             return [super StartDragging:withKeys];
         }
@@ -465,7 +469,6 @@
     draggingDiffIsSet = false;
     dragRectBegin = false;
     [super StopDragging];
-    mousedOverLineIndex = -1;
     draggedIndex = -1;
     madeNewRect = false;
 }

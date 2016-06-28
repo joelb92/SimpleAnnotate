@@ -7,6 +7,7 @@
 #import "GLObject.h"
 #import "InfoOutputController.h"
 #import "Tooltip.h"
+#import "colorArr.h"
 @interface GLViewTool : GLObject
 {
 	Vector2 mousePos;
@@ -22,10 +23,15 @@
     bool linkedDims;
     NSString *currentKey;
     NSMutableArray *elementTypes;
-    NSTextField *testmenu;
+    NSMutableArray *keys;
+    colorArr*segColors;
+    Color previousColor;
     NSView *superView;
     Tooltip *tooltip;
     NSString *currentAnnotationType;
+    int currentAnnotationTypeIndex;
+    bool comboBoxIsOpen;
+    
 }
 @property (readwrite) int mousedOverElementIndex;
 @property (readonly) bool dragging;
@@ -40,6 +46,8 @@
 @property (assign) Tooltip *tooltip;
 @property (readwrite) NSString *currentAnnotationType;
 @property InfoOutputController *infoOutput;
+@property (readwrite) bool comboBoxIsOpen;
+@property (readwrite) int currentAnnotationTypeIndex;
 - (void)DragTo:(Vector3)point Event:(NSEvent *)event;
 - (void)SetMousePosition:(Vector2)mouseP UsingSpaceConverter:(SpaceConverter)spaceConverter;
 - (bool)StartDragging:(NSUInteger)withKeys;
@@ -58,5 +66,11 @@
 -(void)setCurrentElementType:(NSString *) type;
 -(NSDictionary *)getElements;
 -(void)setElements:(NSDictionary *)rects;
-
+-(void)setElementKey:(NSString *)key forIndex:(int)i;
+- (void)SetCurrentColor:(Color)C;
+-(void)setCurrentElementKey:(NSString *)key;
+-(void)setCurrentElementType:(NSString *) type;
+- (bool)StartDragging:(NSUInteger)withKeys;
+-(void) drawToolTipAtPosition:(Vector2) position Corner:(int)corner;
+- (bool) checkToolTipMouseOverForMousePoint:(Vector2)mouseP;
 @end

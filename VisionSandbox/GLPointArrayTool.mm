@@ -48,6 +48,7 @@
         p.AddItemToEnd(v);
         pointSets.push_back(p);
         [keys addObject:key];
+        [elementTypes addObject:currentAnnotationType];
         [segColors addElement:c];
     }
     allPoints.AddItemToEnd(v);
@@ -71,6 +72,7 @@
         
         if(p.Length == 0){
             [keys removeObject:key];
+            [elementTypes removeObjectAtIndex:structureIndex];
             pointSets.erase(pointSets.begin()+structureIndex);
             [segColors removeElementAtIndex:structureIndex];
         }
@@ -79,22 +81,6 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverEllipseIndex)];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
-}
-
--(void)setElementKey:(NSString *)key forIndex:(int)i
-{
-    if (i < keys.count) {
-        [keys replaceObjectAtIndex:i withObject:key];
-    }
-    
-}
-- (void)SetCurrentColor:(Color)C
-{
-    if(C!=previousColor)
-    {
-        previousColor = C;
-        glColor3f(C.r/255.0, C.g/255.0, C.b/255.0);
-    }
 }
 
 -(NSDictionary *)getElements
@@ -144,15 +130,6 @@
     return s;
 }
 
--(NSMutableArray *)getKeys
-{
-    return keys;
-}
-
--(NSUInteger)count{
-    return pointSets.size();
-}
-
 -(void)clearAll
 {
     mousedOverLineIndex = mousedOverPointIndex = -1;
@@ -167,6 +144,7 @@
     currentKey = @"nil";
     [pointStructureIndexMap removeAllObjects];
     [pointStructureMap removeAllObjects];
+    [elementTypes removeAllObjects];
     allPoints = Vector2Arr();
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
@@ -254,16 +232,38 @@
     {
         
         Vector2Arr p = pointSets[i];
-
-        float distval = cv::pointPolygonTest(p.asCVContour(), imagePoint.AsCvPoint(), true);
-        
+        std::vector<cv::Point2f> contour = p.asCVContour();
+        float distval = cv::pointPolygonTest(contour, imagePoint.AsCvPoint(), true);
+        cv::Point farthestLeft,farthestRight,Highest,Lowest;
+        farthestLeft.x = INT_MAX; farthestRight.x = INT_MIN; Highest.y = INT_MAX; Lowest.y = INT_MIN;
+        //Find the extrema of the contour
+        for(int x = 0; x < contour.size(); x++)
+        {
+            cv::Point p = contour[x];
+            if (p.x > farthestRight.x){
+                farthestRight.x = p.x;
+                farthestRight.y = p.y;
+            }
+            if (p.x < farthestLeft.x) {
+                farthestLeft.x = p.x;
+                farthestLeft.y = p.y;
+            }
+            if (p.y > Lowest.y) {
+                Lowest.y = p.y;
+                Lowest.x = p.x;
+            }
+            if (p.y < Highest.y) {
+                Highest.y = p.y;
+                Highest.x = p.x;
+            }
+        }
         if (distval > -5) {
             inCont = true;
 
             mousedOverElementIndex = i;
             currentKey = [keys objectAtIndex:i];
             [infoOutput.trackNumberLabel setStringValue:[keys objectAtIndex:mousedOverElementIndex]];
-
+            [self drawToolTipAtPosition:spaceConverter.ImageToScreenVector(Vector2(farthestRight)) Corner:0];
         }
     }
     float minDist = 20*20;
@@ -288,6 +288,25 @@
         }
         
         
+    }
+    //check if mouse is in the tooltip
+    std::vector<cv::Point>cont;
+    int border = 20;
+    Vector2 bottomLeft(tooltip.frame.origin.x-border,tooltip.frame.origin.y-border);
+    Vector2 bottomRight(bottomLeft.x+tooltip.frame.size.width+border*2,bottomLeft.y);
+    Vector2 topRight(bottomRight.x,bottomRight.y+tooltip.frame.size.height+border*2);
+    Vector2 topLeft(bottomLeft.x,topRight.y);
+    if (comboBoxIsOpen) {
+        bottomRight.y -= tooltip.typeSelectionBox.itemHeight*tooltip.typeSelectionBox.objectValues.count;
+        bottomLeft.y -= tooltip.typeSelectionBox.itemHeight*tooltip.typeSelectionBox.objectValues.count;
+    }
+    cont.push_back(topLeft.AsCvPoint());
+    cont.push_back(topRight.AsCvPoint());
+    cont.push_back(bottomRight.AsCvPoint());
+    cont.push_back(bottomLeft.AsCvPoint());
+    float dist = cv::pointPolygonTest(cont, mouseP.AsCvPoint(), true);
+    if (dist >= 0) {
+        inCont = true;
     }
     if (!inCont) {
         currentKey = @"nil";

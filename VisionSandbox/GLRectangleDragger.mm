@@ -8,13 +8,13 @@
 
 #import "GLRectangleDragger.h"
 @implementation GLRectangleDragger
-@synthesize mousedOverRectIndex,rectPositionsForKeys,camShiftTrackers,rectTrackingForRectsWithKeys;
+@synthesize rectPositionsForKeys,camShiftTrackers,rectTrackingForRectsWithKeys;
 - (id)initWithOutputView:(InfoOutputController *)inf
 {
     self = [super init];
     if(self)
     {
-        mousedOverLineIndex = mousedOverPointIndex = mousedOverRectIndex = -1;
+        mousedOverLineIndex = mousedOverPointIndex = mousedOverElementIndex = -1;
         camShiftTrackers = [[NSMutableArray alloc] init];
         initialized = false;
         points = Vector2Arr();
@@ -24,7 +24,6 @@
         skippedRects = intArr();
         infoOutput = inf;
         rectPositionsForKeys = [[NSMutableDictionary alloc] init];
-        testmenu = [[NSTextField alloc] init];
         rectTrackingForRectsWithKeys = [[NSMutableArray alloc] init];
         usedRectangleNumberKeys = [[NSMutableArray alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
@@ -57,6 +56,7 @@
 {
     if (i < points.Length/4) {
         [keys removeObjectAtIndex:i];
+        [elementTypes removeObjectAtIndex:i];
         i*=4;
         Vector2Arr newArr = Vector2Arr();
         for (int j = 0; j < points.Length; j++)
@@ -67,37 +67,15 @@
             }
         }
         points = newArr;
-        mousedOverRectIndex = -1;
+        mousedOverElementIndex = -1;
         mousedOverLineIndex = -1;
         skippedRects.AddItemToBegining(i);
-         [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverRectIndex)];
+         [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 
--(void)setElementKey:(NSString *)key forIndex:(int)i
-{
-    if (i < keys.count) {
-        [keys replaceObjectAtIndex:i withObject:key];
-    }
-    
-}
 
--(void)setCurrentElementType:(NSString *) type;
-{
-    if(mousedOverRectIndex >= 0 && mousedOverRectIndex < elementTypes.count){
-        [elementTypes replaceObjectAtIndex:mousedOverRectIndex withObject:type];
-    }
-}
-
-- (void)SetCurrentColor:(Color)C
-{
-    if(C!=previousColor)
-    {
-        previousColor = C;
-        glColor3f(C.r/255.0, C.g/255.0, C.b/255.0);
-    }
-}
 
 -(NSDictionary *)getElements
 {
@@ -124,16 +102,6 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 
--(NSMutableArray *)getKeys
-{
-    return keys;
-}
-
--(NSUInteger)count
-{
-    return keys.count;
-}
-
 - (NSString *) stringForKey:(NSObject *)key
 {
     int i = (int)[keys indexOfObject:key];
@@ -149,8 +117,8 @@
 
 -(void)clearAll
 {
-    mousedOverLineIndex = mousedOverPointIndex = mousedOverRectIndex = -1;
-     [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverRectIndex)];
+    mousedOverLineIndex = mousedOverPointIndex = mousedOverElementIndex = -1;
+     [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
     points = Vector2Arr();
     if (segColors) {
     }
@@ -159,6 +127,7 @@
     segColors = [[colorArr alloc] init];
     keys = [[NSMutableArray alloc] init];
     currentKey = @"nil";
+    [elementTypes removeAllObjects];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 
@@ -206,7 +175,7 @@
                 int jmod = (j+1)%4;
                 if ([rectTrackingForRectsWithKeys containsObject:[keys objectAtIndex:i/4]])
                     [self SetCurrentColor:Color(255, 0, 255)];
-                if (mousedOverRectIndex == i/4 || (mousedOverPointIndex > 0  &&mousedOverPointIndex/4 == i/4)) {
+                if (mousedOverElementIndex == i/4 || (mousedOverPointIndex > 0  &&mousedOverPointIndex/4 == i/4)) {
                     [self SetCurrentColor:Green];
                     glVertex3f(pointsArr[j].x, pointsArr[j].y, minZ);
                     glVertex3f(pointsArr[jmod].x, pointsArr[jmod].y, minZ);
@@ -235,7 +204,7 @@
 {
     [super tableHoverRect:notification];
     id obj = notification.object;
-    mousedOverRectIndex = [(NSNumber *)obj intValue];
+    mousedOverElementIndex = [(NSNumber *)obj intValue];
 }
 
 -(void)InitializeWithSpaceConverter:(SpaceConverter)spaceConverter
@@ -303,28 +272,29 @@
             cont.push_back(points[i+j].AsCvPoint());
         }
         double contourDistance = cv::pointPolygonTest(cont, imagePoint.AsCvPoint(), true);
-        
-        if (contourDistance > 0) {
-            mousedOverRectIndex	= i/4;
-            float rectWidth = (points[mousedOverRectIndex*4+1].x-points[mousedOverRectIndex*4].x);
-            float rectHeight = (points[mousedOverRectIndex*4+2].y-points[mousedOverRectIndex*4+1].y);
-            [infoOutput.xCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)points[mousedOverRectIndex*4].x]];
-            [infoOutput.yCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)points[mousedOverRectIndex*4].y]];
+        if (contourDistance >= -1) {
+            mousedOverElementIndex	= i/4;
+            float rectWidth = (points[mousedOverElementIndex*4+1].x-points[mousedOverElementIndex*4].x);
+            float rectHeight = (points[mousedOverElementIndex*4+2].y-points[mousedOverElementIndex*4+1].y);
+            [infoOutput.xCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)points[mousedOverElementIndex*4].x]];
+            [infoOutput.yCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)points[mousedOverElementIndex*4].y]];
             [infoOutput.widthLabel setStringValue:[NSString stringWithFormat:@"%i",(int)rectWidth]];
             [infoOutput.heightLabel	setStringValue:[NSString stringWithFormat:@"%i",(int)rectHeight]];
-            [infoOutput.trackNumberLabel setStringValue:[keys objectAtIndex:mousedOverRectIndex]];
-            currentKey = [keys objectAtIndex:mousedOverRectIndex];
+            [infoOutput.trackNumberLabel setStringValue:[keys objectAtIndex:mousedOverElementIndex]];
+            currentKey = [keys objectAtIndex:mousedOverElementIndex];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
             
             //display tooltip
-            Vector2 tooltipVect = spaceConverter.ImageToScreenVector(Vector2(points[mousedOverRectIndex*4+1].x,points[mousedOverRectIndex*4+1].y));
+            Vector2 tooltipVect = spaceConverter.ImageToScreenVector(Vector2(points[mousedOverElementIndex*4+1].x,points[mousedOverElementIndex*4+1].y));
             NSRect newframe  = NSMakeRect(tooltipVect.x, tooltipVect.y, tooltip.frame.size.width, tooltip.frame.size.height);
             
-            [tooltip.nameField setStringValue:[keys objectAtIndex:mousedOverRectIndex] ];
+            [tooltip.nameField setStringValue:[keys objectAtIndex:mousedOverElementIndex] ];
+            int ind =(int)[tooltip.typeSelectionBox.objectValues indexOfObject:[elementTypes objectAtIndex:mousedOverElementIndex]];
+            if (ind < 0 ) ind = (int)[tooltip.typeSelectionBox.objectValues indexOfObject:@"None"];
+            [tooltip.typeSelectionBox selectItemAtIndex:ind];
             [tooltip setFrame:newframe];
             [superView addSubview:tooltip];
             [tooltip setHidden:NO];
-            [testmenu display];
             inCont = true;
             continue;
         }
@@ -332,12 +302,16 @@
     }
     //check if mouse is in the tooltip
     std::vector<cv::Point>cont;
-    int border = 10;
-    Vector2 topleft(tooltip.frame.origin.x-border,tooltip.frame.origin.y-border);
-    Vector2 topRight(topleft.x+tooltip.frame.size.width+border,topleft.y);
-    Vector2 bottomRight(topRight.x,topRight.y+tooltip.frame.size.height+border);
-    Vector2 bottomLeft(topleft.x,bottomRight.y);
-    cont.push_back(topleft.AsCvPoint());
+    int border = 20;
+    Vector2 bottomLeft(tooltip.frame.origin.x-border,tooltip.frame.origin.y-border);
+    Vector2 bottomRight(bottomLeft.x+tooltip.frame.size.width+border*2,bottomLeft.y);
+    Vector2 topRight(bottomRight.x,bottomRight.y+tooltip.frame.size.height+border*2);
+    Vector2 topLeft(bottomLeft.x,topRight.y);
+    if (comboBoxIsOpen) {
+        bottomRight.y -= tooltip.typeSelectionBox.itemHeight*tooltip.typeSelectionBox.objectValues.count;
+        bottomLeft.y -= tooltip.typeSelectionBox.itemHeight*tooltip.typeSelectionBox.objectValues.count;
+    }
+    cont.push_back(topLeft.AsCvPoint());
     cont.push_back(topRight.AsCvPoint());
     cont.push_back(bottomRight.AsCvPoint());
     cont.push_back(bottomLeft.AsCvPoint());
@@ -348,7 +322,7 @@
     
     if (!inCont) {
         currentKey = @"nil";
-        mousedOverRectIndex = -1;
+        mousedOverElementIndex = -1;
         [infoOutput.xCoordRectLabel setStringValue:@"NA"];
         [infoOutput.yCoordRectLabel setStringValue:@"NA"];
         [infoOutput.widthLabel setStringValue:@"NA"];
@@ -357,11 +331,11 @@
         
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
     }
-    if(distance>25) //If further than 5 screen pixels from the closest point:
+    if(distance<-5) //If further than 5 screen pixels from the closest point:
     {
         mousedOverLineIndex = -1;
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverRectIndex)];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
     
     
 }
@@ -425,15 +399,15 @@
         }
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
     }
-    else if(mousedOverRectIndex >= 0)
+    else if(mousedOverElementIndex >= 0)
     {
         if (!dragRectBegin)//We are just beginning the rect drag, store initial mouse position
         {
             dragRectBegin = true;
-            Vector2 p1 = points[mousedOverRectIndex*4];
-            Vector2 p2 = points[mousedOverRectIndex*4+1];
-            Vector2 p3 = points[mousedOverRectIndex*4+2];
-            Vector2 p4 = points[mousedOverRectIndex*4+3];
+            Vector2 p1 = points[mousedOverElementIndex*4];
+            Vector2 p2 = points[mousedOverElementIndex*4+1];
+            Vector2 p3 = points[mousedOverElementIndex*4+2];
+            Vector2 p4 = points[mousedOverElementIndex*4+3];
             initialDragDistances[0] = (point-p1);
             initialDragDistances[1] = (point-p2);
             initialDragDistances[2] = (point-p3);
@@ -441,10 +415,10 @@
         }
         else
         {
-            points[mousedOverRectIndex*4]   = point-initialDragDistances[0];
-            points[mousedOverRectIndex*4+1] = point-initialDragDistances[1];
-            points[mousedOverRectIndex*4+2] = point-initialDragDistances[2];
-            points[mousedOverRectIndex*4+3] = point-initialDragDistances[3];
+            points[mousedOverElementIndex*4]   = point-initialDragDistances[0];
+            points[mousedOverElementIndex*4+1] = point-initialDragDistances[1];
+            points[mousedOverElementIndex*4+2] = point-initialDragDistances[2];
+            points[mousedOverElementIndex*4+3] = point-initialDragDistances[3];
         }
     }
     else if(!point.isNull() && draggedIndex < 0 && [event modifierFlags] & NSCommandKeyMask)
@@ -492,18 +466,18 @@
     }
 
     if ([event modifierFlags] & NSShiftKeyMask) {
-        if (mousedOverRectIndex >= 0) {
-            [self removeElementAtIndex:mousedOverRectIndex];
+        if (mousedOverElementIndex >= 0) {
+            [self removeElementAtIndex:mousedOverElementIndex];
         }
     }
     if ([event modifierFlags] & NSFunctionKeyMask) {
-        if (mousedOverRectIndex >= 0) {
-            if (![rectTrackingForRectsWithKeys containsObject:[keys objectAtIndex:mousedOverRectIndex]]) {
-                [rectTrackingForRectsWithKeys addObject:[keys objectAtIndex:mousedOverRectIndex]];
+        if (mousedOverElementIndex >= 0) {
+            if (![rectTrackingForRectsWithKeys containsObject:[keys objectAtIndex:mousedOverElementIndex]]) {
+                [rectTrackingForRectsWithKeys addObject:[keys objectAtIndex:mousedOverElementIndex]];
             }
             else
             {
-                [rectTrackingForRectsWithKeys removeObject:[keys objectAtIndex:mousedOverRectIndex]];
+                [rectTrackingForRectsWithKeys removeObject:[keys objectAtIndex:mousedOverElementIndex]];
             }
         }
     }
@@ -514,14 +488,14 @@
 }
 - (bool)StartDragging:(NSUInteger)withKeys
 {
-    if (mousedOverRectIndex >=0) {
-        draggedIndex = mousedOverRectIndex;
+    if (mousedOverElementIndex >=0) {
+        draggedIndex = mousedOverElementIndex;
         return [super StartDragging:withKeys];
     }
     
     else
     {
-        if(mousedOverRectIndex<0)
+        if(mousedOverElementIndex<0)
         {
             return [super StartDragging:withKeys];
         }
@@ -560,6 +534,7 @@
     dragRectBegin = false;
     [super StopDragging];
     mousedOverLineIndex = -1;
+    
     draggedIndex = -1;
     madeNewRect = false;
 }

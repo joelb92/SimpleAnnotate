@@ -1073,17 +1073,6 @@ CA
                             <customView id="a5b-o1-q5b" userLabel="MainGLView" customClass="GL2DView">
                                 <rect key="frame" x="350" y="0.0" width="1214" height="980"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <subviews>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ddN-Zs-bnG">
-                                        <rect key="frame" x="18" y="20" width="119" height="17"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="BLAH BLAH BLAH" id="fT6-2F-ckO">
-                                            <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                </subviews>
                                 <connections>
                                     <outlet property="infoOutput" destination="zmC-49-3s7" id="fy8-5e-sNb"/>
                                     <outlet property="mouseOverController" destination="thH-ug-6pU" id="sqv-IR-wr4"/>
@@ -1267,7 +1256,6 @@ CA
                 <outlet property="linkDimsButton" destination="Xrd-Na-poF" id="kst-Fp-cOd"/>
                 <outlet property="mainTableView" destination="Uuo-1m-Dhq" id="jP8-gp-41F"/>
                 <outlet property="mainView" destination="a5b-o1-q5b" id="oCt-r5-hHN"/>
-                <outlet property="testLabel" destination="ddN-Zs-bnG" id="caJ-qd-Hk9"/>
                 <outlet property="toolMenu" destination="Vyw-7D-e33" id="Frt-va-Vwh"/>
                 <outlet property="tooltip" destination="Mnr-5j-LY0" id="rce-z9-9Zo"/>
             </connections>
@@ -1513,7 +1501,7 @@ By hitting command+S, you save your project.  All cropped images, along with a a
             <rect key="frame" x="0.0" y="0.0" width="120" height="40"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField verticalHuggingPriority="750" id="cvU-0H-5bM">
+                <textField identifier="tooltipName" verticalHuggingPriority="750" id="cvU-0H-5bM">
                     <rect key="frame" x="0.0" y="18" width="120" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" identifier="tooltipName" placeholderString="Name" drawsBackground="YES" id="l9j-Qn-91u">
@@ -1525,7 +1513,7 @@ By hitting command+S, you save your project.  All cropped images, along with a a
                         <outlet property="delegate" destination="thH-ug-6pU" id="E9R-O6-Tz4"/>
                     </connections>
                 </textField>
-                <comboBox verticalHuggingPriority="750" id="8va-DB-36c">
+                <comboBox identifier="tooltipCombo" verticalHuggingPriority="750" id="8va-DB-36c">
                     <rect key="frame" x="0.0" y="-4" width="123" height="26"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" identifier="tooltipCombo" placeholderString="Type" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="rXp-ia-qBj">

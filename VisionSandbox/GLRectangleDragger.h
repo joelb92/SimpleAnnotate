@@ -20,12 +20,8 @@
 	int draggedIndex;
 	int mousedOverPointIndex;
 	int mousedOverLineIndex;
-	int mousedOverRectIndex;
 	bool isVertical;
-	colorArr*segColors;
 	Vector2Arr points;
-	Color previousColor;
-	NSMutableArray *keys;
 	intArr skippedRects;
 	bool madeNewRect;
 	bool dragRectBegin;
@@ -43,7 +39,6 @@
     NSMutableArray *rectTrackingForRectsWithKeys;
 }
 @property NSString *currentKey;
-@property int mousedOverRectIndex;
 @property NSMutableArray *camShiftTrackers;
 @property int rectWidth;
 @property int rectHeight;

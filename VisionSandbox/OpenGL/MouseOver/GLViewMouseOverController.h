@@ -44,7 +44,6 @@
     IBOutlet NSView * mainView;
     IBOutlet Tooltip *tooltip;
     NSMutableDictionary *labelFields;
-    IBOutlet NSTextField *testLabel;
 	IBOutlet InfoOutputController *infoOutput;
     IBOutlet ROTableView *mainTableView;
     IBOutlet NSButton *linkDimsButton;

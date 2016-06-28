@@ -69,13 +69,8 @@ struct EllipseVis
     bool initialized;
     int draggedIndex;
     int mousedOverPointIndex;
-    int mousedOverLineIndex;
-    int mousedOverEllipseIndex;
     bool isVertical;
-    colorArr*segColors;
     std::vector<EllipseVis> ellipses;
-    Color previousColor;
-    NSMutableArray *keys;
     intArr skippedRects;
     bool madeNewRect;
     bool dragRectBegin;
@@ -93,7 +88,6 @@ struct EllipseVis
 
 }
 @property NSString *currentKey;
-@property int mousedOverRectIndex;
 - (id)initWithOutputView:(InfoOutputController *)infoOutput;
 -(NSMutableArray *)getKeys;
 -(void)clearAll;
