@@ -67,7 +67,7 @@
     e.leftAnchor+=point;
     e.center = point;
     e.axis = axis;
-    e.angle = 0;
+    e.angle = angle;
     ellipses.push_back(e);
     [keys addObject:key];
     [segColors addElement:c];
@@ -94,7 +94,7 @@
     for(int i = 0; i < ellipses.size(); i++)
     {
         EllipseVis e = ellipses[i];
-        NSDictionary * d = [NSDictionary dictionaryWithObjects:@[@(e.center.x),@(e.center.y),@(e.axis.x),@(e.axis.y),@(e.angle),[elementTypes objectAtIndex:i]] forKeys:@[@"x coord",@"y coord",@"width",@"height",@"rotation",@"type"]];
+        NSDictionary * d = [NSDictionary dictionaryWithObjects:@[@(e.center.x),@(e.center.y),@(e.axis.x),@(e.axis.y),@(e.angle),[elementTypes objectAtIndex:i]] forKeys:@[@"x coord",@"y coord",@"width",@"height",@"zrotation",@"type"]];
         [rectDict setValue:d forKey:[keys objectAtIndex:i]];
     }
     return rectDict;
@@ -108,7 +108,7 @@
         NSObject *key = [rects.allKeys objectAtIndex:i];
         NSDictionary *d = [rects objectForKey:key];
         NSRect r = NSMakeRect([[d objectForKey:@"x coord"] floatValue], [[d objectForKey:@"y coord"] floatValue], [[d objectForKey:@"width"] floatValue], [[d objectForKey:@"height"] floatValue]);
-        [self addElement:r withRotation:[[d objectForKey:@"rotation"] floatValue] color:Blue forKey:(NSString *)key andType:[d objectForKey:@"type"]];
+        [self addElement:r withRotation:[[d objectForKey:@"zrotation"] floatValue] color:Blue forKey:(NSString *)key andType:[d objectForKey:@"type"]];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
