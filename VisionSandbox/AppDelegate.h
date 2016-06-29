@@ -70,6 +70,7 @@
     NSMutableDictionary *trackers;
     NSMutableDictionary *isSubFaceImage;
     int numFrames;
+    NSString *saveProjectFilePath;
     
     FaceDetectionHandler *faceDetector;
     

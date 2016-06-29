@@ -847,131 +847,176 @@ Mat norm_0_255(InputArray _src) {
     return dst;
 }
 
+-(bool)object:(std::vector<cv::Point>)obj1 isEntirelyWithinObject:(std::vector<cv::Point>)obj2
+{
+    bool iswithin = true;
+    for (int i = 0; i < obj1.size(); i++) {
+        float dist = cv::pointPolygonTest(obj2, obj1[i], false);
+        if (dist < 0)
+        {
+            iswithin = false;
+            break;
+        }
+    }
+    return iswithin;
+}
+
 - (IBAction)save:(id)sender
 {
-    savingStatusLabel.stringValue = @"Saving Crops...";
-    if ([self shouldStoreRects]) [annotationsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getElements forKey:@(frameNum)];
-    NSMutableString *rectOutputLog = [@"Frame,Rectagle Key,X,Y,Width,Height,FileName\n" mutableCopy];
-    NSFileManager *fm = [NSFileManager defaultManager];
-    
-    if (currentFilePath) {
-        NSString *cropFilePath = [[currentFilePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"pedestrianCrops"];
-        if (!videoMode) {
-            cropFilePath = [currentFilePath stringByAppendingPathComponent:@"pedestrianCrops"];
-        }
-        BOOL DirExists =false;
-        if( !([fm fileExistsAtPath:cropFilePath isDirectory:&DirExists] && DirExists))
-        {
-            [fm createDirectoryAtPath:cropFilePath withIntermediateDirectories:NO attributes:nil error:nil];
-        }
-        for(int i = 0; i < annotationsForFrames.count;i++)
-        {
-            NSNumber *key = [annotationsForFrames.allKeys objectAtIndex:i];
-            NSDictionary *rects = [annotationsForFrames objectForKey:key];
-            int frameNumber = [key intValue];
-            for (int j = 0; j < rects.count; j++) {
-                NSString *key = [[rects allKeys] objectAtIndex:j];
-                NSRect r = [[rects objectForKey:key] rectValue];
-                
-                NSString *saveImgPath = [[[currentFilePath stringByDeletingPathExtension] stringByAppendingFormat:@"Frame%i_Rect%i",frameNumber,key.intValue] stringByAppendingPathExtension:@"jpg"];
-                if([key hasPrefix:@"Rectangle "])
-                {
-                    key = [key substringFromIndex:10];
-                }
-                OpenImageHandler *img = [frameForFrameNumber objectForKey:@(frameNumber)];
-                cv::Mat m = img.Cv;
-                int x = r.origin.x;
-                int y = r.origin.y;
-                int x2 = x+r.size.width;
-                int y2 = y+r.size.height;
-                if (x < 0) x = 0;
-                if (y < 0) y = 0;
-                if (x2 >= m.cols) x2 = m.cols;
-                if (y2 >= m.rows) y2 = m.rows;
-                int width = x2-x;
-                int height = y2-y;
-                if(height > 0 && width > 0 && x < m.cols && y < m.rows && x2 >= 0 && y2 >= 0){
-                    cv::Rect cvr(x,y,width,height);
-                    m = m(cvr);
-                    BOOL valid;
-                    NSCharacterSet *alphaNums = [NSCharacterSet decimalDigitCharacterSet];
-                    NSCharacterSet *inStringSet = [NSCharacterSet characterSetWithCharactersInString:key];
-                    valid = [alphaNums isSupersetOfSet:inStringSet];
-                    if (valid) //numeric
-                    {
-                        int num = key.intValue;
-                        NSString *formattedName =[NSString stringWithFormat:@"crop_frame%08d_gID%06d_x%04d_y%04d_w%04d_h%04d",frameNumber,num,cvr.x,cvr.y,cvr.width,cvr.height];
-                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
-                        if (false or !videoMode)
-                        {
-//                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"Cropped%i_%@",j,[[framePathForFrameNum objectForKey:@(frameNumber)] lastPathComponent]]] stringByAppendingPathExtension:@"png"];
-                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
-                        }
-                    }
-                    else //named without numbers
-                    {
-                        NSString *formattedName = [NSString stringWithFormat:@"crop_frame%08d_gID%@_x%04d_y%04d_w%04d_h%04d",frameNumber,key,cvr.x,cvr.y,cvr.width,cvr.height];
-                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
-                        if (false or !videoMode)
-                        {
-//                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%@",[framePathForFrameNum objectForKey:@(frameNumber)],formattedName]] stringByAppendingPathExtension:@"png"];
-                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
-                        }
-                    }
-                    
-                    [rectOutputLog appendFormat:@"%i,%@,%i,%i,%i,%i,%@\n",frameNumber,key,(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height,saveImgPath.lastPathComponent];
-                    cv::imwrite(saveImgPath.UTF8String, m);
-                    //                    NSLog(@"written %i,%i,%i,%i",x,y,width,height);
-                }
-            }
-            
-        }
-        BOOL CropFileFolderExists;
-        if ([fm fileExistsAtPath:cropFilePath isDirectory:&CropFileFolderExists] && CropFileFolderExists) {
-            NSAlert *alert = [[NSAlert alloc] init];
-            [alert addButtonWithTitle:@"Choose New Location"];
-            [alert addButtonWithTitle:@"Save Here"];
-            [alert addButtonWithTitle:@"Cancel"];
-            [alert setMessageText:[NSString stringWithFormat:@"A folder at %@ already exists.  Would you like to chose a different folder?",cropFilePath]];
-            [alert setInformativeText:@"You may overwrite previous files in this folder"];
-            [alert setAlertStyle:NSWarningAlertStyle];
-            NSInteger modalOut =  [alert runModal];
-            if (modalOut == NSAlertFirstButtonReturn) {
-            chooseFolder: NSOpenPanel* openDlg = [NSOpenPanel openPanel];
-                [openDlg setCanChooseFiles:YES];
-                [openDlg setCanChooseDirectories:YES];
-                [openDlg setCanCreateDirectories:YES];
-                [openDlg setAllowsMultipleSelection:NO];
-                [openDlg setPrompt:@"Save"];
-                if ([openDlg runModalForDirectory:nil file:nil] == NSOKButton )
-                {
-                    NSString *newSaveLocation = [openDlg filename];
-                    if ([fm fileExistsAtPath:newSaveLocation isDirectory:&CropFileFolderExists] && !CropFileFolderExists) {
-                        NSAlert *alert = [[NSAlert alloc] init];
-                        [alert addButtonWithTitle:@"OK"];
-                        [alert setMessageText:[NSString stringWithFormat:@"You must chose a folder to save to, not a file"]];
-                        [alert setAlertStyle:NSWarningAlertStyle];
-                        if ([alert runModal] == NSAlertFirstButtonReturn) {
-                            goto chooseFolder;
-                        }
-                    }
-                    else
-                    {
-                        cropFilePath = newSaveLocation;
-                    }
-                }
-                
-            }
-            else if(modalOut == NSAlertThirdButtonReturn)
-            {
-                return;
-            }
-            
-        }
-        [rectOutputLog writeToFile:[[cropFilePath stringByAppendingPathComponent:@"log"] stringByAppendingPathExtension:@"csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    savingStatusLabel.stringValue = @"Saving Project...";
+    BOOL isdir = NO;
+    if(true or saveProjectFilePath != nil and ![saveProjectFilePath isEqualToString:@""] and [[NSFileManager defaultManager] fileExistsAtPath:saveProjectFilePath isDirectory:&isdir] and isdir)
+    {
         
-        savingStatusLabel.stringValue = [NSString stringWithFormat:@"Crops saved to: %@",cropFilePath];
+        for(int i =0; i < annotationsForFrames.count; i++)
+        {
+            NSString *saveCSV = @"";
+            NSNumber *frameKey = [annotationsForFrames.allKeys objectAtIndex:i];
+            NSString *framePath = [framePathForFrameNum objectForKey:frameKey];
+            NSDictionary *allAnnotationsForFrame = [annotationsForFrames objectForKey:frameKey];
+            for (int j = 0; j < allAnnotationsForFrame.count; j++) {
+                NSString *toolKey = [allAnnotationsForFrame.allKeys objectAtIndex:j];
+                NSDictionary *annotationsFromTool = [allAnnotationsForFrame objectForKey:toolKey];
+                for(int k = 0; k < annotationsFromTool.count; k++)
+                {
+                    NSString *elementKey = [annotationsFromTool.allKeys objectAtIndex:k];
+                    NSDictionary *element = [annotationsFromTool objectForKey:elementKey];
+                    for (int l = 0; l < element.count; l++) {
+                        NSString *propertyKey = [element.allKeys objectAtIndex:l];
+                        NSObject *property = [element objectForKey:propertyKey];
+                        NSLog(@"%@: \n%@",propertyKey,property.description);
+                    }
+                }
+            }
+        }
     }
+    
+    
+    
+    
+    
+//    if ([self shouldStoreRects]) [annotationsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getElements forKey:@(frameNum)];
+//    NSMutableString *rectOutputLog = [@"Frame,Rectagle Key,X,Y,Width,Height,FileName\n" mutableCopy];
+//    NSFileManager *fm = [NSFileManager defaultManager];
+//    
+//    if (currentFilePath) {
+//        NSString *cropFilePath = [[currentFilePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"pedestrianCrops"];
+//        if (!videoMode) {
+//            cropFilePath = [currentFilePath stringByAppendingPathComponent:@"pedestrianCrops"];
+//        }
+//        BOOL DirExists =false;
+//        if( !([fm fileExistsAtPath:cropFilePath isDirectory:&DirExists] && DirExists))
+//        {
+//            [fm createDirectoryAtPath:cropFilePath withIntermediateDirectories:NO attributes:nil error:nil];
+//        }
+//        for(int i = 0; i < annotationsForFrames.count;i++)
+//        {
+//            NSNumber *key = [annotationsForFrames.allKeys objectAtIndex:i];
+//            NSDictionary *rects = [annotationsForFrames objectForKey:key];
+//            int frameNumber = [key intValue];
+//            for (int j = 0; j < rects.count; j++) {
+//                NSString *key = [[rects allKeys] objectAtIndex:j];
+//                NSRect r = [[rects objectForKey:key] rectValue];
+//                
+//                NSString *saveImgPath = [[[currentFilePath stringByDeletingPathExtension] stringByAppendingFormat:@"Frame%i_Rect%i",frameNumber,key.intValue] stringByAppendingPathExtension:@"jpg"];
+//                if([key hasPrefix:@"Rectangle "])
+//                {
+//                    key = [key substringFromIndex:10];
+//                }
+//                OpenImageHandler *img = [frameForFrameNumber objectForKey:@(frameNumber)];
+//                cv::Mat m = img.Cv;
+//                int x = r.origin.x;
+//                int y = r.origin.y;
+//                int x2 = x+r.size.width;
+//                int y2 = y+r.size.height;
+//                if (x < 0) x = 0;
+//                if (y < 0) y = 0;
+//                if (x2 >= m.cols) x2 = m.cols;
+//                if (y2 >= m.rows) y2 = m.rows;
+//                int width = x2-x;
+//                int height = y2-y;
+//                if(height > 0 && width > 0 && x < m.cols && y < m.rows && x2 >= 0 && y2 >= 0){
+//                    cv::Rect cvr(x,y,width,height);
+//                    m = m(cvr);
+//                    BOOL valid;
+//                    NSCharacterSet *alphaNums = [NSCharacterSet decimalDigitCharacterSet];
+//                    NSCharacterSet *inStringSet = [NSCharacterSet characterSetWithCharactersInString:key];
+//                    valid = [alphaNums isSupersetOfSet:inStringSet];
+//                    if (valid) //numeric
+//                    {
+//                        int num = key.intValue;
+//                        NSString *formattedName =[NSString stringWithFormat:@"crop_frame%08d_gID%06d_x%04d_y%04d_w%04d_h%04d",frameNumber,num,cvr.x,cvr.y,cvr.width,cvr.height];
+//                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
+//                        if (false or !videoMode)
+//                        {
+////                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"Cropped%i_%@",j,[[framePathForFrameNum objectForKey:@(frameNumber)] lastPathComponent]]] stringByAppendingPathExtension:@"png"];
+//                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
+//                        }
+//                    }
+//                    else //named without numbers
+//                    {
+//                        NSString *formattedName = [NSString stringWithFormat:@"crop_frame%08d_gID%@_x%04d_y%04d_w%04d_h%04d",frameNumber,key,cvr.x,cvr.y,cvr.width,cvr.height];
+//                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
+//                        if (false or !videoMode)
+//                        {
+////                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%@",[framePathForFrameNum objectForKey:@(frameNumber)],formattedName]] stringByAppendingPathExtension:@"png"];
+//                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
+//                        }
+//                    }
+//                    
+//                    [rectOutputLog appendFormat:@"%i,%@,%i,%i,%i,%i,%@\n",frameNumber,key,(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height,saveImgPath.lastPathComponent];
+//                    cv::imwrite(saveImgPath.UTF8String, m);
+//                    //                    NSLog(@"written %i,%i,%i,%i",x,y,width,height);
+//                }
+//            }
+//            
+//        }
+//        BOOL CropFileFolderExists;
+//        if ([fm fileExistsAtPath:cropFilePath isDirectory:&CropFileFolderExists] && CropFileFolderExists) {
+//            NSAlert *alert = [[NSAlert alloc] init];
+//            [alert addButtonWithTitle:@"Choose New Location"];
+//            [alert addButtonWithTitle:@"Save Here"];
+//            [alert addButtonWithTitle:@"Cancel"];
+//            [alert setMessageText:[NSString stringWithFormat:@"A folder at %@ already exists.  Would you like to chose a different folder?",cropFilePath]];
+//            [alert setInformativeText:@"You may overwrite previous files in this folder"];
+//            [alert setAlertStyle:NSWarningAlertStyle];
+//            NSInteger modalOut =  [alert runModal];
+//            if (modalOut == NSAlertFirstButtonReturn) {
+//            chooseFolder: NSOpenPanel* openDlg = [NSOpenPanel openPanel];
+//                [openDlg setCanChooseFiles:YES];
+//                [openDlg setCanChooseDirectories:YES];
+//                [openDlg setCanCreateDirectories:YES];
+//                [openDlg setAllowsMultipleSelection:NO];
+//                [openDlg setPrompt:@"Save"];
+//                if ([openDlg runModalForDirectory:nil file:nil] == NSOKButton )
+//                {
+//                    NSString *newSaveLocation = [openDlg filename];
+//                    if ([fm fileExistsAtPath:newSaveLocation isDirectory:&CropFileFolderExists] && !CropFileFolderExists) {
+//                        NSAlert *alert = [[NSAlert alloc] init];
+//                        [alert addButtonWithTitle:@"OK"];
+//                        [alert setMessageText:[NSString stringWithFormat:@"You must chose a folder to save to, not a file"]];
+//                        [alert setAlertStyle:NSWarningAlertStyle];
+//                        if ([alert runModal] == NSAlertFirstButtonReturn) {
+//                            goto chooseFolder;
+//                        }
+//                    }
+//                    else
+//                    {
+//                        cropFilePath = newSaveLocation;
+//                    }
+//                }
+//                
+//            }
+//            else if(modalOut == NSAlertThirdButtonReturn)
+//            {
+//                return;
+//            }
+//            
+//        }
+//        [rectOutputLog writeToFile:[[cropFilePath stringByAppendingPathComponent:@"log"] stringByAppendingPathExtension:@"csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+//        
+//        savingStatusLabel.stringValue = [NSString stringWithFormat:@"Crops saved to: %@",cropFilePath];
+//    }
     
 }
 @end
