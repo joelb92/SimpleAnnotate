@@ -52,7 +52,7 @@
     cv::VideoCapture capture;
     NSMutableDictionary *frameForFrameNumber;
     NSMutableDictionary *framePathForFrameNum;
-    NSMutableDictionary *rectsForFrames;
+    NSMutableDictionary *annotationsForFrames;
     bool videoMode;
     bool bruteFix;
 	NSString *currentFilePath;

@@ -34,7 +34,6 @@
     int yDifference;
     bool draggingDiffIsSet;
     NSMutableDictionary *rectPositionsForKeys;
-    NSMutableArray *usedRectangleNumberKeys;
     NSMutableArray *camShiftTrackers;
     NSMutableArray *rectTrackingForRectsWithKeys;
 }

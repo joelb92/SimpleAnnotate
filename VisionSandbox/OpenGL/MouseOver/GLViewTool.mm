@@ -20,6 +20,8 @@
 		startMousePos = Vector2(NAN,NAN);
 		dragging = false;
         elementTypes = [[NSMutableArray alloc] init];
+        usedRectangleNumberKeys = [[NSMutableArray alloc] init];
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
 	}
 	return self;

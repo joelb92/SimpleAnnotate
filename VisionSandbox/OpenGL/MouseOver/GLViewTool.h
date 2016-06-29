@@ -24,6 +24,7 @@
     NSString *currentKey;
     NSMutableArray *elementTypes;
     NSMutableArray *keys;
+    NSMutableArray *usedRectangleNumberKeys;
     colorArr*segColors;
     Color previousColor;
     NSView *superView;

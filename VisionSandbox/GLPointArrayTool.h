@@ -33,7 +33,6 @@ float angleDifference;
 float axisDifference;
 bool draggingDiffIsSet;
 NSMutableDictionary *rectPositionsForKeys;
-NSMutableArray *usedRectangleNumberKeys;
     std::vector<Vector2Arr> pointSets;
     Vector2Arr allPoints;
     NSMutableArray *pointStructureMap;

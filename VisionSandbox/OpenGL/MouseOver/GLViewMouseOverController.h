@@ -27,7 +27,7 @@
     IBOutlet NSTextField *defaultRectHeightField;
     IBOutlet NSTextField *defaultRectWidthField;
 	IBOutlet NSTabView *TabView;
-    NSArray *allTools;
+    NSDictionary *allTools;
 	
 	//Ruler
 	IBOutlet NSTextField *DistanceOutput;
@@ -54,6 +54,7 @@
 }
 @property (assign) GLRectangleDragger *rectangleTool;
 @property (assign) NSTextField *RectKey;
+@property (assign) NSDictionary *allTools;
 - (GLViewTool*)tool;
 - (bool)ActiveInView:(NSView*)view;
 - (void)ToggleInView:(NSView*)view;

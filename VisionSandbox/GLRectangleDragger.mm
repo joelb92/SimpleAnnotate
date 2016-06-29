@@ -25,13 +25,17 @@
         infoOutput = inf;
         rectPositionsForKeys = [[NSMutableDictionary alloc] init];
         rectTrackingForRectsWithKeys = [[NSMutableArray alloc] init];
-        usedRectangleNumberKeys = [[NSMutableArray alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
     }
     return self;
 }
 
 -(void)addElement:(NSRect)r color:(Color)c forKey:(NSString *)key
+{
+    [self addElement:r color:c forKey:key andType:currentAnnotationType];
+}
+
+-(void)addElement:(NSRect)r color:(Color)c forKey:(NSString *)key andType:(NSString *)type
 {
     Vector2 p1,p2,p3,p4;
     p1 =Vector2(r.origin.x, r.origin.y);
@@ -48,7 +52,7 @@
     [segColors addElement:c];
     [segColors addElement:c];
     [keys addObject:key];
-    [elementTypes addObject:currentAnnotationType];
+    [elementTypes addObject:type];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 
@@ -83,7 +87,7 @@
     for(int i = 0; i < points.Length; i+=4)
     {
         NSRect r = NSMakeRect(points[i].x, points[i].y, points[i+1].x-points[i].x, points[i+2].y-points[i].y);
-        NSDictionary *d = [NSDictionary dictionaryWithObjects:@[@(r.origin.x),@(r.origin.y),@(r.size.width),@(r.size.height)] forKeys:@[@"x coord",@"y coord",@"widht",@"height"]];
+        NSDictionary *d = [NSDictionary dictionaryWithObjects:@[@(r.origin.x),@(r.origin.y),@(r.size.width),@(r.size.height),[elementTypes objectAtIndex:i/4]] forKeys:@[@"x coord",@"y coord",@"width",@"height",@"type"]];
         [rectDict setObject:d forKey:[keys objectAtIndex:i/4]];
     }
     return rectDict;
@@ -97,7 +101,7 @@
         NSObject *key = [rects.allKeys objectAtIndex:i];
         NSDictionary *d = [rects objectForKey:key];
         NSRect r = NSMakeRect([[d objectForKey:@"x coord"] floatValue], [[d objectForKey:@"y coord"] floatValue], [[d objectForKey:@"width"] floatValue], [[d objectForKey:@"height"] floatValue]);
-        [self addElement:r color:Blue forKey:(NSString *)key];
+        [self addElement:r color:Blue forKey:(NSString *)key andType:[d objectForKey:@"type"]];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }

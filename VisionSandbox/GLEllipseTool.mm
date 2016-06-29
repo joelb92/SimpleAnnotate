@@ -26,10 +26,16 @@
     return self;
 }
 
+
 -(void)addElement:(NSRect)er color:(Color)c forKey:(NSString *)key
 {
+    [self addElement:er withRotation:0 color:c forKey:key andType:currentAnnotationType];
+}
+
+-(void)addElement:(NSRect)er withRotation:(float)rot color:(Color)c forKey:(NSString *)key andType:(NSString *)type
+{
     //Calculate ellipse angle transform
-    float angle = 0;
+    float angle = rot;
     float t0,t1,t2,t3;
     Vector2 point(er.origin.x,er.origin.y);
     Vector2 axis(er.size.width,er.size.height);
@@ -65,7 +71,7 @@
     ellipses.push_back(e);
     [keys addObject:key];
     [segColors addElement:c];
-    [elementTypes addObject:currentAnnotationType];
+    [elementTypes addObject:type];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 
 }
@@ -88,7 +94,7 @@
     for(int i = 0; i < ellipses.size(); i++)
     {
         EllipseVis e = ellipses[i];
-        NSDictionary * d = [NSDictionary dictionaryWithObjects:@[@(e.center.x),@(e.center.y),@(e.axis.x),@(e.axis.y),@(e.angle)] forKeys:@[@"x coord",@"y coord",@"width",@"height",@"rotation"]];
+        NSDictionary * d = [NSDictionary dictionaryWithObjects:@[@(e.center.x),@(e.center.y),@(e.axis.x),@(e.axis.y),@(e.angle),[elementTypes objectAtIndex:i]] forKeys:@[@"x coord",@"y coord",@"width",@"height",@"rotation",@"type"]];
         [rectDict setValue:d forKey:[keys objectAtIndex:i]];
     }
     return rectDict;
@@ -102,7 +108,7 @@
         NSObject *key = [rects.allKeys objectAtIndex:i];
         NSDictionary *d = [rects objectForKey:key];
         NSRect r = NSMakeRect([[d objectForKey:@"x coord"] floatValue], [[d objectForKey:@"y coord"] floatValue], [[d objectForKey:@"width"] floatValue], [[d objectForKey:@"height"] floatValue]);
-        [self addElement:r color:Blue forKey:(NSString *)key];
+        [self addElement:r withRotation:[[d objectForKey:@"rotation"] floatValue] color:Blue forKey:(NSString *)key andType:[d objectForKey:@"type"]];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }

@@ -21,7 +21,7 @@ using namespace std;
     trackers = [[NSMutableDictionary alloc] init];
     savingStatusLabel.stringValue = @"";
     matchedTemplates = [[NSMutableIndexSet alloc] init];
-    rectsForFrames = [[NSMutableDictionary alloc] init];
+    annotationsForFrames = [[NSMutableDictionary alloc] init];
     frameForFrameNumber = [[NSMutableDictionary alloc] init];
     framePathForFrameNum = [[NSMutableDictionary alloc] init];
     viewList = [[GLViewList alloc] initWithBackupPath:@""];
@@ -160,16 +160,23 @@ using namespace std;
                 if (!frame.empty()) {
                     OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
                     [frameForFrameNumber setObject:img forKey:@(newFrameNum)];
-                    [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getElements forKey:@(frameNum)];
-                    if ([[rectsForFrames allKeys] containsObject:@(newFrameNum)]) {
-                        [mainGLView.mouseOverController.rectangleTool setRects:[rectsForFrames objectForKey:@(newFrameNum)]];
+                    NSMutableDictionary *annotations = [[NSMutableDictionary alloc] init];
+                    for(NSString *k in mainGLView.mouseOverController.allTools.allKeys) [annotations setObject:[[mainGLView.mouseOverController.allTools objectForKey:k] getElements] forKey:k];
+                    [annotationsForFrames setObject:annotations forKey:@(frameNum)];
+                    
+                    if ([[annotationsForFrames allKeys] containsObject:@(newFrameNum)]) {
+                        NSDictionary *annDict = [annotationsForFrames objectForKey:@(newFrameNum)];
+                        for (NSString *k in annDict.allKeys) {
+                            [[mainGLView.mouseOverController.allTools objectForKey:k] setElements:[[annotationsForFrames objectForKey:@(newFrameNum)] objectForKey:k]];
+                        }
                     }
                     else
                     {
-                        [mainGLView.mouseOverController.tool clearAll];
+                        for(GLViewTool *t in mainGLView.mouseOverController.allTools.allValues) [t clearAll];
                     }
-                    [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
                     [GLViewListCommand AddObject:[frameForFrameNumber objectForKey:@(newFrameNum)] ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+                    [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
+
                     //                    [mainGLView.mouseOverController.rectangleTool setCurrentFrame:[(OpenImageHandler *)[frameForFrameNumber objectForKey:@(newFrameNum)] Cv]];
                     [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",newFrameNum,numFrames]];
                     
@@ -191,18 +198,26 @@ using namespace std;
                     OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
                     [framePathForFrameNum setObject:[imagePathArray objectAtIndex:i-1] forKey:@(newFrameNum)];
                     [frameForFrameNumber setObject:img forKey:@(newFrameNum)];
-                    [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getElements forKey:@(frameNum)];
-                    if ([[rectsForFrames allKeys] containsObject:@(newFrameNum)]) {
-                        [mainGLView.mouseOverController.rectangleTool setRects:[rectsForFrames objectForKey:@(newFrameNum)]];
+                    
+                    NSMutableDictionary *annotations = [[NSMutableDictionary alloc] init];
+                    for(NSString *k in mainGLView.mouseOverController.allTools.allKeys) [annotations setObject:[[mainGLView.mouseOverController.allTools objectForKey:k] getElements] forKey:k];
+                    [annotationsForFrames setObject:annotations forKey:@(frameNum)];
+                    
+                    if ([[annotationsForFrames allKeys] containsObject:@(newFrameNum)]) {
+                        NSDictionary *annDict = [annotationsForFrames objectForKey:@(newFrameNum)];
+                        for (NSString *k in annDict.allKeys) {
+                            [[mainGLView.mouseOverController.allTools objectForKey:k] setElements:[[annotationsForFrames objectForKey:@(newFrameNum)] objectForKey:k]];
+                        }
                     }
                     else
                     {
-                        [mainGLView.mouseOverController.rectangleTool clearAll];
+                        for(GLViewTool *t in mainGLView.mouseOverController.allTools.allValues) [t clearAll];
                     }
                     [fileNameField setStringValue:[[imagePathArray objectAtIndex:i-1] lastPathComponent]];
                     [isSubFaceImage setObject:@(NO) forKey:@(newFrameNum)];
-                    [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
                     [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+                    [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
+
                     //                    [mainGLView.mouseOverController.rectangleTool setCurrentFrame:[(OpenImageHandler *)[frameForFrameNumber objectForKey:@(newFrameNum)] Cv]];
                     [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%li",newFrameNum+1,imagePathArray.count]];
                     
@@ -214,13 +229,20 @@ using namespace std;
         }
         else //this frame already exists in our cached frame list
         {
-            [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getElements forKey:@(frameNum)]; //save current rects for current frame
-            if ([[rectsForFrames allKeys] containsObject:@(newFrameNum)]) {
-                [mainGLView.mouseOverController.rectangleTool setRects:[rectsForFrames objectForKey:@(newFrameNum)]]; //load new rects for next frame
+            NSMutableDictionary *annotations = [[NSMutableDictionary alloc] init];
+            for(NSString *k in mainGLView.mouseOverController.allTools.allKeys) [annotations setObject:[[mainGLView.mouseOverController.allTools objectForKey:k] getElements] forKey:k];
+            [annotationsForFrames setObject:annotations forKey:@(frameNum)]; //save current rects for current frame
+            
+            if ([[annotationsForFrames allKeys] containsObject:@(newFrameNum)]) {
+                NSDictionary *annDict = [annotationsForFrames objectForKey:@(newFrameNum)];
+                for (NSString *k in annDict.allKeys) {
+                    [[mainGLView.mouseOverController.allTools objectForKey:k] setElements:[[annotationsForFrames objectForKey:@(newFrameNum)] objectForKey:k]];
+                } //load new rects for next frame
             }
             OpenImageHandler *img = [frameForFrameNumber objectForKey:@(newFrameNum)];
-            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
             [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
+
             //            [mainGLView.mouseOverController.rectangleTool setCurrentFrame:[(OpenImageHandler *)[frameForFrameNumber objectForKey:@(newFrameNum)] Cv]];
             int finalVal =numFrames;
             int displayFrameNum = newFrameNum;
@@ -313,7 +335,7 @@ using namespace std;
 {
     for(int i = frameNum-1; i >= 0; i--)
     {
-        NSMutableDictionary* rects = [rectsForFrames objectForKey:@(i)];
+        NSMutableDictionary* rects = [annotationsForFrames objectForKey:@(i)];
        
         if (rects && rects.count > 0 && i != frameNum) {
             NSMutableDictionary* newRects = [[NSMutableDictionary alloc  ] init];
@@ -374,7 +396,9 @@ using namespace std;
 }
 - (IBAction)ClearCurrentRects:(id)sender
 {
-    [mainGLView.mouseOverController.tool clearAll];
+    for (GLViewTool *t in mainGLView.mouseOverController.allTools.allValues) {
+        [t clearAll];
+    }
 }
 
 -(bool)shouldStoreRects
@@ -451,7 +475,6 @@ using namespace std;
                     imagePathArray = onlyImagesFullPath;
                     [self loadNewFrame:0];
                     OpenImageHandler *img = [frameForFrameNumber objectForKey:@(0)];
-                                        [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
                     [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
                     [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%li",1,imagePathArray.count]];
                 }
@@ -479,7 +502,6 @@ using namespace std;
                         if(didload)
                         {
                             OpenImageHandler *img = [frameForFrameNumber objectForKey:@(0)];
-                            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
                             [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
                             [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",frameNum,numFrames]];
                         }
@@ -828,7 +850,7 @@ Mat norm_0_255(InputArray _src) {
 - (IBAction)save:(id)sender
 {
     savingStatusLabel.stringValue = @"Saving Crops...";
-    if ([self shouldStoreRects]) [rectsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getElements forKey:@(frameNum)];
+    if ([self shouldStoreRects]) [annotationsForFrames setObject:mainGLView.mouseOverController.rectangleTool.getElements forKey:@(frameNum)];
     NSMutableString *rectOutputLog = [@"Frame,Rectagle Key,X,Y,Width,Height,FileName\n" mutableCopy];
     NSFileManager *fm = [NSFileManager defaultManager];
     
@@ -842,10 +864,10 @@ Mat norm_0_255(InputArray _src) {
         {
             [fm createDirectoryAtPath:cropFilePath withIntermediateDirectories:NO attributes:nil error:nil];
         }
-        for(int i = 0; i < rectsForFrames.count;i++)
+        for(int i = 0; i < annotationsForFrames.count;i++)
         {
-            NSNumber *key = [rectsForFrames.allKeys objectAtIndex:i];
-            NSDictionary *rects = [rectsForFrames objectForKey:key];
+            NSNumber *key = [annotationsForFrames.allKeys objectAtIndex:i];
+            NSDictionary *rects = [annotationsForFrames objectForKey:key];
             int frameNumber = [key intValue];
             for (int j = 0; j < rects.count; j++) {
                 NSString *key = [[rects allKeys] objectAtIndex:j];

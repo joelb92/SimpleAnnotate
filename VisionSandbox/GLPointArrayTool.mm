@@ -24,13 +24,17 @@
         rectPositionsForKeys = [[NSMutableDictionary alloc] init];
         pointStructureMap = [[NSMutableArray alloc] init];
         pointStructureIndexMap = [[NSMutableArray alloc] init];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
     }
     return self;
 }
 
 -(void)addElement:(NSRect)er color:(Color)c forKey:(NSString *)key
+{
+    [self addElement:er color:c forKey:key andType:currentAnnotationType];
+}
+
+-(void)addElement:(NSRect)er color:(Color)c forKey:(NSString *)key andType:(NSString *)type
 {
     Vector2 v(er.origin.x,er.origin.y);
     Vector2Arr p;
@@ -40,7 +44,7 @@
         p = pointSets[index];
         p.AddItemToEnd(v);
         pointSets[index] = p;
-
+        
     }
     else
     {
@@ -48,13 +52,14 @@
         p.AddItemToEnd(v);
         pointSets.push_back(p);
         [keys addObject:key];
-        [elementTypes addObject:currentAnnotationType];
+        [elementTypes addObject:type];
         [segColors addElement:c];
     }
     allPoints.AddItemToEnd(v);
     [pointStructureMap addObject:key];
     [pointStructureIndexMap addObject:@(p.Length-1)];
 }
+
 
 
 -(void)removeElementAtIndex:(int)i
@@ -69,7 +74,8 @@
         [pointStructureIndexMap removeObjectAtIndex:i];
         
         p.RemoveItemAtIndex(pIndex);
-        
+        pointSets[structureIndex] = p;
+
         if(p.Length == 0){
             [keys removeObject:key];
             [elementTypes removeObjectAtIndex:structureIndex];
@@ -77,8 +83,8 @@
             [segColors removeElementAtIndex:structureIndex];
         }
         
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverEllipseIndex)];
+        allPoints.RemoveItemAtIndex(i);
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverPointIndex)];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
@@ -95,7 +101,8 @@
             Vector2 point = p[j];
             [arr addObject:[NSValue valueWithPoint:point.AsNSPoint()]];
         }
-        [pointsDict setValue:arr forKey:[keys objectAtIndex:i]];
+        NSDictionary *setDict = [NSDictionary dictionaryWithObjects:@[arr,[elementTypes objectAtIndex:i]] forKeys:@[@"coords",@"type"]];
+        [pointsDict setValue:setDict forKey:[keys objectAtIndex:i]];
     }
     return pointsDict;
 }
@@ -106,13 +113,13 @@
     for(int i = 0; i < rects.count; i++)
     {
         NSObject *key = [rects.allKeys objectAtIndex:i];
-        [keys addObject:key];
-        NSArray *arr = [rects objectForKey:key];
+        NSDictionary *dict = [rects objectForKey:key];
+        NSArray *arr = [dict objectForKey:@"coords"];
         [segColors addElement:Blue];
         Vector2Arr p = Vector2Arr();
         for (int j = 0; j < arr.count; j++) {
             NSPoint np = [[arr objectAtIndex:j] pointValue];
-            [self addElement:NSMakeRect(np.x, np.y, 0, 0) color:Blue forKey:key];
+            [self addElement:NSMakeRect(np.x, np.y, 0, 0) color:Blue forKey:key andType:[dict objectForKey:@"type"]];
         }
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
@@ -184,6 +191,8 @@
             //Draw ellipse drag handles if within the correct area
 
             [self SetCurrentColor:[segColors elementAtIndex:i]];
+            
+
             for(int j=0; j<points.Length; j++)
             {
                 if (mousedOverPointIndex >= 0 && [[pointStructureMap objectAtIndex:mousedOverPointIndex] isEqualToString:[keys objectAtIndex:i]] && [[pointStructureIndexMap objectAtIndex:mousedOverPointIndex] intValue] == j) {
@@ -274,6 +283,7 @@
             {
                 
                 mousedOverPointIndex = i;
+                
                 int innerIndex = [[pointStructureIndexMap objectAtIndex:i] intValue];
 //                NSLog(@"inner index: %i",innerIndex);
                 [infoOutput.xCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)allPoints[i].x]];
@@ -352,6 +362,7 @@
             dragStarted = true;
         }
         points[elIndex] = newP;
+        allPoints[mousedOverPointIndex] = newP;
             [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
     
 }
@@ -370,11 +381,12 @@
     if (([event modifierFlags] & NSCommandKeyMask) && (([event modifierFlags] & NSAlternateKeyMask)  ||  pointSets.size() == 0)) {
         if (!madeNewRect) {
             int currentKeyNum =int(pointSets.size());
-            while ([usedRectangleNumberKeys containsObject:@(currentKeyNum)]) {
-                currentKeyNum++;
-            }
-            [usedRectangleNumberKeys addObject:@(currentKeyNum)];
             NSString *newRectKey =[NSString stringWithFormat:@"Point Set %i",currentKeyNum];
+            while ([usedRectangleNumberKeys containsObject:newRectKey]) {
+                currentKeyNum++;
+                newRectKey =[NSString stringWithFormat:@"Point Set %i",currentKeyNum];
+            }
+            [usedRectangleNumberKeys addObject:newRectKey];
             currentAdditionKey= newRectKey;
             [self addElement:NSMakeRect(p.x, p.y, defaultWidth, defaultHeight) color:Blue forKey:newRectKey];
         }

@@ -7,7 +7,7 @@
 #import "GLViewMouseOverController.h"
 
 @implementation GLViewMouseOverController
-@synthesize rectangleTool,RectKey;
+@synthesize rectangleTool,RectKey,allTools;
 - (GLViewTool*)tool
 {
 	return [[currentTool retain] autorelease];
@@ -26,7 +26,7 @@
 		rectangleTool = [[GLRectangleDragger alloc] initWithOutputView:infoOutput];
         ellipseTool = [[GLEllipseTool alloc] initWithOutputView:infoOutput];
         pointTool = [[GLPointArrayTool alloc] initWithOutputView:infoOutput];
-        allTools = [[NSArray alloc] initWithObjects:rectangleTool,ellipseTool, pointTool, nil];
+        allTools = [[NSDictionary alloc] initWithObjects:@[rectangleTool,ellipseTool,pointTool] forKeys:@[@"rectangleTool",@"ellipseTool",@"pointTool"]];
         labelFields = [[NSMutableDictionary alloc] init];
         annotationTypes = [[NSMutableArray alloc] initWithObjects:@"Face",@"Tattoo",@"Piercing",@"None",@"+Add Other", nil];
 //		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
@@ -66,7 +66,7 @@
     currentTool.defaultWidth = defaultRectWidthField.intValue;
     currentTool.defaultHeight = defaultRectHeightField.intValue;
     [tooltip.typeSelectionBox addItemsWithObjectValues:annotationTypes];
-    for(GLViewTool *t in allTools)
+    for(GLViewTool *t in allTools.allValues)
     {
         [t setSuperView:mainView];
         [t setTooltip:tooltip];
@@ -86,14 +86,14 @@
 
 -(IBAction)toolSelection:(id)sender
 {
-    currentTool = [allTools objectAtIndex:toolMenu.selectedSegment];
+    currentTool = [allTools objectForKey:[allTools.allKeys objectAtIndex:toolMenu.selectedSegment]];
     
     [self reloadTable];
 }
 
 -(void)comboBoxWillPopUp:(NSNotification *)notification
 {
-    for(GLViewTool *t in allTools)
+    for(GLViewTool *t in allTools.allValues)
     {
         t.comboBoxIsOpen = true;
     }
@@ -101,7 +101,7 @@
 
 -(void)comboBoxWillDismiss:(NSNotification *)notification
 {
-    for(GLViewTool *t in allTools)
+    for(GLViewTool *t in allTools.allValues)
     {
         t.comboBoxIsOpen = false;
     }

@@ -84,7 +84,6 @@ struct EllipseVis
     float axisDifference;
     bool draggingDiffIsSet;
     NSMutableDictionary *rectPositionsForKeys;
-    NSMutableArray *usedRectangleNumberKeys;
 
 }
 @property NSString *currentKey;
