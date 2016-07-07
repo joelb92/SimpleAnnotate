@@ -874,47 +874,52 @@ Mat norm_0_255(InputArray _src) {
             NSNumber *frameKey = [annotationsForFrames.allKeys objectAtIndex:i];
             NSString *framePath = [framePathForFrameNum objectForKey:frameKey];
             NSDictionary *allAnnotationsForFrame = [annotationsForFrames objectForKey:frameKey];
+            
+            //first find all of the different headers there need to be
+            NSMutableDictionary *uniquePropertyKeyDict = [[NSMutableDictionary alloc] init];
+            for (int j = 0; j < allAnnotationsForFrame.count; j++) {
+                NSString *toolKey = [allAnnotationsForFrame.allKeys objectAtIndex:j];
+                NSDictionary *annotationsFromTool = [allAnnotationsForFrame objectForKey:toolKey];
+                for(NSString *elementKey in annotationsFromTool.allKeys){
+                    NSDictionary *elements = [annotationsFromTool objectForKey:elementKey];
+                    for (NSString *key in elements.allKeys) [uniquePropertyKeyDict setObject:@"" forKey:key];
+                }
+            }
+            NSMutableArray *propertyKeys =  uniquePropertyKeyDict.allKeys.mutableCopy;
+            [propertyKeys sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+            [propertyKeys insertObjects:@[@"annotationType",@"name"] atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 2)]];
+            
+            //Create the csv headers
+            [saveCSV appendString:[propertyKeys componentsJoinedByString:@","]];
+            [saveCSV appendString:@"\n"];
+        
+            
+            //Write the annotation data
             for (int j = 0; j < allAnnotationsForFrame.count; j++) {
                 NSString *toolKey = [allAnnotationsForFrame.allKeys objectAtIndex:j];
                 NSDictionary *annotationsFromTool = [allAnnotationsForFrame objectForKey:toolKey];
                 if (annotationsFromTool.count > 0)
                 {
-                NSArray *firstAnnotationKeysFromTool = [[annotationsFromTool objectForKey:[annotationsFromTool.allKeys objectAtIndex:0]] allKeys];
-                    [saveCSV appendString:@"annotationType,"];
-                    [saveCSV appendString:@"name"];
-                    for (int k = 0; k < firstAnnotationKeysFromTool.count; k++) {
-                        [saveCSV appendString:@","];
-                        [saveCSV appendString:[firstAnnotationKeysFromTool objectAtIndex:k]];
-                        
+                    for(int k = 0; k < annotationsFromTool.count; k++)
+                    {
+                        NSString *elementKey = [annotationsFromTool.allKeys objectAtIndex:k];
+                        NSDictionary *elementDict = [annotationsFromTool objectForKey:elementKey];
+                        [saveCSV appendFormat:@"%@,%@",toolKey,elementKey];
+                        for (int l = 2; l < propertyKeys.count; l++) {
+                            NSObject *o =[elementDict objectForKey:[propertyKeys objectAtIndex:l]];
+                            if ( o != nil) {
+                                [saveCSV appendFormat:@",%@",o.description];
+                            }
+                            else {
+                                [saveCSV appendString:@","];
+                            }
+                        }
+                        [saveCSV appendString:@"\n"];
                     }
+        
                     
                 }
-                for(int k = 0; k < annotationsFromTool.count; k++)
-                {
-                    NSString *elementKey = [annotationsFromTool.allKeys objectAtIndex:k];
-                    NSDictionary *element = [annotationsFromTool objectForKey:elementKey];
-                    [saveCSV appendString:@"\n"];
-                    [saveCSV appendString:toolKey];
-                    [saveCSV appendString:@","];
-                    [saveCSV appendString:elementKey];
-                    for (int l = 0; l < element.count; l++) {
-                        NSString *propertyKey = [element.allKeys objectAtIndex:l];
-                        NSObject *property = [element objectForKey:propertyKey];
-                        if([property isKindOfClass:NSArray.class] or [property isMemberOfClass:NSArray.class])
-                        {
-                            
-                        }
-                        else{
-                            [saveCSV appendString:@","];
-                            [saveCSV appendString:property.description];
-                            
-                        }
-                        
-                        NSLog(@"%@: \n%@",propertyKey,property.description);
-                    }
-                    
-                }
-                [saveCSV appendString:@"\n"];
+
             }
             [saveCSV writeToFile:[NSString stringWithFormat:@"f%i.csv",i] atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }

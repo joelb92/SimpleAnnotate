@@ -81,6 +81,7 @@
 		5D55C5771995D1AE00D9F78A /* ImageListView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D55C5761995D1AE00D9F78A /* ImageListView.mm */; };
 		5D55C57A1995F04200D9F78A /* FunctionVisualTableCellView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D55C5791995F04200D9F78A /* FunctionVisualTableCellView.mm */; };
 		5D55C5811995F36700D9F78A /* FunctionVisualParametersView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D55C5801995F36700D9F78A /* FunctionVisualParametersView.mm */; };
+		5D77A3C01D25675F00435C36 /* source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D77A3BF1D25675F00435C36 /* source.cpp */; };
 		5D7BF1501AA4E8AD00AC2DBE /* ROTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D7BF14F1AA4E8AD00AC2DBE /* ROTableView.m */; };
 		5D7BF1561AA9521200AC2DBE /* mainIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 5D7BF1551AA9521200AC2DBE /* mainIcon.iconset */; };
 		5D890E0D1D109CF90097F3E0 /* FrameHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D890E0C1D109CF90097F3E0 /* FrameHandler.mm */; };
@@ -127,7 +128,6 @@
 		5DF796AB199B2229003D7930 /* ColorTableCellView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5DF796AA199B2229003D7930 /* ColorTableCellView.mm */; };
 		5DF796AE199B2B4D003D7930 /* VisualFunctionViewHolder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5DF796AD199B2B4D003D7930 /* VisualFunctionViewHolder.mm */; };
 		D8081B7A1D1850F9005AC6F4 /* GLPointArrayTool.mm in Sources */ = {isa = PBXBuildFile; fileRef = D8081B791D1850F9005AC6F4 /* GLPointArrayTool.mm */; };
-		D8D4FC8A1D13176C00A652BD /* source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8D4FC891D13176C00A652BD /* source.cpp */; };
 		D8E1BC1D1D1C44570092FB0C /* FaceDetectionHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = D8E1BC1C1D1C44570092FB0C /* FaceDetectionHandler.mm */; };
 		D8E1BC201D1DBCB60092FB0C /* Tooltip.m in Sources */ = {isa = PBXBuildFile; fileRef = D8E1BC1F1D1DBCB60092FB0C /* Tooltip.m */; };
 /* End PBXBuildFile section */
@@ -296,6 +296,7 @@
 		5D55C5791995F04200D9F78A /* FunctionVisualTableCellView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FunctionVisualTableCellView.mm; sourceTree = "<group>"; };
 		5D55C57F1995F36700D9F78A /* FunctionVisualParametersView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionVisualParametersView.h; sourceTree = "<group>"; };
 		5D55C5801995F36700D9F78A /* FunctionVisualParametersView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FunctionVisualParametersView.mm; sourceTree = "<group>"; };
+		5D77A3BF1D25675F00435C36 /* source.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = source.cpp; path = "../../../dlib-18.18/dlib/all/source.cpp"; sourceTree = "<group>"; };
 		5D7BF14E1AA4E8AD00AC2DBE /* ROTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ROTableView.h; sourceTree = "<group>"; };
 		5D7BF14F1AA4E8AD00AC2DBE /* ROTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ROTableView.m; sourceTree = "<group>"; };
 		5D7BF1551AA9521200AC2DBE /* mainIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = mainIcon.iconset; sourceTree = SOURCE_ROOT; };
@@ -374,7 +375,6 @@
 		5DF796AD199B2B4D003D7930 /* VisualFunctionViewHolder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VisualFunctionViewHolder.mm; sourceTree = "<group>"; };
 		D8081B781D1850F9005AC6F4 /* GLPointArrayTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLPointArrayTool.h; path = ../../GLPointArrayTool.h; sourceTree = "<group>"; };
 		D8081B791D1850F9005AC6F4 /* GLPointArrayTool.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GLPointArrayTool.mm; path = ../../GLPointArrayTool.mm; sourceTree = "<group>"; };
-		D8D4FC891D13176C00A652BD /* source.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = source.cpp; path = "../../../../dlib-18.18/dlib/all/source.cpp"; sourceTree = "<group>"; };
 		D8E1BC1B1D1C44570092FB0C /* FaceDetectionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceDetectionHandler.h; sourceTree = "<group>"; };
 		D8E1BC1C1D1C44570092FB0C /* FaceDetectionHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FaceDetectionHandler.mm; sourceTree = "<group>"; };
 		D8E1BC1E1D1DBCB60092FB0C /* Tooltip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tooltip.h; sourceTree = "<group>"; };
@@ -460,8 +460,8 @@
 			children = (
 				5D2897A31991E2300036CFD6 /* AppDelegate.h */,
 				5D2897A41991E2300036CFD6 /* AppDelegate.mm */,
-				D8D4FC891D13176C00A652BD /* source.cpp */,
 				5DB2C7EE1A720F2E00A1F815 /* InfoOutputController.h */,
+				5D77A3BF1D25675F00435C36 /* source.cpp */,
 				5DB2C7EF1A720F2E00A1F815 /* InfoOutputController.mm */,
 				5DF2E0951B8CC3D900873B9D /* objectTracker.h */,
 				5DF2E0961B8CC3D900873B9D /* objectTracker.mm */,
@@ -996,7 +996,6 @@
 				5D2898491991FA890036CFD6 /* GLOutlineViewController.mm in Sources */,
 				5D2898611991FF8E0036CFD6 /* GLViewMouseOverController.mm in Sources */,
 				5D55C53A199340DA00D9F78A /* Color.mm in Sources */,
-				D8D4FC8A1D13176C00A652BD /* source.cpp in Sources */,
 				5D2898BE199202710036CFD6 /* colorArr.mm in Sources */,
 				5D2898C7199202710036CFD6 /* CvSeqArr.mm in Sources */,
 				5D2898BB199202710036CFD6 /* boolArr.mm in Sources */,
@@ -1041,6 +1040,7 @@
 				5D2898BD199202710036CFD6 /* intArr.mm in Sources */,
 				5D2898461991FA890036CFD6 /* GLObject.mm in Sources */,
 				5DEA6CEE1B724989009D240B /* ImageRepresentation.cpp in Sources */,
+				5D77A3C01D25675F00435C36 /* source.cpp in Sources */,
 				5DEA6CED1B724989009D240B /* FeatureHaar.cpp in Sources */,
 				5D2898471991FA890036CFD6 /* GLObjectData.mm in Sources */,
 				5DEA6CE51B724989009D240B /* ImageSource.cpp in Sources */,
