@@ -71,7 +71,9 @@
     NSMutableDictionary *isSubFaceImage;
     int numFrames;
     NSString *saveProjectFilePath;
+    NSString *saveProjectFileDir;
     bool separateFaces;
+    bool hasSavePath;
     FaceDetectionHandler *faceDetector;
     
 }

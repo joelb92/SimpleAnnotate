@@ -111,6 +111,11 @@
                                     <action selector="save:" target="494" id="od1-Ke-iAP"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Save As…" keyEquivalent="S" id="iBW-9L-ub2" userLabel="Save As…">
+                                <connections>
+                                    <action selector="saveAs:" target="494" id="idi-FY-EM6"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Revert to Saved" id="112">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
