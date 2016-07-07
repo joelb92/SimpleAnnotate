@@ -1,0 +1,1 @@
+/Users/bog/Downloads/dlib-18.18/tools/python/../../python_examples/dlib.so
