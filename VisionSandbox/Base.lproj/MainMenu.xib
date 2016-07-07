@@ -1096,11 +1096,13 @@ CA
         <customObject id="494" customClass="AppDelegate">
             <connections>
                 <outlet property="about" destination="zdB-yp-Ggp" id="g92-On-ApN"/>
+                <outlet property="backwardMenuBotton" destination="sTB-eI-jQ1" id="tJs-7N-ogw"/>
                 <outlet property="fileFixerWindow" destination="ZtF-SL-By5" id="d0k-Js-21q"/>
                 <outlet property="fileNameField" destination="FxP-dU-rz7" id="73B-7D-RAp"/>
                 <outlet property="fixCropFolderField" destination="5q0-b3-jaf" id="bB7-QY-KF5"/>
                 <outlet property="fixImageFolderField" destination="Q2x-yk-VBu" id="acV-Uh-m6W"/>
                 <outlet property="fixStatusLabel" destination="EhO-zd-mgw" id="XHb-sK-zoO"/>
+                <outlet property="forwardMenuBotton" destination="pDW-gy-Axe" id="hYF-fv-VBR"/>
                 <outlet property="frameJumpField" destination="65L-B9-WD1" id="5uO-BL-7Ed"/>
                 <outlet property="frameSkipField" destination="YuK-lA-FuP" id="1yz-u8-SFm"/>
                 <outlet property="help" destination="j9B-cQ-fuq" id="s6p-Fd-S5d"/>
@@ -1111,6 +1113,7 @@ CA
                 <outlet property="playButton" destination="MsC-rI-GWh" id="wry-YS-SKc"/>
                 <outlet property="savingStatusLabel" destination="ZMz-zz-zyk" id="3n9-rc-Kq8"/>
                 <outlet property="splashScreen" destination="IYI-to-kve" id="GDw-Hr-giR"/>
+                <outlet property="tooltip" destination="Mnr-5j-LY0" id="4dU-W1-9nk"/>
                 <outlet property="versionNumber" destination="VLE-Pz-aRl" id="tiw-2W-jm8"/>
                 <outlet property="window" destination="371" id="532"/>
             </connections>
@@ -1118,7 +1121,7 @@ CA
         <customObject id="420" customClass="NSFontManager"/>
         <userDefaultsController representsSharedInstance="YES" id="fzf-xf-EqL"/>
         <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="14" outlineTableColumn="5fY-4F-1CO" id="BKA-0E-lpV" customClass="GLOutlineViewController">
-            <rect key="frame" x="0.0" y="0.0" width="237" height="0.0"/>
+            <rect key="frame" x="0.0" y="0.0" width="237" height="1"/>
             <autoresizingMask key="autoresizingMask"/>
             <size key="intercellSpacing" width="3" height="0.0"/>
             <color key="backgroundColor" red="0.92156862750000001" green="0.92156862750000001" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -1535,7 +1538,7 @@ By hitting command+S, you save your project.  All cropped images, along with a a
                 <outlet property="nameField" destination="cvU-0H-5bM" id="eNA-mn-CeJ"/>
                 <outlet property="typeSelectionBox" destination="8va-DB-36c" id="Dac-LF-4Ve"/>
             </connections>
-            <point key="canvasLocation" x="-21" y="-432"/>
+            <point key="canvasLocation" x="-6" y="-192"/>
         </customView>
     </objects>
     <resources>

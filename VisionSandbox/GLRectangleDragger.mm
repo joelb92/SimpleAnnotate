@@ -137,6 +137,7 @@
 
 - (void)GraphUsingSpaceConverter:(SpaceConverter)spaceConverter
 {
+    screenPixelLength = spaceConverter.ScreenToCameraVector(Vector2(1,0)).x;
     previousColor = Color(NAN,NAN,NAN);
     [lock lock];
     glEnable(GL_POINT_SMOOTH);
@@ -236,14 +237,14 @@
     float pointDist = FLT_MAX;
     for (int i = 0; i < points.Length; i++)
     {
-        float newDist = points[i].SqDistanceTo(imagePoint);
+        float newDist = spaceConverter.ImageToScreenVector(points[i]).SqDistanceTo(spaceConverter.ImageToScreenVector(imagePoint));
         if (newDist < pointDist) {
             pointDist = newDist;
             mousedOverPointIndex = i;
             
         }
     }
-    if (pointDist > 3*3) {
+    if (pointDist > 20*20) {
         mousedOverPointIndex = -1;
     }
     //Find closest line to point

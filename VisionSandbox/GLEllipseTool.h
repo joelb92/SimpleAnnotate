@@ -16,7 +16,7 @@ struct EllipseVis
 {
     std::vector<cv::Point> imagePoints;
     float angle;
-    Vector2 leftAnchor,rightAnchor,topAnchor,bottomAnchor,rotationAnchor,center,axis;
+    Vector2 leftAnchor,rightAnchor,topAnchor,bottomAnchor,rotationAnchor,rotationAnchorScreen,center,axis;
     void recalc()
     {
         float a = angle;

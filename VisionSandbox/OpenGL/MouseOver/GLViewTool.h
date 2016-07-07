@@ -32,6 +32,7 @@
     NSString *currentAnnotationType;
     int currentAnnotationTypeIndex;
     bool comboBoxIsOpen;
+    float screenPixelLength;
     
 }
 @property (readwrite) int mousedOverElementIndex;

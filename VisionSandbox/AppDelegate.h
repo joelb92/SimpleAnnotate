@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <inttypes.h>
+#include "Tooltip.h"
 
 @interface AppDelegate : NSObject <NSApplicationDelegate,NSTextFieldDelegate>
 {
@@ -46,6 +47,10 @@
     IBOutlet NSTextField *fixCropFolderField;
     IBOutlet NSTextField *fixStatusLabel;
     IBOutlet NSTextField *fileNameField;
+    IBOutlet Tooltip *tooltip;
+    IBOutlet NSMenuItem *forwardMenuBotton;
+    IBOutlet NSMenuItem *backwardMenuBotton;
+
     
     NSArray *acceptableImageTypes;
     GLViewList *viewList;

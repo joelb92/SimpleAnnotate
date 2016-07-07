@@ -143,6 +143,7 @@
 
 - (void)GraphUsingSpaceConverter:(SpaceConverter)spaceConverter
 {
+    screenPixelLength = spaceConverter.ScreenToCameraVector(Vector2(1,0)).x;
     bool ismousedover = false;
     previousColor = Color(NAN,NAN,NAN);
     [lock lock];
@@ -175,6 +176,7 @@
                 Vector2 leftAnchor= spaceConverter.ImageToCameraVector(e.leftAnchor);
                 Vector2 rightAnchor= spaceConverter.ImageToCameraVector(e.rightAnchor);
                 Vector2 rotateAnchor= spaceConverter.ImageToCameraVector(e.rotationAnchor);
+                rotateAnchor = (rotateAnchor - leftAnchor)*-screenPixelLength+leftAnchor;
                 ismousedover = true;
                 glPointSize(10);
                 glBegin(GL_POINTS);
@@ -201,6 +203,7 @@
                 }
                 [self SetCurrentColor:Red];
                 //draw rotation anchor
+                
                 if(mousedOverPointIndex == 5) [self SetCurrentColor:Yellow];
                 glVertex3d(rotateAnchor.x, rotateAnchor.y, minZ);
                 glEnd();
@@ -245,6 +248,7 @@
 }
 - (void)SetMousePosition:(Vector2)mouseP UsingSpaceConverter:(SpaceConverter)spaceConverter
 {
+    int mouseoverMaxDist = 20;
     Vector2 imagePoint = spaceConverter.ScreenToImageVector(mouseP);
     bool inCont;
     [super SetMousePosition:mouseP UsingSpaceConverter:spaceConverter];
@@ -253,27 +257,35 @@
         
         EllipseVis e = ellipses[i];
         float distval = cv::pointPolygonTest(e.imagePoints, imagePoint.AsCvPoint(), true);
-        if (distval > -30) {
+        if (fabs(spaceConverter.ImageToScreenVector(Vector2(distval,0)).x) > 20 or distval >= 0) {
             inCont = true;
             mousedOverElementIndex = i;
-            int mindist = 5*5;
-            if(e.topAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 1;
-            else if(e.bottomAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 2;
-            else if(e.leftAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 3;
-            else if(e.rightAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 4;
-            else if(e.rotationAnchor.SqDistanceTo(imagePoint) < mindist) mousedOverPointIndex = 5;
+            int mindist = mouseoverMaxDist*mouseoverMaxDist;
+            Vector2 rotateAnchor= spaceConverter.ImageToScreenVector(e.rotationAnchor);
+            Vector2 leftAnchor = spaceConverter.ImageToScreenVector(e.leftAnchor);
+            rotateAnchor = (rotateAnchor - leftAnchor)*-screenPixelLength+leftAnchor;
+            
+            if(spaceConverter.ImageToScreenVector(e.topAnchor).SqDistanceTo(spaceConverter.ImageToScreenVector(imagePoint)) < mindist) mousedOverPointIndex = 1;
+            else if(spaceConverter.ImageToScreenVector(e.bottomAnchor).SqDistanceTo(mouseP) < mindist) mousedOverPointIndex = 2;
+            else if(spaceConverter.ImageToScreenVector(e.leftAnchor).SqDistanceTo(mouseP) < mindist) mousedOverPointIndex = 3;
+            else if(spaceConverter.ImageToScreenVector(e.rightAnchor).SqDistanceTo(mouseP) < mindist) mousedOverPointIndex = 4;
+            else if(rotateAnchor.SqDistanceTo(mouseP) < mindist) mousedOverPointIndex = 5;
             else{
                 mousedOverPointIndex = -1;
             }
             //display tooltip
             cv::Rect er = cv::boundingRect(e.imagePoints);
-            Vector2 tooltipVect = spaceConverter.ImageToScreenVector(Vector2(e.rotationAnchor.x+3,e.rotationAnchor.y+3));
+            
+            Vector2 offset(10,10);
             int corner = 0; // bottom left
             if(e.angle <= M_PI and e.angle > M_PI/2) corner = 1; //anchor at bottom right
-            if(e.angle <= -M_PI/2) corner = 2;//anchor at top right
+            if(e.angle <= -M_PI/2){
+                corner = 2;//anchor at top right
+                offset = Vector2(-10,-10);
+            }
             if(e.angle < 0 && e.angle >= -M_PI/2) corner = 3; //anchor at top left
+            Vector2 tooltipVect = rotateAnchor+offset;
                 [self drawToolTipAtPosition:tooltipVect Corner:corner];
-            
                 [infoOutput.xCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)e.center.x]];
                 [infoOutput.yCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)e.center.y]];
                 [infoOutput.widthLabel setStringValue:[NSString stringWithFormat:@"%i",(int)e.axis.x]];

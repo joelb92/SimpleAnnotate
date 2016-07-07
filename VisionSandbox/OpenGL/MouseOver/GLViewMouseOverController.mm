@@ -115,6 +115,7 @@
         }
         else
         {
+            
             currentAnnotationType = tooltip.typeSelectionBox.indexOfSelectedItem;
             currentTool.currentAnnotationType = [tooltip.typeSelectionBox.objectValues objectAtIndex:currentAnnotationType];
             [currentTool setCurrentElementType:currentTool.currentAnnotationType];
@@ -123,8 +124,15 @@
     }
     [self reloadTable];
 }
-
+-(IBAction)textClick:(id)sender
+{
+    
+}
+-(void)controlTextDidBeginEditing:(NSNotification *)obj{
+    
+}
 - (void)controlTextDidChange:(NSNotification *)notification {
+    
 }
 -(void)controlTextDidEndEditing:(NSNotification *)obj
 {

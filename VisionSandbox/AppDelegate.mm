@@ -36,8 +36,21 @@ using namespace std;
     [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,1000,1000)];
     acceptableImageTypes = @[[NSPredicate predicateWithFormat:@"self ENDSWITH '.jpg'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.png'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.bmp'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.ppm'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.gif'"]];
     NSLog(@"loaded");
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(toggleNextPrevActionConnection:) name:@"tooltipIsActive" object:nil];
 }
-
+-(void)toggleNextPrevActionConnection:(NSNotification *)obj
+{
+    //Allows user to use arrow keys within the tooltip while tooltip is on hover, instead of moving back and forth between images
+    bool isOn = [(NSNumber *)obj.object boolValue];
+    if (isOn) {
+        [forwardMenuBotton setAction:nil];
+        [backwardMenuBotton setAction:nil];
+    }
+    else{
+        [forwardMenuBotton setAction:@selector(NextFrame:)];
+        [backwardMenuBotton setAction:@selector(PrevFrame:)];
+    }
+}
 -(IBAction)findFacesInCurrentFrame:(id)sender
 {
     OpenImageHandler *currentImage =[frameForFrameNumber objectForKey:@(frameNum)];
@@ -107,15 +120,31 @@ using namespace std;
 }
 
 - (IBAction)PrevFrame:(id)sender {
+    if (![self isTextFieldInFocus:tooltip.nameField]) {
     int newFrameNum = frameNum-frameSkip;
+    
     if (!videoMode) newFrameNum = frameNum-1;
     [self GoToFrame:newFrameNum];
+    }
 }
 - (IBAction)NextFrame:(id)sender
 {
+    if (![self isTextFieldInFocus:tooltip.nameField]) {
     int newFrameNum = frameNum+frameSkip;
     if (!videoMode) newFrameNum = frameNum+1;
     [self GoToFrame:newFrameNum];
+    }
+}
+
+- (BOOL)isTextFieldInFocus:(NSTextField *)textField
+{
+    BOOL inFocus = NO;
+    
+    inFocus = ([[[textField window] firstResponder] isKindOfClass:[NSTextView class]]
+               && [[textField window] fieldEditor:NO forObject:nil]!=nil
+               && [textField isEqualTo:(id)[(NSTextView *)[[textField window] firstResponder]delegate]]);
+    
+    return inFocus;
 }
 
 -(bool)GoToFrame:(int)newFrameNum

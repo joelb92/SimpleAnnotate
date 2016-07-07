@@ -159,6 +159,8 @@
 - (void)GraphUsingSpaceConverter:(SpaceConverter)spaceConverter
 {
     bool ismousedover = false;
+    screenPixelLength = spaceConverter.ScreenToCameraVector(Vector2(1,0)).x;
+
     previousColor = Color(NAN,NAN,NAN);
     [lock lock];
     glEnable(GL_POINT_SMOOTH);
@@ -327,6 +329,8 @@
         [infoOutput.heightLabel	setStringValue:@"NA"];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
         mousedOverEllipseIndex = -1;
+        [tooltip setHidden:YES];
+
         
     }
     if(!onPoint) mousedOverPointIndex = -1;

@@ -20,4 +20,13 @@
     }
     return self;
 }
+
+-(void)setHidden:(BOOL)flag
+{
+    [super setHidden:flag];
+    if (!flag) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"tooltipIsActive" object:[NSNumber numberWithBool:YES]];
+    }
+    else [[NSNotificationCenter defaultCenter] postNotificationName:@"tooltipIsActive" object:[NSNumber numberWithBool:NO]];
+}
 @end
