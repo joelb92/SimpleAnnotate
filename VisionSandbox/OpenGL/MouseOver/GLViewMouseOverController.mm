@@ -72,7 +72,7 @@
         [t setTooltip:tooltip];
         t.currentAnnotationType = @"none";
     }
-    [self linkDimsToggle:nil];
+//    [self linkDimsToggle:nil];
 
 }
 - (void)drawRect:(NSRect)dirtyRect

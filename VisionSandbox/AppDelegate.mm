@@ -18,6 +18,7 @@ using namespace std;
     [self splashSequence];
     lock = [[NSLock alloc] init];
     matchedScenes = [[NSMutableIndexSet alloc] init];
+    imagePathArray = [[NSMutableArray alloc] init];
     trackers = [[NSMutableDictionary alloc] init];
     savingStatusLabel.stringValue = @"";
     matchedTemplates = [[NSMutableIndexSet alloc] init];
@@ -121,18 +122,18 @@ using namespace std;
 
 - (IBAction)PrevFrame:(id)sender {
     if (![self isTextFieldInFocus:tooltip.nameField]) {
-    int newFrameNum = frameNum-frameSkip;
-    
-    if (!videoMode) newFrameNum = frameNum-1;
-    [self GoToFrame:newFrameNum];
+        int newFrameNum = frameNum-frameSkip;
+        
+        if (!videoMode) newFrameNum = frameNum-1;
+        [self GoToFrame:newFrameNum];
     }
 }
 - (IBAction)NextFrame:(id)sender
 {
     if (![self isTextFieldInFocus:tooltip.nameField]) {
-    int newFrameNum = frameNum+frameSkip;
-    if (!videoMode) newFrameNum = frameNum+1;
-    [self GoToFrame:newFrameNum];
+        int newFrameNum = frameNum+frameSkip;
+        if (!videoMode) newFrameNum = frameNum+1;
+        [self GoToFrame:newFrameNum];
     }
 }
 
@@ -150,7 +151,7 @@ using namespace std;
 -(bool)GoToFrame:(int)newFrameNum
 {
     bool stillGood = false;
-    if (newFrameNum >= 0) {
+    if (newFrameNum >= 0 and newFrameNum < imagePathArray.count) {
         
         if (![frameForFrameNumber.allKeys containsObject:@(newFrameNum)]){//we need to get the new frame
             if (videoMode) {
@@ -215,7 +216,7 @@ using namespace std;
             else //We aren't in video mode
             {
                 [fileNameField setStringValue:[[imagePathArray objectAtIndex:newFrameNum ] lastPathComponent]];
-
+                
                 cv::Mat frame;
                 int i = newFrameNum;
                 while(frame.empty() && i < imagePathArray.count)
@@ -260,8 +261,15 @@ using namespace std;
         else //this frame already exists in our cached frame list
         {
             NSMutableDictionary *annotations = [[NSMutableDictionary alloc] init];
-            for(NSString *k in mainGLView.mouseOverController.allTools.allKeys) [annotations setObject:[[mainGLView.mouseOverController.allTools objectForKey:k] getElements] forKey:k];
-            [annotationsForFrames setObject:annotations forKey:@(frameNum)]; //save current rects for current frame
+            int total = 0;
+            for(NSString *k in mainGLView.mouseOverController.allTools.allKeys){
+                NSDictionary *d = [[mainGLView.mouseOverController.allTools objectForKey:k] getElements];
+                [annotations setObject:d forKey:k];
+                total+= (int)d.count;
+            }
+            if (total > 0) {
+                [annotationsForFrames setObject:annotations forKey:@(frameNum)]; //save current rects for current frame
+            }
             
             if ([[annotationsForFrames allKeys] containsObject:@(newFrameNum)]) {
                 NSDictionary *annDict = [annotationsForFrames objectForKey:@(newFrameNum)];
@@ -277,9 +285,9 @@ using namespace std;
             int finalVal =numFrames;
             int displayFrameNum = newFrameNum;
             if (!videoMode){
-                finalVal = imagePathArray.count;
+                finalVal = frameForFrameNumber.count;
                 [fileNameField setStringValue:[[imagePathArray objectAtIndex:newFrameNum ] lastPathComponent]];
-
+                
                 displayFrameNum = newFrameNum+1;
             }
             [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",displayFrameNum,finalVal]];
@@ -898,10 +906,13 @@ Mat norm_0_255(InputArray _src) {
     NSSavePanel *tvarNSSavePanelObj	= [NSSavePanel savePanel];
     int tvarInt	= [tvarNSSavePanelObj runModal];
     if(tvarInt == NSOKButton){
+        didCancelSave = false;
         hasSavePath = true;
     } else if(tvarInt == NSCancelButton) {
+        didCancelSave = true;
         return false;
     } else {
+        didCancelSave = true;
         return false;
     } // end if
     
@@ -916,7 +927,7 @@ Mat norm_0_255(InputArray _src) {
     [alert addButtonWithTitle:@"OK"];
     [alert addButtonWithTitle:@"Cancel"];
     [alert setMessageText:name];
-//    [alert setInformativeText:@"This will irreversible over-write the previous file"];
+    //    [alert setInformativeText:@"This will irreversible over-write the previous file"];
     [alert setAlertStyle:NSWarningAlertStyle];
     if ([alert runModal] == NSAlertFirstButtonReturn) {
         // OK clicked, delete the record
@@ -967,90 +978,80 @@ Mat norm_0_255(InputArray _src) {
                 hasSavePath = true;
             }
         }
-
+        
     }
     [self save:sender];
-
+    
     
 }
 
 - (IBAction)save:(id)senders
 {
-    savingStatusLabel.stringValue = @"Saving Project a...";
+    
+    if (didCancelSave){ didCancelSave = false; return;}
     if(!hasSavePath)
     {
         [self saveAs:senders];
+        if (didCancelSave){didCancelSave = false; return;}
     }
     else
     {
-    NSMutableDictionary *annotations = [[NSMutableDictionary alloc] init];
-    for(NSString *k in mainGLView.mouseOverController.allTools.allKeys) [annotations setObject:[[mainGLView.mouseOverController.allTools objectForKey:k] getElements] forKey:k];
-    [annotationsForFrames setObject:annotations forKey:@(frameNum)]; //save current rects for current frame
-    
-    NSMutableString *fullSaveFile = [[NSMutableString alloc] init];
-    BOOL isdir = NO;
-    if(saveProjectFilePath != nil and ![saveProjectFilePath isEqualToString:@""] and [[NSFileManager defaultManager] fileExistsAtPath:saveProjectFilePath.stringByDeletingLastPathComponent isDirectory:&isdir] and isdir)
-    {
+        savingStatusLabel.stringValue = @"Saving Project...";
+        NSMutableDictionary *annotations = [[NSMutableDictionary alloc] init];
+        for(NSString *k in mainGLView.mouseOverController.allTools.allKeys) [annotations setObject:[[mainGLView.mouseOverController.allTools objectForKey:k] getElements] forKey:k];
+        [annotationsForFrames setObject:annotations forKey:@(frameNum)]; //save current rects for current frame
         
-        //first find all of the different headers there need to be
-        NSMutableDictionary *uniquePropertyKeyDict = [[NSMutableDictionary alloc] init];
-        for(int i =0; i < annotationsForFrames.count; i++)
+        NSMutableString *fullSaveFile = [[NSMutableString alloc] init];
+        [fullSaveFile appendFormat:@"%@,\n",saveProjectFileDir];
+        BOOL isdir = NO;
+        if(saveProjectFilePath != nil and ![saveProjectFilePath isEqualToString:@""] and [[NSFileManager defaultManager] fileExistsAtPath:saveProjectFilePath.stringByDeletingLastPathComponent isDirectory:&isdir] and isdir)
         {
-            NSNumber *frameKey = [annotationsForFrames.allKeys objectAtIndex:i];
-            NSDictionary *allAnnotationsForFrame = [annotationsForFrames objectForKey:frameKey];
-        for (int j = 0; j < allAnnotationsForFrame.count; j++) {
-            NSString *toolKey = [allAnnotationsForFrame.allKeys objectAtIndex:j];
-            NSDictionary *annotationsFromTool = [allAnnotationsForFrame objectForKey:toolKey];
-            for(NSString *elementKey in annotationsFromTool.allKeys){
-                NSDictionary *elements = [annotationsFromTool objectForKey:elementKey];
-                for (NSString *key in elements.allKeys) [uniquePropertyKeyDict setObject:@"" forKey:key];
+            
+            //first find all of the different headers there need to be
+            NSMutableDictionary *uniquePropertyKeyDict = [[NSMutableDictionary alloc] init];
+            for(int i =0; i < annotationsForFrames.count; i++)
+            {
+                NSNumber *frameKey = [annotationsForFrames.allKeys objectAtIndex:i];
+                NSDictionary *allAnnotationsForFrame = [annotationsForFrames objectForKey:frameKey];
+                for (int j = 0; j < allAnnotationsForFrame.count; j++) {
+                    NSString *toolKey = [allAnnotationsForFrame.allKeys objectAtIndex:j];
+                    NSDictionary *annotationsFromTool = [allAnnotationsForFrame objectForKey:toolKey];
+                    for(NSString *elementKey in annotationsFromTool.allKeys){
+                        NSDictionary *elements = [annotationsFromTool objectForKey:elementKey];
+                        for (NSString *key in elements.allKeys) [uniquePropertyKeyDict setObject:@"" forKey:key];
+                    }
+                }
             }
-        }
-        }
-        NSMutableArray *propertyKeys =  uniquePropertyKeyDict.allKeys.mutableCopy;
-        [propertyKeys removeObject:@"coords"];
-        [propertyKeys sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-        [propertyKeys insertObjects:@[@"annotationType",@"name"] atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 2)]];
-        
-        //now begin saving the annotations for each image file
-        for(int i =0; i < annotationsForFrames.count; i++)
-        {
-            NSMutableString *saveCSV = @"".mutableCopy;
-            NSNumber *frameKey = [annotationsForFrames.allKeys objectAtIndex:i];
-            NSString *framePath = [framePathForFrameNum objectForKey:frameKey];
-            NSDictionary *allAnnotationsForFrame = [annotationsForFrames objectForKey:frameKey];
+            NSMutableArray *propertyKeys =  uniquePropertyKeyDict.allKeys.mutableCopy;
+            [propertyKeys removeObject:@"coords"];
+            [propertyKeys sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+            [propertyKeys insertObjects:@[@"annotationType",@"name"] atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 2)]];
             
-                        //Create the csv headers
-            [saveCSV appendString:[propertyKeys componentsJoinedByString:@","]];
-            [saveCSV appendString:@"\n"];
-            
-            
-            //Write the annotation data
-            for (int j = 0; j < allAnnotationsForFrame.count; j++) {
-                NSString *toolKey = [allAnnotationsForFrame.allKeys objectAtIndex:j];
-                NSDictionary *annotationsFromTool = [allAnnotationsForFrame objectForKey:toolKey];
-                if (annotationsFromTool.count > 0)
-                {
-                    for(int k = 0; k < annotationsFromTool.count; k++)
+            //now begin saving the annotations for each image file
+            int i = 0;
+            for(i =0; i < annotationsForFrames.count; i++)
+            {
+                NSMutableString *saveCSV = @"".mutableCopy;
+                NSNumber *frameKey = [annotationsForFrames.allKeys objectAtIndex:i];
+                NSString *framePath = [framePathForFrameNum objectForKey:frameKey];
+                NSDictionary *allAnnotationsForFrame = [annotationsForFrames objectForKey:frameKey];
+                
+                //Create the csv headers
+                [saveCSV appendString:[propertyKeys componentsJoinedByString:@","]];
+                [saveCSV appendString:@"\n"];
+                
+                
+                //Write the annotation data
+                for (int j = 0; j < allAnnotationsForFrame.count; j++) {
+                    NSString *toolKey = [allAnnotationsForFrame.allKeys objectAtIndex:j];
+                    NSDictionary *annotationsFromTool = [allAnnotationsForFrame objectForKey:toolKey];
+                    if (annotationsFromTool.count > 0)
                     {
-                        NSString *elementKey = [annotationsFromTool.allKeys objectAtIndex:k];
-                        NSDictionary *elementDict = [annotationsFromTool objectForKey:elementKey];
-                        [saveCSV appendFormat:@"%@,%@",toolKey,elementKey];
-                        if ([toolKey isEqualToString:@"pointTool"]) {
-                            [saveCSV appendString:@"\n"];
-                            NSArray *points = [elementDict objectForKey:@"coords"];
-                            for (int n = 0; n < points.count; n++) {
-                                NSPoint p = [[points objectAtIndex:n] pointValue];
-                                for (int m = 0; m < propertyKeys.count; m++) {
-                                    NSString *propKey = [propertyKeys objectAtIndex:m];
-                                    if ([propKey isEqualToString:@"x coord"]) [saveCSV appendFormat:@"%i,",(int)p.y];
-                                    else if([propKey isEqualToString:@"y coord"]) [saveCSV appendFormat:@"%i,",(int)p.y];
-                                    else [saveCSV appendString:@","];
-                                }
-                                [saveCSV appendString:@"\n"];
-                            }
-                        }
-                        else {
+                        for(int k = 0; k < annotationsFromTool.count; k++)
+                        {
+                            NSString *elementKey = [annotationsFromTool.allKeys objectAtIndex:k];
+                            NSDictionary *elementDict = [annotationsFromTool objectForKey:elementKey];
+                            [saveCSV appendFormat:@"%@,%@",toolKey,elementKey];
                             for (int l = 2; l < propertyKeys.count; l++) {
                                 NSObject *o =[elementDict objectForKey:[propertyKeys objectAtIndex:l]];
                                 if ( o != nil) {
@@ -1061,30 +1062,201 @@ Mat norm_0_255(InputArray _src) {
                                 }
                             }
                             [saveCSV appendString:@"\n"];
+                            if ([toolKey isEqualToString:@"pointTool"]) {
+                                
+                                NSArray *points = [elementDict objectForKey:@"coords"];
+                                for (int n = 0; n < points.count; n++) {
+                                    NSPoint p = [[points objectAtIndex:n] pointValue];
+                                    for (int m = 0; m < propertyKeys.count; m++) {
+                                        NSString *propKey = [propertyKeys objectAtIndex:m];
+                                        if ([propKey isEqualToString:@"x coord"]) [saveCSV appendFormat:@"%i,",(int)p.x];
+                                        else if([propKey isEqualToString:@"y coord"]) [saveCSV appendFormat:@"%i,",(int)p.y];
+                                        else [saveCSV appendString:@","];
+                                    }
+                                    [saveCSV appendString:@"\n"];
+                                }
+                            }
                         }
+                        
+                        
                     }
                     
-                    
                 }
-                
+                [fullSaveFile appendFormat:@"f:%@\n",framePath];
+                [fullSaveFile appendString:saveCSV];
+                NSString *individualFileSaveFolder = [saveProjectFileDir stringByAppendingPathComponent:@"logFiles"];
+                BOOL isDirAlready;
+                if ([[NSFileManager defaultManager] fileExistsAtPath:individualFileSaveFolder isDirectory:&isDirAlready] or !isDirAlready) {
+                    [[NSFileManager defaultManager] createDirectoryAtPath:individualFileSaveFolder withIntermediateDirectories:YES attributes:nil error:nil];
+                }
+                NSString *individualFileSavePath = [[individualFileSaveFolder stringByAppendingPathComponent:framePath.lastPathComponent ] stringByAppendingString:@"_log.csv"];
+                [saveCSV writeToFile:individualFileSavePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
             }
-            [fullSaveFile appendFormat:@"%@\n",framePath];
-            [fullSaveFile appendString:saveCSV];
-            NSString *individualFileSaveFolder = [saveProjectFileDir stringByAppendingPathComponent:@"logFiles"];
-            BOOL isDirAlready;
-            if ([[NSFileManager defaultManager] fileExistsAtPath:individualFileSaveFolder isDirectory:&isDirAlready] or !isDirAlready) {
-                [[NSFileManager defaultManager] createDirectoryAtPath:individualFileSaveFolder withIntermediateDirectories:YES attributes:nil error:nil];
+            //add the rest of the files we loaded
+            for(i = i; i < imagePathArray.count; i++)
+            {
+                [fullSaveFile appendFormat:@"f:%@\n",[imagePathArray objectAtIndex:i]];
             }
-            NSString *individualFileSavePath = [[individualFileSaveFolder stringByAppendingPathComponent:framePath.lastPathComponent ] stringByAppendingString:@"_log.csv"];
-            [saveCSV writeToFile:individualFileSavePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
+            [fullSaveFile writeToFile:[saveProjectFilePath stringByAppendingPathExtension:@"saproj"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
-        [fullSaveFile writeToFile:[saveProjectFilePath stringByAppendingPathExtension:@"saproj"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
-    }
-    NSDate *currDate = [NSDate date];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
-    [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
-    NSString *dateString = [dateFormatter stringFromDate:currDate];
-    savingStatusLabel.stringValue = [NSString stringWithFormat:@"Project saved at %@",dateString];
+        NSDate *currDate = [NSDate date];
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+        [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
+        NSString *dateString = [dateFormatter stringFromDate:currDate];
+        savingStatusLabel.stringValue = [NSString stringWithFormat:@"Project saved at %@",dateString];
     }
 }
+
+-(IBAction)openProject:(id)sender
+{
+    savingStatusLabel.stringValue = @"Opening Files...";
+    NSOpenPanel* openDlg = [NSOpenPanel openPanel];
+    [openDlg setCanChooseFiles:YES];
+    [openDlg setCanChooseDirectories:NO];
+    [openDlg setAllowsMultipleSelection:NO];
+    [openDlg setPrompt:@"Open"];
+    if ([openDlg runModalForDirectory:nil file:nil] == NSOKButton )
+    {
+        NSFileManager *fm = [NSFileManager defaultManager];
+        NSArray* files = [openDlg filenames];
+        BOOL isdir;
+        if ([fm fileExistsAtPath:[files objectAtIndex:0] isDirectory:&isdir] and !isdir) {
+            [self loadProjectFile:[files objectAtIndex:0]];
+        }
+    }
+}
+
+-(void)clearCurrentProject
+{
+    [frameForFrameNumber removeAllObjects];
+    [framePathForFrameNum removeAllObjects];
+    [annotationsForFrames removeAllObjects];
+    [imagePathArray removeAllObjects];
+}
+
+-(void)loadProjectFile:(NSString *)projFilePath
+{
+    NSString *projectName = [[projFilePath lastPathComponent] stringByDeletingPathExtension];
+    savingStatusLabel.stringValue = [NSString stringWithFormat:@"Loading Project %@", projectName];
+    NSFileManager *fm = [NSFileManager defaultManager];
+    BOOL isdir;
+    if ([fm fileExistsAtPath:projFilePath isDirectory:&isdir] and !isdir and [projFilePath hasSuffix:@"saproj"]) {
+        [self clearCurrentProject];
+        NSString *projectCSVString = [NSString stringWithContentsOfFile:projFilePath encoding:NSUTF8StringEncoding error:nil];
+        NSArray *projectLines = [projectCSVString componentsSeparatedByString:@"\n"];
+        if (projectLines.count > 0) {
+            int frameCounter = 0;
+            bool shouldSkipFile = false;
+            bool startNewFile = false;
+            NSArray *projectOriginationPath = [projectLines objectAtIndex:0];
+            NSMutableArray *propertyKeys = [[NSMutableArray alloc] init];
+            NSMutableArray *allAnnotations = [[NSMutableArray alloc] init];
+            NSMutableArray *allFileNames = [[NSMutableArray alloc] init];
+            NSMutableDictionary *allAnnotationsForFileName = [[NSMutableDictionary alloc] init];
+            NSMutableDictionary *annotationsForSingleFile = [[NSMutableDictionary alloc] init];
+            //Build the initial dictionary containing all entries
+            NSString *currentFileName = @"";
+            int i = 1;
+            for(i = 1; i < projectLines.count; i++)
+            {
+                NSArray *lineValues = [[projectLines objectAtIndex:i] componentsSeparatedByString:@","];
+                if (lineValues.count > 0 and [[lineValues objectAtIndex:0] hasPrefix:@"f:"]) { //this starts a new file
+                    if (allAnnotations.count > 0)
+                    {
+                        [allAnnotationsForFileName setObject:allAnnotations.copy forKey:currentFileName];
+                    }
+                    [allAnnotations removeAllObjects];
+                    currentFileName = [[lineValues objectAtIndex:0] substringFromIndex:2];
+                    [imagePathArray addObject:currentFileName];
+                    [allFileNames addObject:currentFileName];
+                    startNewFile = true;
+                }
+                else if (lineValues.count > 1){
+                    if (startNewFile) {
+                        startNewFile = false;
+                        [propertyKeys removeAllObjects];
+                        [propertyKeys addObjectsFromArray:lineValues];
+                        [annotationsForSingleFile removeAllObjects];
+                    }
+                    else{
+                        NSMutableDictionary *entryDictionary = [[NSMutableDictionary alloc] init];
+                        for (int j = 0; j < lineValues.count; j++) {
+                            NSString *val = [lineValues objectAtIndex:j];
+                            if (j < propertyKeys.count)
+                            {
+                                NSString *pkey = [propertyKeys objectAtIndex:j];
+                                if (![val isEqualToString:@""]) {
+                                    [entryDictionary setObject:val forKey:pkey];
+                                }
+                            }
+                            
+                        }
+                        [allAnnotations addObject:entryDictionary];
+                    }
+                }
+            }
+            if (allAnnotations.count > 0) {
+                [allAnnotationsForFileName setObject:allAnnotations.copy forKey:currentFileName];
+            }
+            //Build individual annotation sets for each image file
+            for (int i = 0; i < allFileNames.count; i++) {
+                NSString *fileName =[allFileNames objectAtIndex:i];
+                NSArray *annotationsForFile = [allAnnotationsForFileName objectForKey:fileName];
+                if (annotationsForFile){
+                NSMutableDictionary *annotationsByToolForFile = [[NSMutableDictionary alloc] init];
+                NSString *currentTool = @"";
+                for (int j = 0; j < annotationsForFile.count; j++) {
+                    NSMutableDictionary *entry = [[annotationsForFile objectAtIndex:j] mutableCopy];
+                    NSString *entryName = [entry objectForKey:@"name"];
+                    NSString *toolType = [entry objectForKey:@"annotationType"];
+                    if ([toolType isEqualToString:@"pointTool"]) {
+                        NSMutableArray *coords = [[NSMutableArray alloc] init];
+                        NSDictionary *nextEntry = [annotationsForFile objectAtIndex:j+1];
+                        while(j+2 < annotationsForFile.count and ([nextEntry objectForKey:@"name"] == nil or [[nextEntry objectForKey:@"name"] isEqualToString:@""]))
+                        {
+                            NSPoint p = NSMakePoint([[nextEntry objectForKey:@"x coord"] floatValue], [[nextEntry objectForKey:@"y coord"] floatValue]);
+                            [coords addObject:[NSValue valueWithPoint:p]];
+                            j++;
+                            nextEntry = [annotationsForFile objectAtIndex:j+1];
+                        }
+                        j++;
+                        [entry setObject:coords forKey:@"coords"];
+                    }
+                    NSMutableDictionary *toolAnnotationEntries;
+                    if ([annotationsByToolForFile objectForKey:toolType]) {
+                        toolAnnotationEntries = [annotationsByToolForFile objectForKey:toolType];
+                    }
+                    else
+                    {
+                        toolAnnotationEntries = [[NSMutableDictionary alloc] init];
+                        [annotationsByToolForFile setObject:toolAnnotationEntries forKey:toolType];
+                    }
+                    [toolAnnotationEntries setObject:entry forKey:[entry objectForKey:@"name"]];
+                }
+                if (i == 0)
+                {
+                    cv::Mat img = cv::imread(fileName.UTF8String);
+                    
+                    if (img.empty()) {
+                        NSLog(@"WARNING: could not open '%@', the file is either corrupt or non-existant",fileName);
+                        img = cv::Mat::eye(500, 500, CV_8UC3);
+                    }
+                    OpenImageHandler *imageH = [[OpenImageHandler alloc] initWithCVMat:img Color:White BinaryImage:false];
+                    [frameForFrameNumber setObject:imageH forKey:@(i)];
+                }
+                [framePathForFrameNum setObject:fileName forKey:@(i)];
+                [annotationsForFrames setObject:annotationsByToolForFile forKey:@(i)];
+                }
+            }
+            numFrames = frameForFrameNumber.count;
+            //            OpenImageHandler *img = [frameForFrameNumber objectForKey:@(0)];
+            //            [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+            //            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
+            //            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",0,framePathForFrameNum.count]];
+            [self GoToFrame:0];
+        }
+    }
+}
+
+
 @end

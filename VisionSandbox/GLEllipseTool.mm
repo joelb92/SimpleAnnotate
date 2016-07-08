@@ -176,7 +176,7 @@
                 Vector2 leftAnchor= spaceConverter.ImageToCameraVector(e.leftAnchor);
                 Vector2 rightAnchor= spaceConverter.ImageToCameraVector(e.rightAnchor);
                 Vector2 rotateAnchor= spaceConverter.ImageToCameraVector(e.rotationAnchor);
-                rotateAnchor = (rotateAnchor - leftAnchor)*-screenPixelLength+leftAnchor;
+                rotateAnchor = (rotateAnchor - leftAnchor)*-screenPixelLength/2+leftAnchor;
                 ismousedover = true;
                 glPointSize(10);
                 glBegin(GL_POINTS);
@@ -257,13 +257,14 @@
         
         EllipseVis e = ellipses[i];
         float distval = cv::pointPolygonTest(e.imagePoints, imagePoint.AsCvPoint(), true);
-        if (fabs(spaceConverter.ImageToScreenVector(Vector2(distval,0)).x) > 20 or distval >= 0) {
+        float screendist =spaceConverter.ImageToScreenVector(Vector2(distval,0)).x;
+        if (screendist >= -25) {
             inCont = true;
             mousedOverElementIndex = i;
             int mindist = mouseoverMaxDist*mouseoverMaxDist;
             Vector2 rotateAnchor= spaceConverter.ImageToScreenVector(e.rotationAnchor);
             Vector2 leftAnchor = spaceConverter.ImageToScreenVector(e.leftAnchor);
-            rotateAnchor = (rotateAnchor - leftAnchor)*-screenPixelLength+leftAnchor;
+            rotateAnchor = (rotateAnchor - leftAnchor)*-screenPixelLength/2+leftAnchor;
             
             if(spaceConverter.ImageToScreenVector(e.topAnchor).SqDistanceTo(spaceConverter.ImageToScreenVector(imagePoint)) < mindist) mousedOverPointIndex = 1;
             else if(spaceConverter.ImageToScreenVector(e.bottomAnchor).SqDistanceTo(mouseP) < mindist) mousedOverPointIndex = 2;

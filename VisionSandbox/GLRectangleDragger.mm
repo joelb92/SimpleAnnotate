@@ -114,6 +114,7 @@
 
 -(NSString *)stringForIndex:(int)i
 {
+    i = i*4;
     NSRect r = NSMakeRect(points[i].x, points[i].y, points[i+1].x-points[i].x, points[i+2].y-points[i].y);
     NSString *s =  [NSString stringWithFormat:@"%i,%i,%i,%i",(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height];
     return s;
@@ -445,7 +446,7 @@
         
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
-
+    
 }
 
 

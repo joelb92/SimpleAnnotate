@@ -79,6 +79,7 @@
     NSString *saveProjectFileDir;
     bool separateFaces;
     bool hasSavePath;
+    bool didCancelSave;
     FaceDetectionHandler *faceDetector;
     
 }
