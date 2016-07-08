@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "VisionSandbox/GLRectangleDragger.mm"
-            timestampString = "489705048.148661"
+            timestampString = "489706105.90394"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "294"
-            endingLineNumber = "294"
+            startingLineNumber = "293"
+            endingLineNumber = "293"
             landmarkName = "-SetMousePosition:UsingSpaceConverter:"
             landmarkType = "5">
          </BreakpointContent>

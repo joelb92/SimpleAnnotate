@@ -1090,12 +1090,22 @@ Mat norm_0_255(InputArray _src) {
                     [[NSFileManager defaultManager] createDirectoryAtPath:individualFileSaveFolder withIntermediateDirectories:YES attributes:nil error:nil];
                 }
                 NSString *individualFileSavePath = [[individualFileSaveFolder stringByAppendingPathComponent:framePath.lastPathComponent ] stringByAppendingString:@"_log.csv"];
+                if ([[NSFileManager defaultManager] fileExistsAtPath:individualFileSavePath isDirectory:&isDirAlready] and !isDirAlready)
+                {
+                    [[NSFileManager defaultManager] removeItemAtPath:individualFileSavePath error:nil];
+                }
+                
                 [saveCSV writeToFile:individualFileSavePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
             }
             //add the rest of the files we loaded
             for(i = i; i < imagePathArray.count; i++)
             {
                 [fullSaveFile appendFormat:@"f:%@\n",[imagePathArray objectAtIndex:i]];
+            }
+            BOOL isDir;
+            if ([[NSFileManager defaultManager] fileExistsAtPath:saveProjectFilePath isDirectory:&isDir] and !isDir)
+            {
+                [[NSFileManager defaultManager] removeItemAtPath:saveProjectFilePath error:nil];
             }
             [fullSaveFile writeToFile:[saveProjectFilePath stringByAppendingPathExtension:@"saproj"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
