@@ -280,6 +280,7 @@
     float minDist = 20*20;
     for(int i = 0; i < allPoints.Length; i++)
     {
+        float dist = spaceConverter.ImageToScreenVector(allPoints[i]).SqDistanceTo(mouseP);
         if(allPoints[i].SqDistanceTo(imagePoint) <= minDist)
         {
             {
@@ -336,7 +337,7 @@
     if(!onPoint) mousedOverPointIndex = -1;
     if(!initialized) [self InitializeWithSpaceConverter:spaceConverter];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverEllipseIndex)];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
     
 }
 - (void)DragTo:(Vector3)point Event:(NSEvent *)event
@@ -372,7 +373,21 @@
 }
 }
 
-
+-(void)setKey:(NSString *)key atIndexed:(int)index
+{
+    if (index >= 0 && index < keys.count) {
+        NSString *currentobjKey = [keys objectAtIndex:index];
+        [keys replaceObjectAtIndex:index withObject:key];
+        for(int i = 0; i < pointStructureMap.count; i++)
+        {
+            if ([[pointStructureMap objectAtIndex:i] isEqualToString:currentobjKey]) {
+                [pointStructureMap replaceObjectAtIndex:i withObject:key];
+            }
+        }
+    }
+   
+    
+}
 
 - (void)ResetHandles
 {

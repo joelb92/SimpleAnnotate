@@ -91,6 +91,11 @@
 	stopMousePos = mousePos;
 }
 
+-(void)setKey:(NSString *)key atIndexed:(int)index
+{
+    [keys replaceObjectAtIndex:index withObject:key];
+}
+
 -(void)drawToolTipAtPosition:(Vector2)position Corner:(int)corner
 {
     //display tooltip

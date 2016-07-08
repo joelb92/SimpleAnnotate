@@ -154,7 +154,8 @@
     if (row >= 0) {
         NSString *currentKey = [currentTool.getKeys objectAtIndex:row];
         NSString *newKey = [(NSTextField *)obj.object stringValue];
-        [[currentTool getKeys] setObject:newKey atIndexedSubscript:row];
+        [currentTool setKey:newKey atIndexed:row];
+//        [[currentTool getKeys] setObject:newKey atIndexedSubscript:row];
     }
     }
     [self reloadTable];
