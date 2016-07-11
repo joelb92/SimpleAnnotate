@@ -256,9 +256,15 @@
     {
         
         EllipseVis e = ellipses[i];
-        float distval = cv::pointPolygonTest(e.imagePoints, imagePoint.AsCvPoint(), true);
-        float screendist =spaceConverter.ImageToScreenVector(Vector2(distval,0)).x;
-        if (screendist >= -25) {
+        std::vector<cv::Point2f> screencont(e.imagePoints.size());
+        for(int j = 0; j < e.imagePoints.size(); j++)
+        {
+            Vector2 sp = spaceConverter.ImageToScreenVector(Vector2(e.imagePoints[j]));
+            screencont[j] = cv::Point2f(sp.x,sp.y);
+        }
+        float distval = cv::pointPolygonTest(screencont, mouseP.AsCvPoint(), true);
+        NSLog(@"Dist: %f",distval);
+        if (distval >= -30) {
             inCont = true;
             mousedOverElementIndex = i;
             int mindist = mouseoverMaxDist*mouseoverMaxDist;

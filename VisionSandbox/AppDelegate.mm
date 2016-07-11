@@ -56,24 +56,24 @@ using namespace std;
 {
     OpenImageHandler *currentImage =[frameForFrameNumber objectForKey:@(frameNum)];
     [faceDetector detectFacesInImage:currentImage atScale:0];
-    [mainGLView.mouseOverController.rectangleTool setElements:faceDetector.faceRectDict];
-    NSAlert *alert = [[NSAlert alloc] init];
-    [alert addButtonWithTitle:@"Yes"];
-    [alert addButtonWithTitle:@"No"];
-    [alert setMessageText:[NSString stringWithFormat:@"%lu Faces have been detected.  Would you like to split them?",(unsigned long)faceDetector.faceRectDict.count]];
-    [alert setInformativeText:@"This will allow you to work on each individual face separately"];
-    [alert setAlertStyle:NSWarningAlertStyle];
-    if ([alert runModal] == NSAlertFirstButtonReturn) {
-        //split the faces
-        for(int i = 0; i < faceDetector.dets.size(); i++)
-        {
-            NSRect nsr = faceDetector.dets[i];
-            cv::Rect r(nsr.origin.x,nsr.origin.y,nsr.size.width,nsr.size.height);
-            cv::Mat face = currentImage.Cv(r).clone();
-            OpenImageHandler *faceImage = [[OpenImageHandler alloc] initWithCVMat:face Color:Black BinaryImage:false];
-            
-        }
+    for(int i = 0; i < faceDetector.dets.size(); i++)
+    {
+        NSRect nsr = faceDetector.dets[i];
+        cv::Rect r(nsr.origin.x,nsr.origin.y,nsr.size.width,nsr.size.height);
+        cv::Mat face = currentImage.Cv(r).clone();
+        OpenImageHandler *faceImage = [[OpenImageHandler alloc] initWithCVMat:face Color:Black BinaryImage:false];
+        [[mainGLView.mouseOverController rectangleTool] addElement:nsr color:Green forKey:[NSString stringWithFormat:@"Face %i",i] andType:@"Face"];
     }
+
+//    NSAlert *alert = [[NSAlert alloc] init];
+//    [alert addButtonWithTitle:@"Yes"];
+//    [alert addButtonWithTitle:@"No"];
+//    [alert setMessageText:[NSString stringWithFormat:@"%lu Faces have been detected.  Would you like to split them?",(unsigned long)faceDetector.faceRectDict.count]];
+//    [alert setInformativeText:@"This will allow you to work on each individual face separately"];
+//    [alert setAlertStyle:NSWarningAlertStyle];
+//    if ([alert runModal] == NSAlertFirstButtonReturn) {
+//        //split the faces
+//    }
     
     //    cv::imshow("test", [[frameForFrameNumber objectForKey:@(frameNum)] Cv]);
 }
@@ -232,6 +232,7 @@ using namespace std;
                     [frameForFrameNumber setObject:img forKey:@(newFrameNum)];
                     
                     NSMutableDictionary *annotations = [[NSMutableDictionary alloc] init];
+//                    annotations  = mainGLView.mouseOverController.allTools.mutableCopy;
                     for(NSString *k in mainGLView.mouseOverController.allTools.allKeys) [annotations setObject:[[mainGLView.mouseOverController.allTools objectForKey:k] getElements] forKey:k];
                     [annotationsForFrames setObject:annotations forKey:@(frameNum)];
                     
@@ -270,7 +271,7 @@ using namespace std;
             if (total > 0) {
                 [annotationsForFrames setObject:annotations forKey:@(frameNum)]; //save current rects for current frame
             }
-            
+            for(GLViewTool *t in mainGLView.mouseOverController.allTools.allValues) [t clearAll];
             if ([[annotationsForFrames allKeys] containsObject:@(newFrameNum)]) {
                 NSDictionary *annDict = [annotationsForFrames objectForKey:@(newFrameNum)];
                 for (NSString *k in annDict.allKeys) {
@@ -1116,6 +1117,143 @@ Mat norm_0_255(InputArray _src) {
         savingStatusLabel.stringValue = [NSString stringWithFormat:@"Project saved at %@",dateString];
     }
 }
+
+
+- (IBAction)save_legacy:(id)sender
+{
+    savingStatusLabel.stringValue = @"Saving Crops...";
+    
+    NSMutableDictionary *annotations = [[NSMutableDictionary alloc] init];
+    for(NSString *k in mainGLView.mouseOverController.allTools.allKeys) [annotations setObject:[[mainGLView.mouseOverController.allTools objectForKey:k] getElements] forKey:k];
+    [annotationsForFrames setObject:annotations forKey:@(frameNum)]; //save current rects for current frame
+
+    NSMutableString *rectOutputLog = [@"Frame,Rectagle Key,X,Y,Width,Height,FileName\n" mutableCopy];
+    NSFileManager *fm = [NSFileManager defaultManager];
+    
+    if (currentFilePath) {
+        NSString *cropFilePath = [[currentFilePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"pedestrianCrops"];
+        if (!videoMode) {
+            cropFilePath = [currentFilePath stringByAppendingPathComponent:@"pedestrianCrops"];
+        }
+        BOOL DirExists =false;
+        if( !([fm fileExistsAtPath:cropFilePath isDirectory:&DirExists] && DirExists))
+        {
+            [fm createDirectoryAtPath:cropFilePath withIntermediateDirectories:NO attributes:nil error:nil];
+        }
+        
+        for(int i = 0; i < annotationsForFrames.count;i++)
+        {
+            NSNumber *key = [annotationsForFrames.allKeys objectAtIndex:i];
+            NSDictionary *anns = [annotationsForFrames objectForKey:key];
+            NSDictionary *rectangleDict = [anns objectForKey:@"rectangleTool"];
+            int frameNumber = [key intValue];
+            for (int j = 0; j < rectangleDict.count; j++) {
+                NSString *key = [[rectangleDict allKeys] objectAtIndex:j];
+                NSDictionary *rdict = [rectangleDict objectForKey:key];
+                NSRect r = NSMakeRect([[rdict objectForKey:@"x coord"] intValue], [[rdict objectForKey:@"y coord"] intValue], [[rdict objectForKey:@"width"] intValue], [[rdict objectForKey:@"height" ] intValue]);
+                
+                NSString *saveImgPath = [[[currentFilePath stringByDeletingPathExtension] stringByAppendingFormat:@"Frame%i_Rect%i",frameNumber,key.intValue] stringByAppendingPathExtension:@"jpg"];
+                if([key hasPrefix:@"Rectangle "])
+                {
+                    key = [key substringFromIndex:10];
+                }
+                OpenImageHandler *img = [frameForFrameNumber objectForKey:@(frameNumber)];
+                cv::Mat m = img.Cv;
+                int x = r.origin.x;
+                int y = r.origin.y;
+                int x2 = x+r.size.width;
+                int y2 = y+r.size.height;
+                if (x < 0) x = 0;
+                if (y < 0) y = 0;
+                if (x2 >= m.cols) x2 = m.cols;
+                if (y2 >= m.rows) y2 = m.rows;
+                int width = x2-x;
+                int height = y2-y;
+                if(height > 0 && width > 0 && x < m.cols && y < m.rows && x2 >= 0 && y2 >= 0){
+                    cv::Rect cvr(x,y,width,height);
+                    m = m(cvr);
+                    BOOL valid;
+                    NSCharacterSet *alphaNums = [NSCharacterSet decimalDigitCharacterSet];
+                    NSCharacterSet *inStringSet = [NSCharacterSet characterSetWithCharactersInString:key];
+                    valid = [alphaNums isSupersetOfSet:inStringSet];
+                    if (valid) //numeric
+                    {
+                        int num = key.intValue;
+                        NSString *formattedName =[NSString stringWithFormat:@"crop_frame%08d_gID%06d_x%04d_y%04d_w%04d_h%04d",frameNumber,num,cvr.x,cvr.y,cvr.width,cvr.height];
+                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
+                        if (false or !videoMode)
+                        {
+                            //                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"Cropped%i_%@",j,[[framePathForFrameNum objectForKey:@(frameNumber)] lastPathComponent]]] stringByAppendingPathExtension:@"png"];
+                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
+                        }
+                    }
+                    else //named without numbers
+                    {
+                        NSString *formattedName = [NSString stringWithFormat:@"crop_frame%08d_gID%@_x%04d_y%04d_w%04d_h%04d",frameNumber,key,cvr.x,cvr.y,cvr.width,cvr.height];
+                        saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
+                        if (false or !videoMode)
+                        {
+                            //                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%@",[framePathForFrameNum objectForKey:@(frameNumber)],formattedName]] stringByAppendingPathExtension:@"png"];
+                            saveImgPath = [[cropFilePath stringByAppendingPathComponent:formattedName] stringByAppendingPathExtension:@"png"];
+                        }
+                    }
+                    
+                    [rectOutputLog appendFormat:@"%i,%@,%i,%i,%i,%i,%@\n",frameNumber,key,(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height,saveImgPath.lastPathComponent];
+                    cv::imwrite(saveImgPath.UTF8String, m);
+                    //                    NSLog(@"written %i,%i,%i,%i",x,y,width,height);
+                }
+            }
+            
+        }
+        BOOL CropFileFolderExists;
+        if ([fm fileExistsAtPath:cropFilePath isDirectory:&CropFileFolderExists] && CropFileFolderExists) {
+            NSAlert *alert = [[NSAlert alloc] init];
+            [alert addButtonWithTitle:@"Choose New Location"];
+            [alert addButtonWithTitle:@"Save Here"];
+            [alert addButtonWithTitle:@"Cancel"];
+            [alert setMessageText:[NSString stringWithFormat:@"A folder at %@ already exists.  Would you like to chose a different folder?",cropFilePath]];
+            [alert setInformativeText:@"You may overwrite previous files in this folder"];
+            [alert setAlertStyle:NSWarningAlertStyle];
+            NSInteger modalOut =  [alert runModal];
+            if (modalOut == NSAlertFirstButtonReturn) {
+            chooseFolder: NSOpenPanel* openDlg = [NSOpenPanel openPanel];
+                [openDlg setCanChooseFiles:YES];
+                [openDlg setCanChooseDirectories:YES];
+                [openDlg setCanCreateDirectories:YES];
+                [openDlg setAllowsMultipleSelection:NO];
+                [openDlg setPrompt:@"Save"];
+                if ([openDlg runModalForDirectory:nil file:nil] == NSOKButton )
+                {
+                    NSString *newSaveLocation = [openDlg filename];
+                    if ([fm fileExistsAtPath:newSaveLocation isDirectory:&CropFileFolderExists] && !CropFileFolderExists) {
+                        NSAlert *alert = [[NSAlert alloc] init];
+                        [alert addButtonWithTitle:@"OK"];
+                        [alert setMessageText:[NSString stringWithFormat:@"You must chose a folder to save to, not a file"]];
+                        [alert setAlertStyle:NSWarningAlertStyle];
+                        if ([alert runModal] == NSAlertFirstButtonReturn) {
+                            goto chooseFolder;
+                        }
+                    }
+                    else
+                    {
+                        cropFilePath = newSaveLocation;
+                    }
+                }
+                
+            }
+            else if(modalOut == NSAlertThirdButtonReturn)
+            {
+                return;
+            }
+            
+        }
+        [rectOutputLog writeToFile:[[cropFilePath stringByAppendingPathComponent:@"log"] stringByAppendingPathExtension:@"csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+        
+        savingStatusLabel.stringValue = [NSString stringWithFormat:@"Crops saved to: %@",cropFilePath];
+    }
+    
+}
+
 
 -(IBAction)openProject:(id)sender
 {

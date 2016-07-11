@@ -23,7 +23,8 @@
 	IBOutlet GLViewMouseOverController*mouseOverController;
 	Vector2 previousMouseLocation;
 	NSTrackingArea*trackingArea;
-	
+    cv::Mat rgbImg;
+    bool isConverted;
 	Vector2 mousePosition;
 	Vector2 previousMousePosition;
 	Vector2 mousePositionOnMouseDown;

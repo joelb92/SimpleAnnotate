@@ -62,6 +62,7 @@
 - (void)tableHoverRect:(NSNotification *)notification;
 - (void)clearAll;
 - (void)addElement:(NSRect)r color:(Color)c forKey:(NSString *)key;
+- (void)addElement:(NSRect)r color:(Color)c forKey:(NSString *)key andType:(NSString *)etype;
 - (void)removeElementAtIndex:(int)i;
 - (void)setElementKey:(NSString *)key forIndex:(int)i;
 - (void)setCurrentElementKey:(NSString *) key;

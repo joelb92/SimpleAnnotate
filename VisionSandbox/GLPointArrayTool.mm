@@ -70,6 +70,14 @@
         Vector2Arr p = pointSets[structureIndex];
         int pIndex = [[pointStructureIndexMap objectAtIndex:i] intValue];
         
+        for(int j = 0; j < pointStructureIndexMap.count; j++)
+        {
+            int val =[[pointStructureIndexMap objectAtIndex:j] intValue];
+            if ([[pointStructureMap objectAtIndex:j] isEqualToString:key] &&  val > [[pointStructureIndexMap objectAtIndex:i] intValue] && val > 0) {
+                [pointStructureIndexMap replaceObjectAtIndex:j withObject:@(val-1)];
+            }
+        }
+        
         [pointStructureMap removeObjectAtIndex:i];
         [pointStructureIndexMap removeObjectAtIndex:i];
         
@@ -270,23 +278,26 @@
         }
         if (distval > -5) {
             inCont = true;
-
+            
             mousedOverElementIndex = i;
             currentKey = [keys objectAtIndex:i];
             [infoOutput.trackNumberLabel setStringValue:[keys objectAtIndex:mousedOverElementIndex]];
-            [self drawToolTipAtPosition:spaceConverter.ImageToScreenVector(Vector2(farthestRight)) Corner:0];
+            
+            //display tooltip
+            
+            
+//            [self drawToolTipAtPosition:spaceConverter.ImageToScreenVector(Vector2(farthestRight)) Corner:0];
         }
     }
     float minDist = 20*20;
     for(int i = 0; i < allPoints.Length; i++)
     {
         float dist = spaceConverter.ImageToScreenVector(allPoints[i]).SqDistanceTo(mouseP);
-        if(allPoints[i].SqDistanceTo(imagePoint) <= minDist)
+        if(dist <= minDist)
         {
             {
                 
                 mousedOverPointIndex = i;
-                
                 int innerIndex = [[pointStructureIndexMap objectAtIndex:i] intValue];
 //                NSLog(@"inner index: %i",innerIndex);
                 [infoOutput.xCoordRectLabel setStringValue:[NSString stringWithFormat:@"%i",(int)allPoints[i].x]];
@@ -299,6 +310,13 @@
             }
             break;
         }
+
+//        Vector2 lpos = spaceConverter.ImageToScreenVector(allPoints[i]);
+//        NSRect newframe  = NSMakeRect(lpos.x, lpos.y, 30, 30);
+//        NSTextField *newField = [[NSTextField alloc] initWithFrame:newframe];
+//        [newField setStringValue:[NSString stringWithFormat:@"%i,%i",[[pointStructureMap objectAtIndex:i] intValue],[[pointStructureIndexMap objectAtIndex:i] intValue]]];
+//        [superView addSubview:newField];
+//        [newField setHidden:NO];
         
         
     }

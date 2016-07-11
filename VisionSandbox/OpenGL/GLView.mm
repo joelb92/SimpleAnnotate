@@ -243,19 +243,27 @@
 - (void)mouseMoved:(NSEvent*)event
 {
 	[self GetMousePositionForEvent:event];
-	if(mouseOverController && [mouseOverController.superview isEqual:self] && (!spaceConverter.ImageRect.size.isNull() || spaceConverter.type==_3d))
+    cv::Mat img = [(OpenImageHandler *)([(TreeListItem *)[objectList ObjectForKeyPath:@"/First"] object]) Cv];
+
+	if(mouseOverController && [mouseOverController.superview isEqual:self] && (!spaceConverter.ImageRect.size.isNull() || spaceConverter.type==_3d) && !img.empty())
 	{
+
 		[mouseOverController.tool SetMousePosition:mousePosition UsingSpaceConverter:spaceConverter];
         int mouseX = [objectList MouseOverPointAtScreenPoint:mousePosition UsingSpaceConverter:spaceConverter].x;
         int mouseY =[objectList MouseOverPointAtScreenPoint:mousePosition UsingSpaceConverter:spaceConverter].y;
 		[infoOutput.xCoordMouseLabel setStringValue:[NSString stringWithFormat:@"%i",mouseX]];
 		[infoOutput.yCoordMouseLabel setStringValue:[NSString stringWithFormat:@"%i",mouseY]];
         id obj =[objectList ObjectForKeyPath:@"/First"];
-        cv::Mat img = [(OpenImageHandler *)([(TreeListItem *)[objectList ObjectForKeyPath:@"/First"] object]) Cv];
+        
+        if (img.channels() == 4) {
+            cv::cvtColor(img, rgbImg, CV_BGRA2BGR);
+        }
+        else if (img.empty()) img = cv::Mat();
+        else rgbImg = img;
         int r,g,b;
-        cv::Vec4b bgra;
+        cv::Vec3b bgra;
         if (mouseX >= 0 && mouseX < img.cols && mouseY >= 0 && mouseY < img.rows) {
-            bgra = img.at<cv::Vec4b>(mouseY,mouseX);
+            bgra = rgbImg.at<cv::Vec3b>(mouseY,mouseX);
             infoOutput.blueLabel.intValue = bgra[0];
             infoOutput.greenLabel.intValue = bgra[1];
             infoOutput.redLabel.intValue = bgra[2];

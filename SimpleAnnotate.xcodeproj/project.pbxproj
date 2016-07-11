@@ -81,6 +81,7 @@
 		5D55C5771995D1AE00D9F78A /* ImageListView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D55C5761995D1AE00D9F78A /* ImageListView.mm */; };
 		5D55C57A1995F04200D9F78A /* FunctionVisualTableCellView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D55C5791995F04200D9F78A /* FunctionVisualTableCellView.mm */; };
 		5D55C5811995F36700D9F78A /* FunctionVisualParametersView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D55C5801995F36700D9F78A /* FunctionVisualParametersView.mm */; };
+		5D77A3C21D33DD9300435C36 /* gear.png in Resources */ = {isa = PBXBuildFile; fileRef = 5D77A3C11D33DD9300435C36 /* gear.png */; };
 		5D7BF1501AA4E8AD00AC2DBE /* ROTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D7BF14F1AA4E8AD00AC2DBE /* ROTableView.m */; };
 		5D7BF1561AA9521200AC2DBE /* mainIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 5D7BF1551AA9521200AC2DBE /* mainIcon.iconset */; };
 		5D890E0D1D109CF90097F3E0 /* FrameHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5D890E0C1D109CF90097F3E0 /* FrameHandler.mm */; };
@@ -304,6 +305,7 @@
 		5D55C5791995F04200D9F78A /* FunctionVisualTableCellView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FunctionVisualTableCellView.mm; sourceTree = "<group>"; };
 		5D55C57F1995F36700D9F78A /* FunctionVisualParametersView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionVisualParametersView.h; sourceTree = "<group>"; };
 		5D55C5801995F36700D9F78A /* FunctionVisualParametersView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FunctionVisualParametersView.mm; sourceTree = "<group>"; };
+		5D77A3C11D33DD9300435C36 /* gear.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gear.png; sourceTree = SOURCE_ROOT; };
 		5D7BF14E1AA4E8AD00AC2DBE /* ROTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ROTableView.h; sourceTree = "<group>"; };
 		5D7BF14F1AA4E8AD00AC2DBE /* ROTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ROTableView.m; sourceTree = "<group>"; };
 		5D7BF1551AA9521200AC2DBE /* mainIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = mainIcon.iconset; sourceTree = SOURCE_ROOT; };
@@ -428,8 +430,6 @@
 			isa = PBXGroup;
 			children = (
 				D8543A1F1D2EAFBC00BC8F97 /* opencv2.framework */,
-				D8543A191D2EAD6C00BC8F97 /* Opencv */,
-				D8543A151D2EAC0400BC8F97 /* dlib-18.18 */,
 				5D2897971991E2300036CFD6 /* VisionSandbox */,
 				5D2897B51991E2300036CFD6 /* VisionSandboxTests */,
 				5D2897901991E2300036CFD6 /* Frameworks */,
@@ -449,6 +449,8 @@
 		5D2897901991E2300036CFD6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D8543A191D2EAD6C00BC8F97 /* Opencv */,
+				D8543A151D2EAC0400BC8F97 /* dlib-18.18 */,
 				D8543A241D30054600BC8F97 /* RHPreferences.framework */,
 				D8543A1B1D2EAD8300BC8F97 /* opencv2.framework */,
 				5DF2E0931B8CB3E100873B9D /* CoreMedia.framework */,
@@ -716,6 +718,7 @@
 		5D55C5721995C4DC00D9F78A /* GUI */ = {
 			isa = PBXGroup;
 			children = (
+				5D77A3C11D33DD9300435C36 /* gear.png */,
 				5DC59E1B1AA9567C00F80674 /* LogoTransparent.gif */,
 				5DC59E1D1AA9568800F80674 /* LogoBoardered.png */,
 				5DC59E1F1AA9575A00F80674 /* NDLogo.png */,
@@ -963,6 +966,7 @@
 				5D2897A81991E2300036CFD6 /* MainMenu.xib in Resources */,
 				5DD4C76219990F470066DFE1 /* ListViewIcon.png in Resources */,
 				5DECC67D1AA96F6F009C2183 /* dsa_pub.pem in Resources */,
+				5D77A3C21D33DD9300435C36 /* gear.png in Resources */,
 				5DC59E201AA9575A00F80674 /* NDLogo.png in Resources */,
 				5D55C56619948EFC00D9F78A /* FolderIcon.png in Resources */,
 				5D8D80311B045E47002A1EC6 /* link.png in Resources */,

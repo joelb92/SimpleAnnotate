@@ -35,7 +35,7 @@
     [self addElement:r color:c forKey:key andType:currentAnnotationType];
 }
 
--(void)addElement:(NSRect)r color:(Color)c forKey:(NSString *)key andType:(NSString *)type
+-(void)addElement:(NSRect)r color:(Color)c forKey:(NSString *)key andType:(NSString *)etype
 {
     Vector2 p1,p2,p3,p4;
     p1 =Vector2(r.origin.x, r.origin.y);
@@ -52,7 +52,7 @@
     [segColors addElement:c];
     [segColors addElement:c];
     [keys addObject:key];
-    [elementTypes addObject:type];
+    [elementTypes addObject:etype];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 

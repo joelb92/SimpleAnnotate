@@ -211,11 +211,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "VisionSandbox/OpenGL/GLView.mm"
-            timestampString = "487707850.983074"
+            timestampString = "489956119.739983"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "290"
-            endingLineNumber = "290"
+            startingLineNumber = "298"
+            endingLineNumber = "298"
             landmarkName = "-mouseUp:"
             landmarkType = "5">
          </BreakpointContent>
@@ -227,12 +227,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "VisionSandbox/AppDelegate.mm"
-            timestampString = "489552105.014626"
+            timestampString = "489962772.137986"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "888"
-            endingLineNumber = "888"
-            landmarkName = "-save:"
+            startingLineNumber = "889"
+            endingLineNumber = "889"
+            landmarkName = "norm_0_255(InputArray _src)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "VisionSandbox/AppDelegate.mm"
+            timestampString = "489962296.217682"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "153"
+            endingLineNumber = "153"
+            landmarkName = "-GoToFrame:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

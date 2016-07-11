@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1808" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14F1713" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -90,6 +90,11 @@
                             <menuItem title="Open Project…" keyEquivalent="O" id="Gqf-dp-QkW" userLabel="Open Project…">
                                 <connections>
                                     <action selector="openProject:" target="494" id="pcI-vs-DXD"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Export as Legacy" keyEquivalent="E" id="2mW-Nx-W1F" userLabel="Export as Legacy">
+                                <connections>
+                                    <action selector="save_legacy:" target="494" id="8wB-U2-sNK"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Open Recent" id="124">
@@ -1126,7 +1131,7 @@ CA
         <customObject id="420" customClass="NSFontManager"/>
         <userDefaultsController representsSharedInstance="YES" id="fzf-xf-EqL"/>
         <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="14" outlineTableColumn="5fY-4F-1CO" id="BKA-0E-lpV" customClass="GLOutlineViewController">
-            <rect key="frame" x="0.0" y="0.0" width="237" height="0.0"/>
+            <rect key="frame" x="0.0" y="-1" width="237" height="0.0"/>
             <autoresizingMask key="autoresizingMask"/>
             <size key="intercellSpacing" width="3" height="0.0"/>
             <color key="backgroundColor" red="0.92156862750000001" green="0.92156862750000001" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -1260,6 +1265,7 @@ CA
                     </prototypeCellViews>
                 </tableColumn>
             </tableColumns>
+            <point key="canvasLocation" x="-546.5" y="253"/>
         </outlineView>
         <customObject id="thH-ug-6pU" customClass="GLViewMouseOverController">
             <connections>
@@ -1561,6 +1567,42 @@ By hitting command+S, you save your project.  All cropped images, along with a a
             </defaultToolbarItems>
             <point key="canvasLocation" x="684.5" y="-681"/>
         </toolbar>
+        <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="r6K-RN-wCR" customClass="SettingsPanelHandler">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="167" y="107" width="276" height="378"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <view key="contentView" id="Ayc-mG-1IC">
+                <rect key="frame" x="0.0" y="0.0" width="276" height="378"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <tabView id="adi-ck-PnX">
+                        <rect key="frame" x="-8" y="-4" width="292" height="388"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <font key="font" metaFont="system"/>
+                        <tabViewItems>
+                            <tabViewItem label="General Settings" identifier="1" id="GE7-3R-Rpw">
+                                <view key="view" id="oRw-KF-lGh">
+                                    <rect key="frame" x="10" y="33" width="272" height="342"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <button id="00x-Yg-Ufx">
+                                            <rect key="frame" x="15" y="317" width="61" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="check" title="Test" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Moe-vO-S9q">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                        </button>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                        </tabViewItems>
+                    </tabView>
+                </subviews>
+            </view>
+            <point key="canvasLocation" x="973" y="-392"/>
+        </window>
     </objects>
     <resources>
         <image name="FolderIcon" width="1024" height="1024"/>
