@@ -26,7 +26,10 @@
 		rectangleTool = [[GLRectangleDragger alloc] initWithOutputView:infoOutput];
         ellipseTool = [[GLEllipseTool alloc] initWithOutputView:infoOutput];
         pointTool = [[GLPointArrayTool alloc] initWithOutputView:infoOutput];
-        allTools = [[NSDictionary alloc] initWithObjects:@[rectangleTool,ellipseTool,pointTool] forKeys:@[@"rectangleTool",@"ellipseTool",@"pointTool"]];
+        NSArray *toolNames = @[@"rectangleTool",@"ellipseTool",@"pointTool"];
+        NSArray *tools = @[rectangleTool,ellipseTool,pointTool];
+        allTools = [[NSDictionary alloc] initWithObjects:tools forKeys:toolNames];
+        keysForTools = [[NSMutableDictionary alloc] initWithObjects:toolNames forKeys:tools];
         labelFields = [[NSMutableDictionary alloc] init];
         annotationTypes = [[NSMutableArray alloc] initWithObjects:@"Face",@"Tattoo",@"Piercing",@"None",@"+Add Other", nil];
 //		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
@@ -55,6 +58,10 @@
     }
 }
 
+-(NSString *)currentToolKey
+{
+    return [keysForTools objectForKey:[self tool]];
+}
 
 - (void)UpdateOutput
 {

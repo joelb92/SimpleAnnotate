@@ -376,64 +376,71 @@ using namespace std;
 {
     for(int i = frameNum-1; i >= 0; i--)
     {
-        NSMutableDictionary* rects = [annotationsForFrames objectForKey:@(i)];
-        
-        if (rects && rects.count > 0 && i != frameNum) {
-            NSMutableDictionary* newRects = [[NSMutableDictionary alloc  ] init];
-            for(int j = 0; j < rects.count; j++)
-            {
-                NSObject *key = [rects.allKeys objectAtIndex:j];
-                if ([mainGLView.mouseOverController.rectangleTool.rectTrackingForRectsWithKeys containsObject:key]) {
-                    cv::Mat lastImg = [(OpenImageHandler *)[frameForFrameNumber objectForKey:@(i)] Cv];
-                    cv::Mat curImage = [(OpenImageHandler *)[frameForFrameNumber objectForKey:@(frameNum)] Cv];
-                    NSRect r = [[rects objectForKey:key] rectValue];
-                    cv::Rect r2(r.origin.x,r.origin.y,r.size.width,r.size.height);
-                    ;
-                    cv::Mat gray;
-                    cv::cvtColor(lastImg, gray, CV_BGR2GRAY);
-                    dlib::cv_image<uchar> img(gray);
-                    dlib::correlation_tracker *trackerTmp;
-                    if (![trackers.allKeys containsObject:key]) {
-                        trackerTmp= new dlib::correlation_tracker;
-                        //                        dlib::array2d<dlib::bgr_pixel> img;
-                        //                        img.set_size(lastImg.rows, lastImg.cols);
-                        //                        for(int x = 0; x < lastImg.cols; x++)
-                        //                        {
-                        //                            for (int y = 0; y < lastImg.rows; y++) {
-                        //                                cv::Vec3b s = lastImg.at<cv::Vec3b>(y,x);
-                        //                                img[y][x] = dlib::bgr_pixel(s[0],s[1],s[2]);
-                        //                            }
-                        //                        }
-                        trackerTmp->start_track(img, dlib::centered_rect(dlib::point(r2.x+r2.width/2,r2.y+r2.height/2), r2.width, r2.height));
-                        NSValue *val = [NSValue valueWithPointer:trackerTmp];
-                        [trackers setObject:val forKey:key.copy];
+        NSMutableDictionary *annotations = [annotationsForFrames objectForKey:@(i)];
+        if (annotations) {
+            NSMutableDictionary* rects = [annotations objectForKey:mainGLView.mouseOverController.currentToolKey];
+            [mainGLView.mouseOverController.tool setElements:rects];
+            
+            
+            if (rects && rects.count > 0 && i != frameNum) {
+                NSMutableDictionary* newRects = [[NSMutableDictionary alloc  ] init];
+                for(int j = 0; j < rects.count; j++)
+                {
+                    
+                    NSObject *key = [rects.allKeys objectAtIndex:j];
+                    if ([mainGLView.mouseOverController.rectangleTool.rectTrackingForRectsWithKeys containsObject:key]) {
+                        cv::Mat lastImg = [(OpenImageHandler *)[frameForFrameNumber objectForKey:@(i)] Cv];
+                        cv::Mat curImage = [(OpenImageHandler *)[frameForFrameNumber objectForKey:@(frameNum)] Cv];
+                        NSRect r = [[rects objectForKey:key] rectValue];
+                        cv::Rect r2(r.origin.x,r.origin.y,r.size.width,r.size.height);
+                        ;
+                        cv::Mat gray;
+                        cv::cvtColor(lastImg, gray, CV_BGR2GRAY);
+                        dlib::cv_image<uchar> img(gray);
+                        dlib::correlation_tracker *trackerTmp;
+                        if (![trackers.allKeys containsObject:key]) {
+                            trackerTmp= new dlib::correlation_tracker;
+                            //                        dlib::array2d<dlib::bgr_pixel> img;
+                            //                        img.set_size(lastImg.rows, lastImg.cols);
+                            //                        for(int x = 0; x < lastImg.cols; x++)
+                            //                        {
+                            //                            for (int y = 0; y < lastImg.rows; y++) {
+                            //                                cv::Vec3b s = lastImg.at<cv::Vec3b>(y,x);
+                            //                                img[y][x] = dlib::bgr_pixel(s[0],s[1],s[2]);
+                            //                            }
+                            //                        }
+                            trackerTmp->start_track(img, dlib::centered_rect(dlib::point(r2.x+r2.width/2,r2.y+r2.height/2), r2.width, r2.height));
+                            NSValue *val = [NSValue valueWithPointer:trackerTmp];
+                            [trackers setObject:val forKey:key.copy];
+                        }
+                        else
+                        {
+                            trackerTmp = (dlib::correlation_tracker *)[[trackers objectForKey:key] pointerValue];
+                        }
+                        trackerTmp->update(img);
+                        dlib::drectangle newRect =  trackerTmp->get_position();
+                        
+                        //                SemiBoostingApplication tracker;
+                        //                tracker.initTracker(100, .99, 2, r2, lastImg);
+                        //                cv::Rect newLocation = tracker.RunTrackIteration(curImage);
+                        //            CamShiftTracker *newTracker = [[CamShiftTracker alloc] init];
+                        //            [newTracker inputImage:lastImg selectedArea:r2];
+                        //            cv::Rect newLocation = [newTracker trackOnImage:curImage];
+                        NSRect newLocationRect = NSMakeRect(newRect.left(), newRect.top(), newRect.width(), newRect.height());
+                        [newRects setObject:[NSValue valueWithRect:newLocationRect] forKey:key.copy];
                     }
                     else
                     {
-                        trackerTmp = (dlib::correlation_tracker *)[[trackers objectForKey:key] pointerValue];
+                        [newRects setObject:[rects objectForKey:key] forKey:key.copy];
                     }
-                    trackerTmp->update(img);
-                    dlib::drectangle newRect =  trackerTmp->get_position();
                     
-                    //                SemiBoostingApplication tracker;
-                    //                tracker.initTracker(100, .99, 2, r2, lastImg);
-                    //                cv::Rect newLocation = tracker.RunTrackIteration(curImage);
-                    //            CamShiftTracker *newTracker = [[CamShiftTracker alloc] init];
-                    //            [newTracker inputImage:lastImg selectedArea:r2];
-                    //            cv::Rect newLocation = [newTracker trackOnImage:curImage];
-                    NSRect newLocationRect = NSMakeRect(newRect.left(), newRect.top(), newRect.width(), newRect.height());
-                    [newRects setObject:[NSValue valueWithRect:newLocationRect] forKey:key.copy];
                 }
-                else
-                {
-                    [newRects setObject:[rects objectForKey:key] forKey:key.copy];
-                }
-                
+                [mainGLView.mouseOverController.rectangleTool setElements:newRects]; //load new rects for next frame
+                return;
             }
-            [mainGLView.mouseOverController.rectangleTool setElements:newRects]; //load new rects for next frame
-            return;
         }
-    }
+        }
+
 }
 - (IBAction)ClearCurrentRects:(id)sender
 {
@@ -475,9 +482,13 @@ using namespace std;
     if ([openDlg runModalForDirectory:nil file:nil] == NSOKButton )
     {
         NSFileManager *fm = [NSFileManager defaultManager];
-        NSArray* files = [openDlg filenames];
+        NSMutableArray* files = [[openDlg filenames] mutableCopy];
         
         NSMutableArray *onlyImages2 = [[NSMutableArray alloc] init];
+        for(int i = 0; i < files.count; i++)
+        {
+            [files replaceObjectAtIndex:i withObject:[[files objectAtIndex:i] lowercaseString]];
+        }
         for(NSPredicate *fltr in acceptableImageTypes)
         {
             NSArray *only =[files filteredArrayUsingPredicate:fltr];
@@ -489,7 +500,9 @@ using namespace std;
             
             if( [fm fileExistsAtPath:fileName isDirectory:&isDir])
             {
+                
                 if (isDir || onlyImages2.count > 0) {
+                    //we have a directory selected, look for all images in directory
                     videoMode =false;
                     currentFilePath = [fileName retain];
                     NSArray *dirContents = [fm contentsOfDirectoryAtPath:fileName error:nil];
@@ -519,7 +532,7 @@ using namespace std;
                     [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
                     [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%li",1,imagePathArray.count]];
                 }
-                else{
+                else{ //we most likely have a video
                     videoMode = true;
                     currentFilePath = [fileName retain];
                     AVAsset *asset = [AVAsset assetWithURL:[[NSURL alloc] initFileURLWithPath:fileName]];

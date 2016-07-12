@@ -48,6 +48,7 @@
     IBOutlet ROTableView *mainTableView;
     IBOutlet NSButton *linkDimsButton;
     IBOutlet NSSegmentedControl *toolMenu;
+    NSMutableDictionary *keysForTools;
     NSImage *linkImg;
     NSImage *unlinkImg;
 
@@ -55,6 +56,7 @@
 @property (assign) GLRectangleDragger *rectangleTool;
 @property (assign) NSTextField *RectKey;
 @property (assign) NSDictionary *allTools;
+-(NSString *) currentToolKey;
 - (GLViewTool*)tool;
 - (bool)ActiveInView:(NSView*)view;
 - (void)ToggleInView:(NSView*)view;
