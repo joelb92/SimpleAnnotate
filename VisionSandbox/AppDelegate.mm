@@ -503,6 +503,11 @@ using namespace std;
                 
                 if (isDir || onlyImages2.count > 0) {
                     //we have a directory selected, look for all images in directory
+                    
+                    saveProjectFileDir = fileName.retain;
+                    saveProjectFilePath = [fileName stringByAppendingPathComponent:@"mainProject"].retain;
+                    hasSavePath = true;
+                    
                     videoMode =false;
                     currentFilePath = [fileName retain];
                     NSArray *dirContents = [fm contentsOfDirectoryAtPath:fileName error:nil];
@@ -930,8 +935,8 @@ Mat norm_0_255(InputArray _src) {
         return false;
     } // end if
     
-    saveProjectFileDir = [tvarNSSavePanelObj directory];
-    saveProjectFilePath= [tvarNSSavePanelObj filename];
+    saveProjectFileDir = [[tvarNSSavePanelObj directory] retain];
+    saveProjectFilePath= [[tvarNSSavePanelObj filename] retain];
     return true;
 }
 

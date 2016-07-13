@@ -29,7 +29,7 @@
         NSArray *toolNames = @[@"rectangleTool",@"ellipseTool",@"pointTool"];
         NSArray *tools = @[rectangleTool,ellipseTool,pointTool];
         allTools = [[NSDictionary alloc] initWithObjects:tools forKeys:toolNames];
-        keysForTools = [[NSMutableDictionary alloc] initWithObjects:toolNames forKeys:tools];
+//        keysForTools = [[NSMutableDictionary alloc] initWithObjects:toolNames forKeys:tools];
         labelFields = [[NSMutableDictionary alloc] init];
         annotationTypes = [[NSMutableArray alloc] initWithObjects:@"Face",@"Tattoo",@"Piercing",@"None",@"+Add Other", nil];
 //		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
@@ -60,6 +60,12 @@
 
 -(NSString *)currentToolKey
 {
+    for(NSString *key in allTools.allKeys)
+    {
+        if ([[allTools objectForKey:key] isEqualTo:[self tool]]) {
+            return key;
+        }
+    }
     return [keysForTools objectForKey:[self tool]];
 }
 
