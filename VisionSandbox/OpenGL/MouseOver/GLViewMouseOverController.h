@@ -48,6 +48,7 @@
     IBOutlet ROTableView *mainTableView;
     IBOutlet NSButton *linkDimsButton;
     IBOutlet NSSegmentedControl *toolMenu;
+    NSMutableDictionary *tableViewCells;
     NSMutableDictionary *keysForTools;
     NSImage *linkImg;
     NSImage *unlinkImg;

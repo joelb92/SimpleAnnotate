@@ -3,6 +3,14 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "-[GLViewMouseOverController tableView:viewForTableColumn:row:]:GLViewMouseOverController.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "currentTool.count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "-[GLPointArrayTool mouseClickedAtPoint:withEvent:]:GLPointArrayTool.mm">
       </ContextState>
       <ContextState
@@ -34,6 +42,20 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "-[GLViewMouseOverController controlTextDidEndEditing:]:GLViewMouseOverController.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "obj.object">
+            </PersistentString>
+            <PersistentString
+               value = "tableViewCells">
+            </PersistentString>
+            <PersistentString
+               value = "[obj.object nextKeyView]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "-[GLEllipseTool getElements]:GLEllipseTool.mm">
       </ContextState>
       <ContextState
@@ -61,6 +83,14 @@
       </ContextState>
       <ContextState
          contextName = "-[GLPointArrayTool removeElementAtIndex:]:GLPointArrayTool.mm">
+      </ContextState>
+      <ContextState
+         contextName = "-[GLViewMouseOverController relinkTableCells]:GLViewMouseOverController.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "[[tableViewCells objectForKey:@(0)] nextKeyView]">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
    </ContextStates>
 </VariablesViewState>

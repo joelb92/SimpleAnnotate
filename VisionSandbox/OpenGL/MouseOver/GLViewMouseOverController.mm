@@ -19,7 +19,7 @@
     self = [super initWithFrame:frame];
     if(self)
 	{
-        
+        tableViewCells = [[NSMutableDictionary alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"TableReload" object:nil];
 		rulerTool = [[GLRuler alloc] init];
 		protractorTool = [[GLProtractor alloc] init];
@@ -149,8 +149,6 @@
 }
 -(void)controlTextDidEndEditing:(NSNotification *)obj
 {
-    NSLog(@"done");
-
     if([[(NSTextField *)obj.object identifier] isEqualToString:@"tooltipCombo"])
     {
         NSString *test = tooltip.typeSelectionBox.objectValue;
@@ -231,7 +229,11 @@
     }
     else{
         result.stringValue = [currentTool.getKeys objectAtIndex:row];
-        
+        [tableViewCells setObject:result forKey:@(row)];
+    }
+    if(row == currentTool.count -1)
+    {
+        [self relinkTableCells];
     }
     [result setDelegate:self];
     return result;
@@ -254,7 +256,31 @@
 }
 -(void)reloadTable
 {
+    [tableViewCells removeAllObjects];
     [mainTableView reloadData];
+}
+
+-(void)relinkTableCells
+{
+    NSArray *keys = [tableViewCells.allKeys sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"intValue" ascending:YES]]];
+    for (int i = 0; i < keys.count; i++) {
+        if (i < keys.count-1) {
+            NSTextField *t1 = [tableViewCells objectForKey:[keys objectAtIndex:i]];
+            NSTextField *t2 = [tableViewCells objectForKey:[keys objectAtIndex:i+1]];
+            if (t1 and t2) {
+                [t1 setNextKeyView:t2];
+            }
+        }
+        
+
+    }
+//    for (int i = 0; i < keys.count; i++) {
+//        if (i < keys.count-1) {
+//            NSTextField *t1 = [tableViewCells objectForKey:[keys objectAtIndex:i]];
+//            NSTextField *t2 = [t1 nextKeyView];
+//            NSLog(t2.stringValue);
+//        }
+//    }
 }
 
 
