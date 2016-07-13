@@ -263,7 +263,6 @@
             screencont[j] = cv::Point2f(sp.x,sp.y);
         }
         float distval = cv::pointPolygonTest(screencont, mouseP.AsCvPoint(), true);
-        NSLog(@"Dist: %f",distval);
         if (distval >= -30) {
             inCont = true;
             mousedOverElementIndex = i;

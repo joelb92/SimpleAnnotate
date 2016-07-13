@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14F1713" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1808" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -1506,7 +1506,7 @@ By hitting command+S, you save your project.  All cropped images, along with a a
             <rect key="frame" x="0.0" y="0.0" width="120" height="40"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField identifier="tooltipName" verticalHuggingPriority="750" id="cvU-0H-5bM">
+                <textField identifier="tooltipName" verticalHuggingPriority="750" id="cvU-0H-5bM" customClass="TextFieldWithMouseOver">
                     <rect key="frame" x="0.0" y="18" width="120" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" identifier="tooltipName" placeholderString="Name" drawsBackground="YES" id="l9j-Qn-91u">
@@ -1516,9 +1516,10 @@ By hitting command+S, you save your project.  All cropped images, along with a a
                     </textFieldCell>
                     <connections>
                         <outlet property="delegate" destination="thH-ug-6pU" id="E9R-O6-Tz4"/>
+                        <outlet property="nextKeyView" destination="8va-DB-36c" id="In5-Cb-QAh"/>
                     </connections>
                 </textField>
-                <comboBox identifier="tooltipCombo" verticalHuggingPriority="750" id="8va-DB-36c">
+                <comboBox identifier="tooltipCombo" verticalHuggingPriority="750" id="8va-DB-36c" customClass="ComboBoxWithMouseOver">
                     <rect key="frame" x="0.0" y="-4" width="123" height="26"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" identifier="tooltipCombo" placeholderString="Type" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="rXp-ia-qBj">

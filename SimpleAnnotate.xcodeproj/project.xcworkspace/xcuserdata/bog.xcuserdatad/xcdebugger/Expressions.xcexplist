@@ -3,7 +3,44 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "-[GLPointArrayTool mouseClickedAtPoint:withEvent:]:GLPointArrayTool.mm">
+      </ContextState>
+      <ContextState
+         contextName = "-[AppDelegate GoToFrame:]:AppDelegate.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "mainGLView.mouseOverController">
+            </PersistentString>
+            <PersistentString
+               value = "annotationsForFrames">
+            </PersistentString>
+            <PersistentString
+               value = "annotations">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[AppDelegate loadProjectFile:]:AppDelegate.mm">
+      </ContextState>
+      <ContextState
+         contextName = "-[GLViewMouseOverController awakeFromNib]:GLViewMouseOverController.mm">
+      </ContextState>
+      <ContextState
+         contextName = "-[AppDelegate save:]:AppDelegate.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "framePath">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "-[GLEllipseTool getElements]:GLEllipseTool.mm">
+      </ContextState>
+      <ContextState
+         contextName = "-[GLRectangleDragger SetMousePosition:UsingSpaceConverter:]:GLRectangleDragger.mm">
+      </ContextState>
+      <ContextState
+         contextName = "-[GLEllipseTool GraphUsingSpaceConverter:]:GLEllipseTool.mm">
       </ContextState>
       <ContextState
          contextName = "-[GLViewMouseOverController comboBoxSelectionDidChange:]:GLViewMouseOverController.mm">
@@ -17,30 +54,13 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "-[GLViewMouseOverController awakeFromNib]:GLViewMouseOverController.mm">
-      </ContextState>
-      <ContextState
          contextName = "-[GLPointArrayTool setElements:]:GLPointArrayTool.mm">
       </ContextState>
       <ContextState
-         contextName = "-[AppDelegate save:]:AppDelegate.mm">
-         <PersistentStrings>
-            <PersistentString
-               value = "framePath">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "-[GLRectangleDragger SetMousePosition:UsingSpaceConverter:]:GLRectangleDragger.mm">
-      </ContextState>
-      <ContextState
-         contextName = "-[GLPointArrayTool mouseClickedAtPoint:withEvent:]:GLPointArrayTool.mm">
+         contextName = "-[AppDelegate toggleNextPrevActionConnection:]:AppDelegate.mm">
       </ContextState>
       <ContextState
          contextName = "-[GLPointArrayTool removeElementAtIndex:]:GLPointArrayTool.mm">
-      </ContextState>
-      <ContextState
-         contextName = "-[AppDelegate GoToFrame:]:AppDelegate.mm">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

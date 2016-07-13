@@ -32,6 +32,7 @@
     NSString *currentAnnotationType;
     int currentAnnotationTypeIndex;
     bool comboBoxIsOpen;
+    BOOL wasHiddenBeforeDrag;
     float screenPixelLength;
     
 }

@@ -79,6 +79,7 @@
 - (bool)StartDragging:(NSUInteger)withKeys
 {
 	dragging = true;
+    wasHiddenBeforeDrag = tooltip.isHidden;
     [tooltip setHidden:YES];
 	startMousePos = mousePos;
 	shiftHeld = withKeys & NSShiftKeyMask;
@@ -86,7 +87,7 @@
 }
 - (void)StopDragging
 {
-    [tooltip setHidden:NO];
+    [tooltip setHidden:wasHiddenBeforeDrag];
 	dragging = false;
 	stopMousePos = mousePos;
 }

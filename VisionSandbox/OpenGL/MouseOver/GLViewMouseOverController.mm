@@ -149,6 +149,8 @@
 }
 -(void)controlTextDidEndEditing:(NSNotification *)obj
 {
+    NSLog(@"done");
+
     if([[(NSTextField *)obj.object identifier] isEqualToString:@"tooltipCombo"])
     {
         NSString *test = tooltip.typeSelectionBox.objectValue;
@@ -159,6 +161,7 @@
             [tooltip.typeSelectionBox selectItemAtIndex:annotationTypes.count-1];
             [self comboBoxSelectionDidChange:obj];
         }
+        [tooltip setHidden:YES];
     }
     else
     {
@@ -177,6 +180,8 @@
 {
     currentTool.defaultWidth = defaultRectWidthField.intValue;
     currentTool.defaultHeight = defaultRectHeightField.intValue;
+
+    
 
 	[currentTool mouseClickedAtPoint:p superPoint:SP withEvent:event];
 }

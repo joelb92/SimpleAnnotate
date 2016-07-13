@@ -7,12 +7,13 @@
 //
 
 #import <Cocoa/Cocoa.h>
-
+#import "TextFieldWithMouseOver.h"
+#import "ComboBoxWithMouseOver.h"
 @interface Tooltip : NSView
 {
-    IBOutlet NSComboBox * typeSelectionBox;
-    IBOutlet NSTextField *nameField;
+    IBOutlet ComboBoxWithMouseOver * typeSelectionBox;
+    IBOutlet TextFieldWithMouseOver *nameField;
 }
-@property  NSComboBox *typeSelectionBox;
-@property NSTextField *nameField;
+@property  ComboBoxWithMouseOver *typeSelectionBox;
+@property TextFieldWithMouseOver *nameField;
 @end

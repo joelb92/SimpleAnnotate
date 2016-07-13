@@ -150,6 +150,7 @@ using namespace std;
 
 -(bool)GoToFrame:(int)newFrameNum
 {
+    [tooltip setHidden:YES];
     bool stillGood = false;
     if (newFrameNum >= 0 and newFrameNum < imagePathArray.count) {
         
@@ -268,9 +269,9 @@ using namespace std;
                 [annotations setObject:d forKey:k];
                 total+= (int)d.count;
             }
-            if (total > 0) {
+            
                 [annotationsForFrames setObject:annotations forKey:@(frameNum)]; //save current rects for current frame
-            }
+            
             for(GLViewTool *t in mainGLView.mouseOverController.allTools.allValues) [t clearAll];
             if ([[annotationsForFrames allKeys] containsObject:@(newFrameNum)]) {
                 NSDictionary *annDict = [annotationsForFrames objectForKey:@(newFrameNum)];
@@ -1028,18 +1029,23 @@ Mat norm_0_255(InputArray _src) {
             
             //first find all of the different headers there need to be
             NSMutableDictionary *uniquePropertyKeyDict = [[NSMutableDictionary alloc] init];
+            NSMutableDictionary *numAnnotationsForFrame = [[NSMutableDictionary alloc] init];
             for(int i =0; i < annotationsForFrames.count; i++)
             {
                 NSNumber *frameKey = [annotationsForFrames.allKeys objectAtIndex:i];
                 NSDictionary *allAnnotationsForFrame = [annotationsForFrames objectForKey:frameKey];
+                int total = 0;
                 for (int j = 0; j < allAnnotationsForFrame.count; j++) {
                     NSString *toolKey = [allAnnotationsForFrame.allKeys objectAtIndex:j];
                     NSDictionary *annotationsFromTool = [allAnnotationsForFrame objectForKey:toolKey];
+                    total += annotationsFromTool.count;
                     for(NSString *elementKey in annotationsFromTool.allKeys){
                         NSDictionary *elements = [annotationsFromTool objectForKey:elementKey];
                         for (NSString *key in elements.allKeys) [uniquePropertyKeyDict setObject:@"" forKey:key];
+                        
                     }
                 }
+                [numAnnotationsForFrame setObject:@(total) forKey:frameKey];
             }
             NSMutableArray *propertyKeys =  uniquePropertyKeyDict.allKeys.mutableCopy;
             [propertyKeys removeObject:@"coords"];
@@ -1113,8 +1119,10 @@ Mat norm_0_255(InputArray _src) {
                 {
                     [[NSFileManager defaultManager] removeItemAtPath:individualFileSavePath error:nil];
                 }
+                if ([numAnnotationsForFrame objectForKey:frameKey] != nil and [[numAnnotationsForFrame objectForKey:frameKey] intValue] > 0) {
+                    [saveCSV writeToFile:individualFileSavePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
+                }
                 
-                [saveCSV writeToFile:individualFileSavePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
             }
             //add the rest of the files we loaded
             for(i = i; i < imagePathArray.count; i++)

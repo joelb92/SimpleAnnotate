@@ -134,6 +134,8 @@
 		D8543A231D3003D100BC8F97 /* SettingsPanelHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = D8543A221D3003D100BC8F97 /* SettingsPanelHandler.mm */; };
 		D8543A251D30054600BC8F97 /* RHPreferences.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8543A241D30054600BC8F97 /* RHPreferences.framework */; };
 		D8543A261D30055800BC8F97 /* RHPreferences.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = D8543A241D30054600BC8F97 /* RHPreferences.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D8543A2C1D36CDBD00BC8F97 /* TextFieldWithMouseOver.m in Sources */ = {isa = PBXBuildFile; fileRef = D8543A2B1D36CDBD00BC8F97 /* TextFieldWithMouseOver.m */; };
+		D8543A2F1D36D1E000BC8F97 /* ComboBoxWithMouseOver.m in Sources */ = {isa = PBXBuildFile; fileRef = D8543A2E1D36D1E000BC8F97 /* ComboBoxWithMouseOver.m */; };
 		D8E1BC1D1D1C44570092FB0C /* FaceDetectionHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = D8E1BC1C1D1C44570092FB0C /* FaceDetectionHandler.mm */; };
 		D8E1BC201D1DBCB60092FB0C /* Tooltip.m in Sources */ = {isa = PBXBuildFile; fileRef = D8E1BC1F1D1DBCB60092FB0C /* Tooltip.m */; };
 /* End PBXBuildFile section */
@@ -391,6 +393,10 @@
 		D8543A211D3003D100BC8F97 /* SettingsPanelHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsPanelHandler.h; sourceTree = "<group>"; };
 		D8543A221D3003D100BC8F97 /* SettingsPanelHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SettingsPanelHandler.mm; sourceTree = "<group>"; };
 		D8543A241D30054600BC8F97 /* RHPreferences.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RHPreferences.framework; path = IncludedFrameworks/RHPreferences.framework; sourceTree = "<group>"; };
+		D8543A2A1D36CDBD00BC8F97 /* TextFieldWithMouseOver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextFieldWithMouseOver.h; sourceTree = "<group>"; };
+		D8543A2B1D36CDBD00BC8F97 /* TextFieldWithMouseOver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextFieldWithMouseOver.m; sourceTree = "<group>"; };
+		D8543A2D1D36D1E000BC8F97 /* ComboBoxWithMouseOver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComboBoxWithMouseOver.h; sourceTree = "<group>"; };
+		D8543A2E1D36D1E000BC8F97 /* ComboBoxWithMouseOver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComboBoxWithMouseOver.m; sourceTree = "<group>"; };
 		D8E1BC1B1D1C44570092FB0C /* FaceDetectionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceDetectionHandler.h; sourceTree = "<group>"; };
 		D8E1BC1C1D1C44570092FB0C /* FaceDetectionHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FaceDetectionHandler.mm; sourceTree = "<group>"; };
 		D8E1BC1E1D1DBCB60092FB0C /* Tooltip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tooltip.h; sourceTree = "<group>"; };
@@ -496,6 +502,10 @@
 				5D3F3F0F1B711AC500C9C001 /* CamShiftTracker.mm */,
 				5DB2C7EB1A718A0700A1F815 /* GL2DGeometryDrawer.h */,
 				5DB2C7EC1A718A0700A1F815 /* GL2DGeometryDrawer.mm */,
+				D8543A2A1D36CDBD00BC8F97 /* TextFieldWithMouseOver.h */,
+				D8543A2B1D36CDBD00BC8F97 /* TextFieldWithMouseOver.m */,
+				D8543A2D1D36D1E000BC8F97 /* ComboBoxWithMouseOver.h */,
+				D8543A2E1D36D1E000BC8F97 /* ComboBoxWithMouseOver.m */,
 				5DEA6BD21B71F6F5009D240B /* Tracking */,
 				5D2898661992020C0036CFD6 /* Algebra */,
 				5D28988B199202620036CFD6 /* Array Types */,
@@ -1032,6 +1042,7 @@
 				5D2898B7199202710036CFD6 /* Vector3Arr.mm in Sources */,
 				5D2897A51991E2300036CFD6 /* AppDelegate.mm in Sources */,
 				5D55C55D1994548900D9F78A /* ImageThresholdMask.mm in Sources */,
+				D8543A2C1D36CDBD00BC8F97 /* TextFieldWithMouseOver.m in Sources */,
 				5D2898801992022E0036CFD6 /* Vector3.mm in Sources */,
 				5DEA6CF01B724989009D240B /* Patches.cpp in Sources */,
 				5DEA6CF11B724989009D240B /* Regions.cpp in Sources */,
@@ -1049,6 +1060,7 @@
 				5DB2C7ED1A718A0700A1F815 /* GL2DGeometryDrawer.mm in Sources */,
 				D8E1BC1D1D1C44570092FB0C /* FaceDetectionHandler.mm in Sources */,
 				5DEA6CB21B71FE89009D240B /* SemiBoostingTracker.cpp in Sources */,
+				D8543A2F1D36D1E000BC8F97 /* ComboBoxWithMouseOver.m in Sources */,
 				5D890E0D1D109CF90097F3E0 /* FrameHandler.mm in Sources */,
 				5DEA6CF41B724989009D240B /* StrongClassifierStandard.cpp in Sources */,
 				5D890E131D11C5450097F3E0 /* GLEllipseTool.mm in Sources */,

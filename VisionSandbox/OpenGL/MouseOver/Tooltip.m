@@ -24,9 +24,20 @@
 -(void)setHidden:(BOOL)flag
 {
     [super setHidden:flag];
-    if (!flag) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"tooltipIsActive" object:[NSNumber numberWithBool:YES]];
+    if (flag) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"tooltipIsActive" object:[NSNumber numberWithBool:NO]];
+
     }
-    else [[NSNotificationCenter defaultCenter] postNotificationName:@"tooltipIsActive" object:[NSNumber numberWithBool:NO]];
+    
 }
+
+-(BOOL)acceptsFirstResponder
+{
+    return YES;
+}
+-(BOOL)acceptsFirstMouse:(NSEvent *)theEvent
+{
+    return YES;
+}
+
 @end
