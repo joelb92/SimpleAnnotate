@@ -34,7 +34,7 @@
     bool comboBoxIsOpen;
     BOOL wasHiddenBeforeDrag;
     float screenPixelLength;
-    
+    cv::Mat currentImage;
 }
 @property (readwrite) int mousedOverElementIndex;
 @property (readonly) bool dragging;

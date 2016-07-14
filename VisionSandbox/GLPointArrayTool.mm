@@ -9,6 +9,7 @@
 #import "GLPointArrayTool.h"
 
 @implementation GLPointArrayTool
+@synthesize scissorTool;
 - (id)initWithOutputView:(InfoOutputController *)inf
 {
     self = [super init];
@@ -24,7 +25,11 @@
         rectPositionsForKeys = [[NSMutableDictionary alloc] init];
         pointStructureMap = [[NSMutableArray alloc] init];
         pointStructureIndexMap = [[NSMutableArray alloc] init];
+        scissorTool = [[IntelligentScissors alloc] init];
+        isMagneticArray = [[NSMutableArray alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(lassoTypeDidChange:) name:@"LassoSelectionChanged" object:nil];
+
     }
     return self;
 }
@@ -55,6 +60,7 @@
         [elementTypes addObject:type];
         [segColors addElement:c];
     }
+    [isMagneticArray addObject:[NSNumber numberWithBool:isMagnetic]];
     allPoints.AddItemToEnd(v);
     [pointStructureMap addObject:key];
     [pointStructureIndexMap addObject:@(p.Length-1)];
@@ -83,6 +89,7 @@
         
         p.RemoveItemAtIndex(pIndex);
         pointSets[structureIndex] = p;
+        [isMagneticArray removeObjectAtIndex:i];
 
         if(p.Length == 0){
             [keys removeObject:key];
@@ -133,6 +140,23 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
 
+-(void)appendElements:(NSDictionary *)rects
+{
+    for(int i = 0; i < rects.count; i++)
+    {
+        NSObject *key = [rects.allKeys objectAtIndex:i];
+        NSDictionary *dict = [rects objectForKey:key];
+        NSArray *arr = [dict objectForKey:@"coords"];
+        [segColors addElement:Blue];
+        Vector2Arr p = Vector2Arr();
+        for (int j = 0; j < arr.count; j++) {
+            NSPoint np = [[arr objectAtIndex:j] pointValue];
+            [self addElement:NSMakeRect(np.x, np.y, 0, 0) color:Blue forKey:key andType:[dict objectForKey:@"type"]];
+        }
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
+}
+
 -(NSString *)stringForKey:(NSObject *)key
 {
     return [self stringForIndex:(int)[keys indexOfObject:key]];
@@ -160,6 +184,7 @@
     [pointStructureIndexMap removeAllObjects];
     [pointStructureMap removeAllObjects];
     [elementTypes removeAllObjects];
+    [isMagneticArray removeAllObjects];
     allPoints = Vector2Arr();
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
@@ -226,7 +251,39 @@
         
         
     }
+    if (scissorTool.scissorActive) {
+        std::vector<cv::Point> sPoints = scissorTool.pathPoints;
+        glPointSize(10);
+
+        glBegin(GL_POINTS);
+//        glLineWidth(1);
+        [self SetCurrentColor:Red];
+        if(sPoints.size() > 0)
+        {
+        for(int i = 0; i < sPoints.size()-1; i++)
+        {
+            Vector2 p1 = spaceConverter.ImageToCameraVector(sPoints[i]);
+            Vector2 p2 = spaceConverter.ImageToCameraVector(sPoints[i+1]);
+            glVertex3d(p1.x, p1.y, minZ);
+//            glVertex3d(p2.x, p2.y, minZ);
+        }
+        }
+        glEnd();
+    }
     [lock unlock];
+}
+
+-(void)lassoTypeDidChange:(NSNotification *)notification
+{
+    NSNumber *n = notification.object;
+    if (n.intValue == 0)
+    {
+        isMagnetic = true;
+    }
+    else if(n.intValue == 1)
+    {
+        isMagnetic = false;
+    }
 }
 
 -(void)InitializeWithSpaceConverter:(SpaceConverter)spaceConverter
@@ -362,7 +419,11 @@
 {
     point.x = floor(point.x);
     point.y = floor(point.y);
-    
+    if(isMagnetic)
+        [scissorTool mouseClickedAtScreenPoint:point.AsVector2()];
+    else
+    {
+//    [scissorTool mouseMove:point.AsVector2()];
     if(!point.isNull() && mousedOverPointIndex >= 0)
     {
         NSString *key = [pointStructureMap objectAtIndex:mousedOverPointIndex];
@@ -387,7 +448,7 @@
         points[elIndex] = newP;
         allPoints[mousedOverPointIndex] = newP;
             [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
-    
+    }
 }
 }
 
@@ -414,9 +475,9 @@
 
 - (void)mouseClickedAtPoint:(Vector2)p superPoint:(Vector2)SP withEvent:(NSEvent *)event
 {
-    
-    if (([event modifierFlags] & NSCommandKeyMask) && (([event modifierFlags] & NSAlternateKeyMask)  ||  pointSets.size() == 0)) {
+    if (([event modifierFlags] & NSCommandKeyMask) && (([event modifierFlags] & NSAlternateKeyMask)  ||  (pointSets.size() == 0 && scissorTool.pathPoints.size() == 0 && scissorTool.startPoint.x == -1 && scissorTool.startPoint.y == -1))) {
         if (!madeNewRect) {
+            //We need to make a new point set
             int currentKeyNum =int(pointSets.size());
             NSString *newRectKey =[NSString stringWithFormat:@"Point Set %i",currentKeyNum];
             while ([usedRectangleNumberKeys containsObject:newRectKey]) {
@@ -425,19 +486,37 @@
             }
             [usedRectangleNumberKeys addObject:newRectKey];
             currentAdditionKey= newRectKey;
-            [self addElement:NSMakeRect(p.x, p.y, defaultWidth, defaultHeight) color:Blue forKey:newRectKey];
+            if (isMagnetic) {
+                
+                    [scissorTool startScissorSessionWithName:[NSString stringWithFormat:@"Magnetic Point Set %i",currentKeyNum]];
+                [scissorTool mouseClickedAtScreenPoint:p ];
+            }
+            else{
+                [self addElement:NSMakeRect(p.x, p.y, defaultWidth, defaultHeight) color:Blue forKey:newRectKey];
+            }
+            
         }
         
     }
     else if([event modifierFlags] & NSCommandKeyMask)
     {
+        //We are adding to a point set that already exists
         NSString *newRectKey;
         if([currentAdditionKey isEqualToString:@""] || currentAdditionKey == nil)
         {
              newRectKey =[NSString stringWithFormat:@"Point Set 0"];
         }
         else newRectKey = currentAdditionKey;
-        [self addElement:NSMakeRect(p.x, p.y, 0, 0) color:Blue forKey:newRectKey];
+        if (isMagnetic) {
+            if(scissorTool.scissorActive)
+                [scissorTool mouseClickedAtScreenPoint:p];
+            else{
+                [scissorTool startScissorSessionWithName:@"None"];
+            }
+        }
+        else{
+            [self addElement:NSMakeRect(p.x, p.y, 0, 0) color:Blue forKey:newRectKey];
+        }
     }
     
     if ([event modifierFlags] & NSShiftKeyMask) {

@@ -14,16 +14,16 @@
          contextName = "-[GLPointArrayTool mouseClickedAtPoint:withEvent:]:GLPointArrayTool.mm">
       </ContextState>
       <ContextState
-         contextName = "-[AppDelegate GoToFrame:]:AppDelegate.mm">
+         contextName = "-[GLViewMouseOverController controlTextDidEndEditing:]:GLViewMouseOverController.mm">
          <PersistentStrings>
             <PersistentString
-               value = "mainGLView.mouseOverController">
+               value = "obj.object">
             </PersistentString>
             <PersistentString
-               value = "annotationsForFrames">
+               value = "tableViewCells">
             </PersistentString>
             <PersistentString
-               value = "annotations">
+               value = "[obj.object nextKeyView]">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -42,16 +42,16 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "-[GLViewMouseOverController controlTextDidEndEditing:]:GLViewMouseOverController.mm">
+         contextName = "-[AppDelegate GoToFrame:]:AppDelegate.mm">
          <PersistentStrings>
             <PersistentString
-               value = "obj.object">
+               value = "mainGLView.mouseOverController">
             </PersistentString>
             <PersistentString
-               value = "tableViewCells">
+               value = "annotationsForFrames">
             </PersistentString>
             <PersistentString
-               value = "[obj.object nextKeyView]">
+               value = "annotations">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

@@ -249,6 +249,7 @@ using namespace std;
                     }
                     [isSubFaceImage setObject:@(NO) forKey:@(newFrameNum)];
                     [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+                    [mainGLView.mouseOverController.scissorTool setIm:img.Cv];
                     [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
                     
                     //                    [mainGLView.mouseOverController.rectangleTool setCurrentFrame:[(OpenImageHandler *)[frameForFrameNumber objectForKey:@(newFrameNum)] Cv]];
@@ -281,6 +282,7 @@ using namespace std;
             }
             OpenImageHandler *img = [frameForFrameNumber objectForKey:@(newFrameNum)];
             [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+            [mainGLView.mouseOverController.scissorTool setIm:img.Cv];
             [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
             
             //            [mainGLView.mouseOverController.rectangleTool setCurrentFrame:[(OpenImageHandler *)[frameForFrameNumber objectForKey:@(newFrameNum)] Cv]];
@@ -536,6 +538,7 @@ using namespace std;
                     [self loadNewFrame:0];
                     OpenImageHandler *img = [frameForFrameNumber objectForKey:@(0)];
                     [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+                    [mainGLView.mouseOverController.scissorTool setIm:img.Cv];
                     [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%li",1,imagePathArray.count]];
                 }
                 else{ //we most likely have a video
@@ -563,6 +566,7 @@ using namespace std;
                         {
                             OpenImageHandler *img = [frameForFrameNumber objectForKey:@(0)];
                             [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+                            [mainGLView.mouseOverController.scissorTool setIm:img.Cv];
                             [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",frameNum,numFrames]];
                         }
                     }

@@ -7,7 +7,7 @@
 #import "GLViewMouseOverController.h"
 
 @implementation GLViewMouseOverController
-@synthesize rectangleTool,RectKey,allTools;
+@synthesize rectangleTool,RectKey,allTools,scissorTool;
 - (GLViewTool*)tool
 {
 	return [[currentTool retain] autorelease];
@@ -26,6 +26,8 @@
 		rectangleTool = [[GLRectangleDragger alloc] initWithOutputView:infoOutput];
         ellipseTool = [[GLEllipseTool alloc] initWithOutputView:infoOutput];
         pointTool = [[GLPointArrayTool alloc] initWithOutputView:infoOutput];
+        scissorTool = [[IntelligentScissors alloc] init];
+        pointTool.scissorTool = scissorTool;
         NSArray *toolNames = @[@"rectangleTool",@"ellipseTool",@"pointTool"];
         NSArray *tools = @[rectangleTool,ellipseTool,pointTool];
         allTools = [[NSDictionary alloc] initWithObjects:tools forKeys:toolNames];
@@ -96,10 +98,25 @@
 	[[NSBezierPath bezierPathWithRect:NSInsetRect([self bounds], 1, 1)] stroke];
 }
 
+-(IBAction)lassoSelection:(id)sender
+{
+    NSSegmentedControl *c = (NSSegmentedControl *) sender;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LassoSelectionChanged" object:@(c.selectedSegment)];
+}
 
 -(IBAction)toolSelection:(id)sender
 {
-    currentTool = [allTools objectForKey:[allTools.allKeys objectAtIndex:toolMenu.selectedSegment]];
+    NSString *toolKey =[allTools.allKeys objectAtIndex:toolMenu.selectedSegment];
+    currentTool = [allTools objectForKey:toolKey];
+    if ([toolKey isEqualToString:@"pointTool"]) {
+        [lassoMenu setHidden:NO];
+        for(int i = 0; i < lassoMenu.segmentCount; i++)[lassoMenu setEnabled:YES forSegment:i];
+    }
+    else
+    {
+        for(int i = 0; i < lassoMenu.segmentCount; i++)[lassoMenu setEnabled:NO forSegment:i];
+        [lassoMenu setHidden:YES];
+    }
     
     [self reloadTable];
 }

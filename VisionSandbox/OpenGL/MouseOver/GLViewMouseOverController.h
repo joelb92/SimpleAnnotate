@@ -12,6 +12,8 @@
 #import "GLPointArrayTool.h"
 #import "ROTableView.h"
 #import "Tooltip.h"
+#import "IntelligentScissors.h"
+
 @interface GLViewMouseOverController : DragableSubView <NSTabViewDelegate,NSTableViewDataSource,NSTextFieldDelegate,NSComboBoxDelegate>
 {
 	GLRuler*rulerTool;
@@ -48,8 +50,11 @@
     IBOutlet ROTableView *mainTableView;
     IBOutlet NSButton *linkDimsButton;
     IBOutlet NSSegmentedControl *toolMenu;
+    IBOutlet NSSegmentedControl *lassoMenu;
     NSMutableDictionary *tableViewCells;
     NSMutableDictionary *keysForTools;
+    IntelligentScissors *scissorTool;
+    int lassoMenuHeight;
     NSImage *linkImg;
     NSImage *unlinkImg;
 
@@ -57,6 +62,7 @@
 @property (assign) GLRectangleDragger *rectangleTool;
 @property (assign) NSTextField *RectKey;
 @property (assign) NSDictionary *allTools;
+@property (assign) IntelligentScissors *scissorTool;
 -(NSString *) currentToolKey;
 - (GLViewTool*)tool;
 - (bool)ActiveInView:(NSView*)view;
