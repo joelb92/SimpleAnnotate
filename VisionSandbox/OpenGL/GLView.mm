@@ -53,13 +53,17 @@
 		//objectList = [[GLObjectList alloc] init];
 		
 		spaceConverter = SpaceConverter();
-		
+//        self.acceptsFirstResponder = true;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ZoomIn) name:@"ZoomIn" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ZoomOut) name:@"ZoomOut" object:nil];
 		
 		backgroundColor = [[NSColor colorWithCalibratedRed:0.1 green:0.1 blue:0.1 alpha:1] retain];
 	}
 	return self;
+}
+
+-(BOOL)acceptsFirstResponder{
+    return YES;
 }
 //Set some intitial values and start the idle (60 FPS):
 - (void)prepareOpenGL
@@ -87,6 +91,12 @@
 {
 	[objectList Save];
 }
+
+-(void)keyDown:(NSEvent *)theEvent
+{
+    NSLog(@"got a key down");
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //																								//
 //																								//

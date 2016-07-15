@@ -139,6 +139,7 @@
 		D8543A321D37DCFA00BC8F97 /* IntelligentScissors.mm in Sources */ = {isa = PBXBuildFile; fileRef = D8543A311D37DCFA00BC8F97 /* IntelligentScissors.mm */; };
 		D894AAA11D380EA300EBFDEB /* magneticlasso.png in Resources */ = {isa = PBXBuildFile; fileRef = D894AAA01D380EA300EBFDEB /* magneticlasso.png */; };
 		D894AAA71D38134200EBFDEB /* lassoicon.png in Resources */ = {isa = PBXBuildFile; fileRef = D894AAA61D38134200EBFDEB /* lassoicon.png */; };
+		D8C041FE1D3956F000F520CB /* smootour.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8C041FC1D3956F000F520CB /* smootour.cpp */; };
 		D8E1BC1D1D1C44570092FB0C /* FaceDetectionHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = D8E1BC1C1D1C44570092FB0C /* FaceDetectionHandler.mm */; };
 		D8E1BC201D1DBCB60092FB0C /* Tooltip.m in Sources */ = {isa = PBXBuildFile; fileRef = D8E1BC1F1D1DBCB60092FB0C /* Tooltip.m */; };
 /* End PBXBuildFile section */
@@ -404,6 +405,8 @@
 		D8543A311D37DCFA00BC8F97 /* IntelligentScissors.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = IntelligentScissors.mm; sourceTree = "<group>"; };
 		D894AAA01D380EA300EBFDEB /* magneticlasso.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magneticlasso.png; sourceTree = SOURCE_ROOT; };
 		D894AAA61D38134200EBFDEB /* lassoicon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lassoicon.png; sourceTree = SOURCE_ROOT; };
+		D8C041FC1D3956F000F520CB /* smootour.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = smootour.cpp; sourceTree = "<group>"; };
+		D8C041FD1D3956F000F520CB /* smootour.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = smootour.hpp; sourceTree = "<group>"; };
 		D8E1BC1B1D1C44570092FB0C /* FaceDetectionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceDetectionHandler.h; sourceTree = "<group>"; };
 		D8E1BC1C1D1C44570092FB0C /* FaceDetectionHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FaceDetectionHandler.mm; sourceTree = "<group>"; };
 		D8E1BC1E1D1DBCB60092FB0C /* Tooltip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tooltip.h; sourceTree = "<group>"; };
@@ -515,6 +518,8 @@
 				D8543A2E1D36D1E000BC8F97 /* ComboBoxWithMouseOver.m */,
 				D8543A301D37DCFA00BC8F97 /* IntelligentScissors.h */,
 				D8543A311D37DCFA00BC8F97 /* IntelligentScissors.mm */,
+				D8C041FC1D3956F000F520CB /* smootour.cpp */,
+				D8C041FD1D3956F000F520CB /* smootour.hpp */,
 				5DEA6BD21B71F6F5009D240B /* Tracking */,
 				5D2898661992020C0036CFD6 /* Algebra */,
 				5D28988B199202620036CFD6 /* Array Types */,
@@ -1090,6 +1095,7 @@
 				5D28984D1991FA890036CFD6 /* TreeList.mm in Sources */,
 				5D2898811992022E0036CFD6 /* Ray2.mm in Sources */,
 				5D2898BD199202710036CFD6 /* intArr.mm in Sources */,
+				D8C041FE1D3956F000F520CB /* smootour.cpp in Sources */,
 				5D2898461991FA890036CFD6 /* GLObject.mm in Sources */,
 				5DEA6CEE1B724989009D240B /* ImageRepresentation.cpp in Sources */,
 				5DEA6CED1B724989009D240B /* FeatureHaar.cpp in Sources */,

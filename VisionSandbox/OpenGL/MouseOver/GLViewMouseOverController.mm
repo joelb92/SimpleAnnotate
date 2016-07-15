@@ -19,6 +19,7 @@
     self = [super initWithFrame:frame];
     if(self)
 	{
+        previousStatusLabel = @"";
         tableViewCells = [[NSMutableDictionary alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"TableReload" object:nil];
 		rulerTool = [[GLRuler alloc] init];
@@ -39,6 +40,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UpdateOutput) name:@"MouseOverToolValueChanged" object:nil];
 //		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OpenSegmentationAssistant) name:@"Open Segmentation Assistant!" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setSelectedTableRow:) name:@"SelectionChanged" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyDownHappened:) name:@"KeyDownHappened" object:nil];
+
         linkImg = [NSImage imageNamed:@"link.png"];
         unlinkImg = [NSImage imageNamed:@"unlink.png"];
         currentTool.linkedDims = false;
@@ -47,6 +50,17 @@
     }
     
     return self;
+}
+
+-(void)keyDownHappened:(NSNotification *)notification
+{
+    NSEvent *event = [notification object];
+    if (event.keyCode == 36) {
+        if (currentTool == pointTool and lassoMenu.selectedSegment == 0) {
+            previousStatusLabel = statusLabel.stringValue;
+            [statusLabel setStringValue:@"'CMD'+''alt' click to begin a new magnetic lasso point set"];
+        }
+    }
 }
 
 - (IBAction)linkDimsToggle:(id)sender {
@@ -101,6 +115,7 @@
 -(IBAction)lassoSelection:(id)sender
 {
     NSSegmentedControl *c = (NSSegmentedControl *) sender;
+
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LassoSelectionChanged" object:@(c.selectedSegment)];
 }
 
@@ -117,7 +132,21 @@
         for(int i = 0; i < lassoMenu.segmentCount; i++)[lassoMenu setEnabled:NO forSegment:i];
         [lassoMenu setHidden:YES];
     }
-    
+    if (currentTool == pointTool and !pointTool.scissorTool.scissorActive and lassoMenu.selectedSegment == 0)
+    {
+        previousStatusLabel = statusLabel.stringValue;
+        [statusLabel setStringValue:@"'CMD'+''alt' click to begin a new magnetic lasso point set"];
+    }
+    else if(currentTool == pointTool and !pointTool.scissorTool.scissorActive and lassoMenu.selectedSegment == 1)
+    {
+        previousStatusLabel = statusLabel.stringValue;
+        [statusLabel setStringValue:@"'CMD'+''alt' click to begin a new point set"];
+    }
+    else if(currentTool != pointTool)
+    {
+        previousStatusLabel = statusLabel.stringValue;
+        [statusLabel setStringValue:[NSString stringWithFormat:@"Now using %@",[keysForTools objectForKey:currentTool]]];
+    }
     [self reloadTable];
 }
 
@@ -195,8 +224,13 @@
 {
     currentTool.defaultWidth = defaultRectWidthField.intValue;
     currentTool.defaultHeight = defaultRectHeightField.intValue;
-
-    
+    if (currentTool == pointTool and pointTool.scissorTool.scissorActive) {
+        previousStatusLabel = [statusLabel stringValue];
+        [statusLabel setStringValue:@"Press 'Enter' to finish Magnetic Lasso"];
+    }
+    else{
+        [statusLabel setStringValue:previousStatusLabel];
+    }
 
 	[currentTool mouseClickedAtPoint:p superPoint:SP withEvent:event];
 }

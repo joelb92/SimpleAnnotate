@@ -51,9 +51,11 @@
     IBOutlet NSButton *linkDimsButton;
     IBOutlet NSSegmentedControl *toolMenu;
     IBOutlet NSSegmentedControl *lassoMenu;
+    IBOutlet NSTextField *statusLabel;
     NSMutableDictionary *tableViewCells;
     NSMutableDictionary *keysForTools;
     IntelligentScissors *scissorTool;
+    NSString *previousStatusLabel;
     int lassoMenuHeight;
     NSImage *linkImg;
     NSImage *unlinkImg;

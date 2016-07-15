@@ -1096,6 +1096,9 @@ CA
                     </splitView>
                 </subviews>
             </view>
+            <connections>
+                <outlet property="initialFirstResponder" destination="a5b-o1-q5b" id="cDJ-HA-14t"/>
+            </connections>
             <point key="canvasLocation" x="428" y="416"/>
         </window>
         <customObject id="494" customClass="AppDelegate">
@@ -1271,6 +1274,7 @@ CA
                 <outlet property="linkDimsButton" destination="Xrd-Na-poF" id="kst-Fp-cOd"/>
                 <outlet property="mainTableView" destination="Uuo-1m-Dhq" id="jP8-gp-41F"/>
                 <outlet property="mainView" destination="a5b-o1-q5b" id="oCt-r5-hHN"/>
+                <outlet property="statusLabel" destination="ZMz-zz-zyk" id="ZEa-6S-G2E"/>
                 <outlet property="toolMenu" destination="Vyw-7D-e33" id="Frt-va-Vwh"/>
                 <outlet property="tooltip" destination="Mnr-5j-LY0" id="rce-z9-9Zo"/>
             </connections>

@@ -21,10 +21,15 @@
 		dragging = false;
         elementTypes = [[NSMutableArray alloc] init];
         usedRectangleNumberKeys = [[NSMutableArray alloc] init];
-
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyDownHappened:) name:@"KeyDownHappened" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
 	}
 	return self;
+}
+
+-(void)keyDownHappened:(NSNotification *)notification
+{
+    
 }
 
 -(void)GraphUsingSpaceConverter:(SpaceConverter)spaceConverter

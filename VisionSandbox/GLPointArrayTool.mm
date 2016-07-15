@@ -34,6 +34,20 @@
     return self;
 }
 
+-(void)keyDownHappened:(NSNotification *)notification
+{
+    NSEvent * event = notification.object;
+    if(event.keyCode == 36)
+    {
+    if (scissorTool.scissorActive)
+    {
+        [scissorTool endScissorSession];
+        [self appendElements:scissorTool.getPointArray];
+//        isMagnetic = false;
+    }
+    }
+}
+
 -(void)addElement:(NSRect)er color:(Color)c forKey:(NSString *)key
 {
     [self addElement:er color:c forKey:key andType:currentAnnotationType];
@@ -279,6 +293,7 @@
     if (n.intValue == 0)
     {
         isMagnetic = true;
+        [scissorTool endScissorSession];
     }
     else if(n.intValue == 1)
     {
@@ -475,24 +490,26 @@
 
 - (void)mouseClickedAtPoint:(Vector2)p superPoint:(Vector2)SP withEvent:(NSEvent *)event
 {
+    int currentKeyNum =int(pointSets.size());
+    NSString *newRectKey =[NSString stringWithFormat:@"Point Set %i",currentKeyNum];
+    while ([usedRectangleNumberKeys containsObject:newRectKey]) {
+        currentKeyNum++;
+        newRectKey =[NSString stringWithFormat:@"Point Set %i",currentKeyNum];
+    }
     if (([event modifierFlags] & NSCommandKeyMask) && (([event modifierFlags] & NSAlternateKeyMask)  ||  (pointSets.size() == 0 && scissorTool.pathPoints.size() == 0 && scissorTool.startPoint.x == -1 && scissorTool.startPoint.y == -1))) {
         if (!madeNewRect) {
             //We need to make a new point set
-            int currentKeyNum =int(pointSets.size());
-            NSString *newRectKey =[NSString stringWithFormat:@"Point Set %i",currentKeyNum];
-            while ([usedRectangleNumberKeys containsObject:newRectKey]) {
-                currentKeyNum++;
-                newRectKey =[NSString stringWithFormat:@"Point Set %i",currentKeyNum];
-            }
             [usedRectangleNumberKeys addObject:newRectKey];
             currentAdditionKey= newRectKey;
             if (isMagnetic) {
                 
-                    [scissorTool startScissorSessionWithName:[NSString stringWithFormat:@"Magnetic Point Set %i",currentKeyNum]];
+                    [scissorTool startScissorSessionWithName:newRectKey];
+                [usedRectangleNumberKeys addObject:newRectKey];
                 [scissorTool mouseClickedAtScreenPoint:p ];
             }
             else{
                 [self addElement:NSMakeRect(p.x, p.y, defaultWidth, defaultHeight) color:Blue forKey:newRectKey];
+                [usedRectangleNumberKeys addObject:newRectKey];
             }
             
         }
@@ -501,21 +518,22 @@
     else if([event modifierFlags] & NSCommandKeyMask)
     {
         //We are adding to a point set that already exists
-        NSString *newRectKey;
-        if([currentAdditionKey isEqualToString:@""] || currentAdditionKey == nil)
+        if(([currentAdditionKey isEqualToString:@""] || currentAdditionKey == nil) or isMagnetic)
         {
-             newRectKey =[NSString stringWithFormat:@"Point Set 0"];
         }
         else newRectKey = currentAdditionKey;
         if (isMagnetic) {
             if(scissorTool.scissorActive)
                 [scissorTool mouseClickedAtScreenPoint:p];
             else{
-                [scissorTool startScissorSessionWithName:@"None"];
+                [scissorTool startScissorSessionWithName:newRectKey];
+                [scissorTool mouseClickedAtScreenPoint:p];
+                [usedRectangleNumberKeys addObject:newRectKey];
             }
         }
         else{
             [self addElement:NSMakeRect(p.x, p.y, 0, 0) color:Blue forKey:newRectKey];
+            [usedRectangleNumberKeys addObject:newRectKey];
         }
     }
     

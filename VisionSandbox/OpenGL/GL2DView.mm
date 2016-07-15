@@ -49,6 +49,7 @@
 	glLoadIdentity();
 }
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //																								//
 //																								//
@@ -145,6 +146,7 @@
 
 - (void)keyDown:(NSEvent*)event
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"KeyDownHappened" object:event];
 	switch ([event keyCode])
 	{
 		case 13:	//w

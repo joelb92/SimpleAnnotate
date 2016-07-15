@@ -1,0 +1,34 @@
+MAIN OPERATIONS:
+
+Saving/Loading:
+	*Save Project in current working directory: Command+S
+	*Save Project by new name: Shift+Command+S
+	*Open new set of files: Command+o
+	*Open/Resume project file: Shift+Command+o
+General Operations:
+	*Move forward and backward between images: Left/Right Arrow Keys
+	*Detect faces in Frame: Detect faces button
+	*Change annotation name and type: Use popup tooltip and/or table view on left side
+	
+TOOL SPECIFIC OPERATIONS:
+*Change Tools: Tools can be changed by using the toolbar underneath the "Detect Faces" button on the left hand side of the window.
+*Drag Annotations: Click within element + Drag
+*Lock annotaitons to specific dimension ratios: click the link/unlink toggle button in between the 'default Size' fields
+*Delete annotation: Shift+click within an annotation
+*Delete All Annotations for specific image: Command+delete or Command+backspace
+*Copy annotations from previous image onto current image: Command+c
+	*Rectangle Tool
+		-New Rectangle of default size (specified by 'Default Size' fields): Command+Click
+		-New Rectangle of custom size: Command+Click and drag
+		-Set Rectangle to Track object: Function Key + Click within given rectangle (may be unstable)
+	*Ellipse Tool
+		-New Ellipse: Command+click
+		-Rotate Ellipse: Click and drag rotation anchor located on right side of ellipse
+	*Lasso Tool
+		-New Set of Points: Command+Option+Click
+		-Add point to current point set: Command+Click
+	*Magnetic Lasso Tool
+		-Start New Magnetic Lasso Set: Command+Click to set start anchor
+		-Add to Magnetic Lasso Set: Command+click anywhere, or Command+drag from anywhere
+		-End current Magnetic Lasso Session: 'Enter' key
+		

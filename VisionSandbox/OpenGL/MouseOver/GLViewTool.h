@@ -78,4 +78,6 @@
 - (void)setKey:(NSString *)key atIndexed:(int)index;
 - (void) drawToolTipAtPosition:(Vector2) position Corner:(int)corner;
 - (bool) checkToolTipMouseOverForMousePoint:(Vector2)mouseP;
+- (void)keyDownHappened:(NSNotification *)notification;
+
 @end

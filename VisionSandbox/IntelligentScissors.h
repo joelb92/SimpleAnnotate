@@ -14,7 +14,7 @@
 #include <vector>         // std::vector
 #include <functional>     // std::greater
 #include "Vector2.h"
-
+#include "smootour.hpp"
 class SpecialType
 {
 public:
@@ -70,13 +70,13 @@ public:
     //cv::Mat parentX;
     //cv::Mat parentY;
     cv::Mat previous;
-    
+    int previousPointSize;
     cv::Mat path;
     cv::Mat mask;
 
     //Tools->Activate Scissor. Checkable button. Run the algorithms only if this is true
     bool scissorActive;
-    
+    Smootour smootour;
     //Tools->overlayPathActive. If this is true display with path if any. If false show only the original image.
     bool overlayPathActive;
 }

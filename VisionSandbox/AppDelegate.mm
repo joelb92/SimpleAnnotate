@@ -33,6 +33,7 @@ using namespace std;
     frameNum = 0;
     frameSkip = 1;
     [frameSkipField setStringValue:@"1"];
+    
     faceDetector = [[FaceDetectionHandler alloc] initWithShapePredictorFile:@"/Users/bog/SimpleAnnotate/shape_predictor_68_face_landmarks.dat"];
     [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,1000,1000)];
     acceptableImageTypes = @[[NSPredicate predicateWithFormat:@"self ENDSWITH '.jpg'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.png'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.bmp'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.ppm'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.gif'"]];
@@ -134,6 +135,9 @@ using namespace std;
         int newFrameNum = frameNum+frameSkip;
         if (!videoMode) newFrameNum = frameNum+1;
         [self GoToFrame:newFrameNum];
+//        NSLog(@"Is first responder: %@", [[mainWindow firstResponder] description]);
+//        NSLog(@"Is first responder: %@", [[NSApp targetForAction:@selector(mouseDown:)] description]);
+
     }
 }
 

@@ -26,7 +26,7 @@
             allClicksX[i] = 0;
             allClicksY[i] = 0;
         }
-        
+        previousPointSize = 0;
         //allocate array of Mats weights
         graphWeights = new cv::Mat[9];
         
@@ -41,9 +41,9 @@
 -(void)setIm:(cv::Mat)image
 {
     [self resetStateVariables];
-    cv::GaussianBlur(image, im, cv::Size(5,5), 1);
-    cv::imshow("blurred", im);
+    cv::GaussianBlur(image, im, cv::Size(7,7), 1);
     [self computeGraphWeights];
+    smootour = Smootour(im.rows, im.cols);
 }
 
 -(void) computeGraphWeights
@@ -372,15 +372,24 @@ void overlayPath( cv::Mat a, cv::Mat path, cv::Vec3b intensity , cv::Mat outI )
 
 -(NSDictionary *)getPointArray
 {
+//    std::vector<std::vector<cv::Point> > contours;
+//    contours.push_back(pathPoints);
+//    cv::Mat contourMat = cv::Mat::zeros(im.rows, im.cols, CV_8UC1);
+//    cv::drawContours(contourMat, contours, 0, 255);
+//    smootour.update(contourMat);
+//    contours = smootour.get_contours();
+    std::vector<cv::Point> newPathPoints =  pathPoints;// contours[0];
+    
     NSMutableDictionary *d = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *d2 = [[NSMutableDictionary alloc] init];
     NSMutableArray *a = [[NSMutableArray alloc] init];
+    if(sessionName == nil) sessionName = @"New Magnetic Lasso";
     [d setObject:d2 forKey:sessionName];
     [d2 setObject:a forKey:@"coords"];
     [d2 setObject:@"None" forKey:@"type"];
     for(int i = 0; i < pathPoints.size(); i++)
     {
-        [a addObject:[NSValue valueWithPoint:NSMakePoint(pathPoints[i].x, pathPoints[i].y)]];
+        [a addObject:[NSValue valueWithPoint:NSMakePoint(newPathPoints[i].x, newPathPoints[i].y)]];
     }
     return d;
 }
@@ -418,7 +427,6 @@ void overlayPath( cv::Mat a, cv::Mat path, cv::Vec3b intensity , cv::Mat outI )
             }
             pathImg.at<cv::Vec3b>(pathPoints[i]) = cv::Vec3b(255,0,0);
         }
-        cv::imshow("path", pathImg);
     }
     
     
@@ -613,7 +621,6 @@ void overlayPath( cv::Mat a, cv::Mat path, cv::Vec3b intensity , cv::Mat outI )
     [self resetStateVariables];
 //    paintImage(im);
 }
-
 
 
 -(void) resetStateVariables
