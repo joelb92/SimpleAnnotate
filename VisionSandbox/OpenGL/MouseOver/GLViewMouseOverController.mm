@@ -214,6 +214,7 @@
     {
         t.comboBoxIsOpen = true;
     }
+    [tooltip setHidden:NO];
 }
 
 -(void)comboBoxWillDismiss:(NSNotification *)notification
