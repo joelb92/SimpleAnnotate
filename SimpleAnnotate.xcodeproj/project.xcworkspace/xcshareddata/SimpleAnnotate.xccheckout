@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>EC8F51DD-3FEA-4267-8426-C1585B330724</string>
 	<key>IDESourceControlProjectName</key>
-	<string>SimpleAnnotate</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>D05B6629FB3FC48B12335DBCCDC5905ED591D59E</key>
 		<string>https://github.com/joelb92/SimpleAnnotate.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>SimpleAnnotate.xcodeproj</string>
+	<string>SimpleAnnotate.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>D05B6629FB3FC48B12335DBCCDC5905ED591D59E</key>
