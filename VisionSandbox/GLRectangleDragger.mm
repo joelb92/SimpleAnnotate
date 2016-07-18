@@ -461,12 +461,14 @@
     if ([event modifierFlags] & NSCommandKeyMask) {
         if (!madeNewRect) {
             int currentKeyNum =points.Length/4;
-            while ([usedRectangleNumberKeys containsObject:@(currentKeyNum)]) {
+            NSString *currentKeyName = [NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
+            while ([keys containsObject:@(currentKeyNum)]) {
                 currentKeyNum++;
+                currentKeyName = [NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
             }
-            [usedRectangleNumberKeys addObject:@(currentKeyNum)];
-            NSString *newRectKey =[NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
-            [self addElement:NSMakeRect(floor(p.x-defaultWidth/2), floor(p.y-defaultHeight/2), defaultWidth, defaultHeight) color:Blue forKey:newRectKey];
+//            [usedRectangleNumberKeys addObject:@(currentKeyNum)];
+//            NSString *newRectKey =[NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
+            [self addElement:NSMakeRect(floor(p.x-defaultWidth/2), floor(p.y-defaultHeight/2), defaultWidth, defaultHeight) color:Blue forKey:currentKeyName];
         }
         
     }
