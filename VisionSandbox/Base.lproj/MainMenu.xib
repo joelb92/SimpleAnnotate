@@ -1536,13 +1536,13 @@ By hitting command+S, you save your project.  All cropped images, along with a a
                 <comboBox identifier="tooltipCombo" verticalHuggingPriority="750" id="8va-DB-36c" customClass="ComboBoxWithMouseOver">
                     <rect key="frame" x="0.0" y="-4" width="123" height="26"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" identifier="tooltipCombo" placeholderString="Type" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="rXp-ia-qBj">
+                    <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" identifier="tooltipCombo" placeholderString="Type" drawsBackground="YES" numberOfVisibleItems="5" id="rXp-ia-qBj">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </comboBoxCell>
                     <connections>
-                        <outlet property="delegate" destination="thH-ug-6pU" id="OZz-zD-RhD"/>
+                        <outlet property="delegate" destination="thH-ug-6pU" id="yhK-Ri-FXQ"/>
                     </connections>
                 </comboBox>
             </subviews>

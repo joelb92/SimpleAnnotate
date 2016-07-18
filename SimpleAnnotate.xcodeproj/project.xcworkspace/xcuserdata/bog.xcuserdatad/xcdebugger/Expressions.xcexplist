@@ -23,7 +23,13 @@
                value = "tableViewCells">
             </PersistentString>
             <PersistentString
+               value = "tooltip.typeSelectionBox.objectValues">
+            </PersistentString>
+            <PersistentString
                value = "[obj.object nextKeyView]">
+            </PersistentString>
+            <PersistentString
+               value = "tooltip.typeSelectionBox.objectValue">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -60,6 +66,9 @@
       </ContextState>
       <ContextState
          contextName = "-[GLRectangleDragger SetMousePosition:UsingSpaceConverter:]:GLRectangleDragger.mm">
+      </ContextState>
+      <ContextState
+         contextName = "-[GLPointArrayTool keyDownHappened:]:GLPointArrayTool.mm">
       </ContextState>
       <ContextState
          contextName = "-[GLEllipseTool GraphUsingSpaceConverter:]:GLEllipseTool.mm">

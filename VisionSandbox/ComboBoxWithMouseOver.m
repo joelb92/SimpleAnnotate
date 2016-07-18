@@ -28,6 +28,7 @@
 
 -(void)mouseDown:(NSEvent *)theEvent
 {
+    [super mouseDown:theEvent];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"tooltipIsActive" object:[NSNumber numberWithBool:YES]];
 }
 @end

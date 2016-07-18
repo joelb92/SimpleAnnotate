@@ -167,8 +167,14 @@
 }
 -(void)comboBoxSelectionDidChange:(NSNotification *)notification
 {
-    if ([[(NSComboBox *)notification.object identifier] isEqualToString:@"tooltipCombo"]) {
-        if ([[tooltip.typeSelectionBox.objectValues objectAtIndex:tooltip.typeSelectionBox.indexOfSelectedItem] isEqualToString:@"+Add Other"])
+    NSComboBox *box = notification.object;
+    if ([[box identifier] isEqualToString:@"tooltipCombo"]) {
+        NSString *comboText = [box stringValue];
+        if (![[box objectValues] containsObject:comboText])
+        {
+
+        }
+        else if ([[tooltip.typeSelectionBox.objectValues objectAtIndex:tooltip.typeSelectionBox.indexOfSelectedItem] isEqualToString:@"+Add Other"])
         {
             
         }
@@ -202,7 +208,7 @@
             [annotationTypes insertObject:tooltip.typeSelectionBox.objectValue atIndex:annotationTypes.count-1];
             [tooltip.typeSelectionBox removeAllItems];
             [tooltip.typeSelectionBox addItemsWithObjectValues:annotationTypes];
-            [tooltip.typeSelectionBox selectItemAtIndex:annotationTypes.count-1];
+            [tooltip.typeSelectionBox selectItemAtIndex:annotationTypes.count-2];
             [self comboBoxSelectionDidChange:obj];
         }
         [tooltip setHidden:YES];
