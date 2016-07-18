@@ -13,7 +13,13 @@
 {
     IBOutlet ComboBoxWithMouseOver * typeSelectionBox;
     IBOutlet TextFieldWithMouseOver *nameField;
+    int openCount;
+    NSMutableArray *objectsTooltipIsVisibleIn;
 }
+@property (readonly) int openCount;
 @property  ComboBoxWithMouseOver *typeSelectionBox;
 @property TextFieldWithMouseOver *nameField;
+-(void)incrementVisibleCount;
+-(void)decrementVisibleCount;
+-(void)setHidden:(BOOL)flag forObject:(id)obj;
 @end

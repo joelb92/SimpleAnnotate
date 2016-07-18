@@ -54,6 +54,7 @@
 {
     mouseOverView = NO;
     [self setNeedsDisplayInRect:[self rectOfRow:mouseOverRow]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"TableViewHoverEnded" object:nil];
     mouseOverRow = -1;
     lastOverRow = -1;
 }

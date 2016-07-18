@@ -13,7 +13,6 @@
 {
 	Vector3Arr points;
 	
-	int draggedIndex;
 	int mousedOverIndex;
 	
 	bool initialized;

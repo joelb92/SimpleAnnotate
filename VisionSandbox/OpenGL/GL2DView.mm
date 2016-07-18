@@ -144,6 +144,12 @@
 	[self reshape];
 }
 
+
+- (void)flagsChanged:(NSEvent *)theEvent
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"keyFlagsChanged" object:theEvent];
+}
+
 - (void)keyDown:(NSEvent*)event
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"KeyDownHappened" object:event];
@@ -171,6 +177,7 @@
 }
 - (void)keyUp:(NSEvent*)event
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"KeyUpHappened" object:event];
 	switch ([event keyCode])
 	{
 		case 13:	//w

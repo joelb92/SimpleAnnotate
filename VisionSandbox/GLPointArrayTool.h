@@ -16,7 +16,6 @@
 @interface GLPointArrayTool : GLViewTool
 {
 bool initialized;
-int draggedIndex;
 int mousedOverPointIndex;
 int mousedOverLineIndex;
 int mousedOverEllipseIndex;

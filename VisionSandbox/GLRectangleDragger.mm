@@ -25,7 +25,7 @@
         infoOutput = inf;
         rectPositionsForKeys = [[NSMutableDictionary alloc] init];
         rectTrackingForRectsWithKeys = [[NSMutableArray alloc] init];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
     }
     return self;
 }
@@ -74,7 +74,7 @@
         mousedOverElementIndex = -1;
         mousedOverLineIndex = -1;
         skippedRects.AddItemToBegining(i);
-         [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
+         [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@[self,@(mousedOverElementIndex)]];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
@@ -123,7 +123,7 @@
 -(void)clearAll
 {
     mousedOverLineIndex = mousedOverPointIndex = mousedOverElementIndex = -1;
-     [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
+     [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@[self,@(mousedOverElementIndex)]];
     points = Vector2Arr();
     if (segColors) {
     }
@@ -300,7 +300,7 @@
             [tooltip.typeSelectionBox selectItemAtIndex:ind];
             [tooltip setFrame:newframe];
             [superView addSubview:tooltip];
-            [tooltip setHidden:NO];
+            [tooltip setHidden:NO forObject:self];
             inCont = true;
             continue;
         }
@@ -333,7 +333,7 @@
         [infoOutput.yCoordRectLabel setStringValue:@"NA"];
         [infoOutput.widthLabel setStringValue:@"NA"];
         [infoOutput.heightLabel	setStringValue:@"NA"];
-        [tooltip setHidden:YES];
+        [tooltip setHidden:YES forObject:self];
         
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
     }
@@ -341,7 +341,7 @@
     {
         mousedOverLineIndex = -1;
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@[self,@(mousedOverElementIndex)]];
     
     
 }
@@ -431,14 +431,13 @@
     {
         if (!madeNewRect) {
             int currentKeyNum =points.Length/4;
+            NSString *currentKeyName = [NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
             while ([usedRectangleNumberKeys containsObject:@(currentKeyNum)]) {
                 currentKeyNum++;
+                currentKeyName = [NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
             }
-            [usedRectangleNumberKeys addObject:@(currentKeyNum)];
-            NSString *newRectKey =[NSString stringWithFormat:@"Rectangle %i",currentKeyNum];
             NSRect r = NSMakeRect(point.x, point.y, 1, 1);
-            [self addElement:r color:Blue forKey:newRectKey];
-//            [keys addObject:newRectKey];
+            [self addElement:r color:Blue forKey:currentKeyName];
             mousedOverPointIndex = points.Length-4;
             madeNewRect = true;
             [self DragTo:point Event:event];

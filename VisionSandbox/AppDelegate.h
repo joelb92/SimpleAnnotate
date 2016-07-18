@@ -80,6 +80,7 @@
     bool separateFaces;
     bool hasSavePath;
     bool didCancelSave;
+    bool justLoadedNewProject;
     FaceDetectionHandler *faceDetector;
     
 }

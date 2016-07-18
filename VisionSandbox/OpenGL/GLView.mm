@@ -141,7 +141,8 @@
 			if(mouseOverController && [mouseOverController.superview isEqual:self])
 			{
 				[objectList MouseOverInfoAtScreenPoint:previousMousePosition UsingSpaceConverter:spaceConverter];
-				[mouseOverController.tool GraphUsingSpaceConverter:spaceConverter];
+                for(GLViewTool * t in mouseOverController.visibleTools) [t GraphUsingSpaceConverter:spaceConverter];
+//				[mouseOverController.tool GraphUsingSpaceConverter:spaceConverter];
 			}
 		}glPopMatrix();
 		
@@ -258,7 +259,8 @@
 	if(mouseOverController && [mouseOverController.superview isEqual:self] && (!spaceConverter.ImageRect.size.isNull() || spaceConverter.type==_3d) && !img.empty())
 	{
 
-		[mouseOverController.tool SetMousePosition:mousePosition UsingSpaceConverter:spaceConverter];
+        for(GLViewTool *t in mouseOverController.visibleTools) [t SetMousePosition:mousePosition UsingSpaceConverter:spaceConverter];
+//		[mouseOverController.tool SetMousePosition:mousePosition UsingSpaceConverter:spaceConverter];
         int mouseX = [objectList MouseOverPointAtScreenPoint:mousePosition UsingSpaceConverter:spaceConverter].x;
         int mouseY =[objectList MouseOverPointAtScreenPoint:mousePosition UsingSpaceConverter:spaceConverter].y;
 		[infoOutput.xCoordMouseLabel setStringValue:[NSString stringWithFormat:@"%i",mouseX]];
@@ -293,7 +295,10 @@
 {
 	[self GetMousePositionForEvent:event];
 	mousePositionOnMouseDown = mousePosition;
-	if(mouseOverController && [mouseOverController.superview isEqual:self]) [mouseOverController.tool StartDragging:[event modifierFlags]];
+	if(mouseOverController && [mouseOverController.superview isEqual:self])
+    {
+        for(GLViewTool *t in mouseOverController.visibleTools) [t StartDragging:[event modifierFlags]];
+    }
 	mouseDragged = false;
 }
 - (void)mouseUp:(NSEvent*)event
@@ -308,7 +313,7 @@
 		if(!mouseDragged && !mouseOverController.tool.dragging){} //[mouseOverController ToggleInView:self];
 		else if([mouseOverController.superview isEqual:self])
 		{
-			[mouseOverController.tool StopDragging];
+            for(GLViewTool *t in mouseOverController.visibleTools) [t StopDragging];
 		}
 	}
 }
@@ -325,7 +330,7 @@
 		Vector3 point = [objectList MouseOverPointAtScreenPoint:mousePosition UsingSpaceConverter:spaceConverter];
 		if(!point.isNull())
 		{
-			[mouseOverController.tool DragTo:point Event:event];
+            for(GLViewTool *t in mouseOverController.visibleTools) [t DragTo:point Event:event];
 		}
 	}
 	else mouseDragged = true;

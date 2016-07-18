@@ -7,7 +7,7 @@
 #import "GLViewTool.h"
 
 @implementation GLViewTool
-@synthesize dragging,infoOutput,linkedDims,defaultWidth,defaultHeight,currentKey,mousedOverElementIndex,elementMenus,testmenu,superView,tooltip,currentAnnotationType,comboBoxIsOpen,currentAnnotationTypeIndex;
+@synthesize dragging,infoOutput,linkedDims,defaultWidth,defaultHeight,currentKey,mousedOverElementIndex,elementMenus,testmenu,superView,tooltip,currentAnnotationType,comboBoxIsOpen,currentAnnotationTypeIndex,modifierFlags;
 
 - (id)init
 {
@@ -20,9 +20,10 @@
 		startMousePos = Vector2(NAN,NAN);
 		dragging = false;
         elementTypes = [[NSMutableArray alloc] init];
+        draggedIndex = -1;
         usedRectangleNumberKeys = [[NSMutableArray alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyDownHappened:) name:@"KeyDownHappened" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
 	}
 	return self;
 }
@@ -85,14 +86,14 @@
 {
 	dragging = true;
     wasHiddenBeforeDrag = tooltip.isHidden;
-    [tooltip setHidden:YES];
+    [tooltip setHidden:YES forObject:self];
 	startMousePos = mousePos;
 	shiftHeld = withKeys & NSShiftKeyMask;
 	return true;
 }
 - (void)StopDragging
 {
-    [tooltip setHidden:wasHiddenBeforeDrag];
+    [tooltip setHidden:wasHiddenBeforeDrag forObject:self];
 	dragging = false;
 	stopMousePos = mousePos;
 }
@@ -104,31 +105,34 @@
 
 -(void)drawToolTipAtPosition:(Vector2)position Corner:(int)corner
 {
-    //display tooltip
+    if (!(modifierFlags & NSCommandKeyMask)) {
+        //display tooltip
         NSRect newframe  = NSMakeRect(position.x, position.y, tooltip.frame.size.width, tooltip.frame.size.height);
-    if (corner == 0) {
-        //anchor to bottom left
+        if (corner == 0) {
+            //anchor to bottom left
+        }
+        if (corner == 1){
+            //anchor to bottom right
+            newframe.origin.x -= newframe.size.width;
+        }
+        if (corner == 2) {
+            //anchor to top right
+            newframe.origin.x -= newframe.size.width;
+            newframe.origin.y -= newframe.size.height;
+        }
+        if (corner == 3) {
+            //anchor to top left
+            newframe.origin.y -= newframe.size.height;
+        }
+        [tooltip.nameField setStringValue:[keys objectAtIndex:mousedOverElementIndex] ];
+        int ind =(int)[tooltip.typeSelectionBox.objectValues indexOfObject:[elementTypes objectAtIndex:mousedOverElementIndex]];
+        if (ind < 0 ) ind = (int)[tooltip.typeSelectionBox.objectValues indexOfObject:@"None"];
+        [tooltip.typeSelectionBox selectItemAtIndex:ind];
+        [tooltip setFrame:newframe];
+        [superView addSubview:tooltip];
+        [tooltip setHidden:NO forObject:self];
     }
-    if (corner == 1){
-        //anchor to bottom right
-        newframe.origin.x -= newframe.size.width;
-    }
-    if (corner == 2) {
-        //anchor to top right
-        newframe.origin.x -= newframe.size.width;
-        newframe.origin.y -= newframe.size.height;
-    }
-    if (corner == 3) {
-        //anchor to top left
-        newframe.origin.y -= newframe.size.height;
-    }
-    [tooltip.nameField setStringValue:[keys objectAtIndex:mousedOverElementIndex] ];
-    int ind =(int)[tooltip.typeSelectionBox.objectValues indexOfObject:[elementTypes objectAtIndex:mousedOverElementIndex]];
-    if (ind < 0 ) ind = (int)[tooltip.typeSelectionBox.objectValues indexOfObject:@"None"];
-    [tooltip.typeSelectionBox selectItemAtIndex:ind];
-    [tooltip setFrame:newframe];
-    [superView addSubview:tooltip];
-    [tooltip setHidden:NO];
+
 }
 
 -(bool)checkToolTipMouseOverForMousePoint:(Vector2)mouseP

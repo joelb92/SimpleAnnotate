@@ -19,6 +19,7 @@
     int defaultHeight;
 	bool dragging;
 	bool shiftHeld;
+    int draggedIndex;
 	InfoOutputController *infoOutput;
     bool linkedDims;
     NSString *currentKey;
@@ -35,6 +36,7 @@
     BOOL wasHiddenBeforeDrag;
     float screenPixelLength;
     cv::Mat currentImage;
+    NSUInteger modifierFlags;
 }
 @property (readwrite) int mousedOverElementIndex;
 @property (readonly) bool dragging;
@@ -51,6 +53,7 @@
 @property InfoOutputController *infoOutput;
 @property (readwrite) bool comboBoxIsOpen;
 @property (readwrite) int currentAnnotationTypeIndex;
+@property (readwrite) NSUInteger modifierFlags;
 - (void)DragTo:(Vector3)point Event:(NSEvent *)event;
 - (void)SetMousePosition:(Vector2)mouseP UsingSpaceConverter:(SpaceConverter)spaceConverter;
 - (bool)StartDragging:(NSUInteger)withKeys;

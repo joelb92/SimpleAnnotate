@@ -17,7 +17,6 @@
 @interface GLRectangleDragger : GLViewTool
 {
 	bool initialized;
-	int draggedIndex;
 	int mousedOverPointIndex;
 	int mousedOverLineIndex;
 	bool isVertical;

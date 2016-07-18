@@ -404,7 +404,7 @@ void overlayPath( cv::Mat a, cv::Mat path, cv::Vec3b intensity , cv::Mat outI )
     
     if( scissorActive == false )
     {
-        std::cout<<"Scissor tool not active\n";
+//        std::cout<<"Scissor tool not active\n";
         return false;
     }
     
@@ -423,7 +423,7 @@ void overlayPath( cv::Mat a, cv::Mat path, cv::Vec3b intensity , cv::Mat outI )
         {
             cv::Vec3b val = pathImg.at<cv::Vec3b>(pathPoints[i]);
             if (val[0] == 255) {
-                NSLog(@"overlap %i",i);
+//                NSLog(@"overlap %i",i);
             }
             pathImg.at<cv::Vec3b>(pathPoints[i]) = cv::Vec3b(255,0,0);
         }
@@ -603,12 +603,12 @@ void overlayPath( cv::Mat a, cv::Mat path, cv::Vec3b intensity , cv::Mat outI )
     scissorActive = checked;
     if( scissorActive )
     {
-        std::cout<<"Scissor Tool Activated\n";
+//        std::cout<<"Scissor Tool Activated\n";
         [self computeGraphWeights];
     }
     else
     {
-        std::cout<<"Scissor tools disabled\n";
+//        std::cout<<"Scissor tools disabled\n";
 //        out = im.clone();
         overlayPath(im,path,cv::Vec3b(255,0,0),outim);
 //        paintImage(outim);
@@ -625,7 +625,6 @@ void overlayPath( cv::Mat a, cv::Mat path, cv::Vec3b intensity , cv::Mat outI )
 
 -(void) resetStateVariables
 {
-    std::cout<<"Reset Contours\n";
     
     //reset clicked points
     currentSize=0;

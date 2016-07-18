@@ -156,6 +156,13 @@ using namespace std;
 {
     [tooltip setHidden:YES];
     bool stillGood = false;
+    if (newFrameNum < 0) {
+        newFrameNum = imagePathArray.count-1;
+    }
+    else if (newFrameNum >= imagePathArray.count)
+    {
+        newFrameNum = 0;
+    }
     if (newFrameNum >= 0 and newFrameNum < imagePathArray.count) {
         
         if (![frameForFrameNumber.allKeys containsObject:@(newFrameNum)]){//we need to get the new frame
@@ -243,6 +250,8 @@ using namespace std;
                     
                     if ([[annotationsForFrames allKeys] containsObject:@(newFrameNum)]) {
                         NSDictionary *annDict = [annotationsForFrames objectForKey:@(newFrameNum)];
+                        
+                        for(GLViewTool *k in mainGLView.mouseOverController.allTools.allValues) [k clearAll];
                         for (NSString *k in annDict.allKeys) {
                             [[mainGLView.mouseOverController.allTools objectForKey:k] setElements:[[annotationsForFrames objectForKey:@(newFrameNum)] objectForKey:k]];
                         }
@@ -274,8 +283,12 @@ using namespace std;
                 [annotations setObject:d forKey:k];
                 total+= (int)d.count;
             }
-            
+            if(!justLoadedNewProject)
+            {
+                justLoadedNewProject = false;
                 [annotationsForFrames setObject:annotations forKey:@(frameNum)]; //save current rects for current frame
+            }
+            
             
             for(GLViewTool *t in mainGLView.mouseOverController.allTools.allValues) [t clearAll];
             if ([[annotationsForFrames allKeys] containsObject:@(newFrameNum)]) {
@@ -1430,11 +1443,12 @@ Mat norm_0_255(InputArray _src) {
                 [annotationsForFrames setObject:annotationsByToolForFile forKey:@(i)];
                 }
             }
-            numFrames = frameForFrameNumber.count;
+            numFrames = allFileNames.count;
             //            OpenImageHandler *img = [frameForFrameNumber objectForKey:@(0)];
             //            [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
             //            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
             //            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",0,framePathForFrameNum.count]];
+            justLoadedNewProject = true;
             [self GoToFrame:0];
         }
     }

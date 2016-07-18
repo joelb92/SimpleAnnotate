@@ -21,7 +21,7 @@
         skippedRects = intArr();
         infoOutput = inf;
         rectPositionsForKeys = [[NSMutableDictionary alloc] init];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
     }
     return self;
 }
@@ -83,7 +83,7 @@
         [keys removeObjectAtIndex:i];
         [elementTypes removeObjectAtIndex:i];
         ellipses.erase(ellipses.begin()+i);
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@[self,@(mousedOverElementIndex)]];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
@@ -128,7 +128,7 @@
 -(void)clearAll
 {
     mousedOverPointIndex = mousedOverElementIndex = -1;
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@[self,@(mousedOverElementIndex)]];
     if (segColors) {
     }
     if (keys) {
@@ -333,13 +333,13 @@
         [infoOutput.heightLabel	setStringValue:@"NA"];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
         mousedOverElementIndex = -1;
-        [tooltip setHidden:YES];
+        [tooltip setHidden:YES forObject:self];
         
     }
     
     if(!initialized) [self InitializeWithSpaceConverter:spaceConverter];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@[self,@(mousedOverElementIndex)]];
     
 }
 - (void)DragTo:(Vector3)point Event:(NSEvent *)event

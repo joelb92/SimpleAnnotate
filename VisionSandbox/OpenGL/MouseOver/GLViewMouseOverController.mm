@@ -7,7 +7,7 @@
 #import "GLViewMouseOverController.h"
 
 @implementation GLViewMouseOverController
-@synthesize rectangleTool,RectKey,allTools,scissorTool;
+@synthesize rectangleTool,RectKey,allTools,scissorTool,visibleTools;
 - (GLViewTool*)tool
 {
 	return [[currentTool retain] autorelease];
@@ -23,16 +23,19 @@
         tableViewCells = [[NSMutableDictionary alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"TableReload" object:nil];
 		rulerTool = [[GLRuler alloc] init];
+        visibleTools = [[NSMutableArray alloc] init];
+        toolIndexToTableIndex = [[NSMutableDictionary alloc] init];
+        tableIndexToToolIndex = [[NSMutableDictionary alloc] init];
 		protractorTool = [[GLProtractor alloc] init];
 		rectangleTool = [[GLRectangleDragger alloc] initWithOutputView:infoOutput];
         ellipseTool = [[GLEllipseTool alloc] initWithOutputView:infoOutput];
         pointTool = [[GLPointArrayTool alloc] initWithOutputView:infoOutput];
         scissorTool = [[IntelligentScissors alloc] init];
         pointTool.scissorTool = scissorTool;
-        NSArray *toolNames = @[@"rectangleTool",@"ellipseTool",@"pointTool"];
-        NSArray *tools = @[rectangleTool,ellipseTool,pointTool];
+        toolNames = [@[@"rectangleTool",@"ellipseTool",@"pointTool"] retain];
+        tools = [@[rectangleTool,ellipseTool,pointTool] retain];
         allTools = [[NSDictionary alloc] initWithObjects:tools forKeys:toolNames];
-//        keysForTools = [[NSMutableDictionary alloc] initWithObjects:toolNames forKeys:tools];
+        keysForTools = [[NSMutableDictionary alloc] init];
         labelFields = [[NSMutableDictionary alloc] init];
         annotationTypes = [[NSMutableArray alloc] initWithObjects:@"Face",@"Tattoo",@"Piercing",@"None",@"+Add Other", nil];
 //		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
@@ -41,6 +44,12 @@
 //		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OpenSegmentationAssistant) name:@"Open Segmentation Assistant!" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setSelectedTableRow:) name:@"SelectionChanged" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyDownHappened:) name:@"KeyDownHappened" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyDownHappened:) name:@"KeyUpHappened" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyFlagsChanged:) name:@"keyFlagsChanged" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverEnded" object:nil];
+        
+
 
         linkImg = [NSImage imageNamed:@"link.png"];
         unlinkImg = [NSImage imageNamed:@"unlink.png"];
@@ -61,6 +70,24 @@
             [statusLabel setStringValue:@"'CMD'+''alt' click to begin a new magnetic lasso point set"];
         }
     }
+}
+
+-(void)keyUpHappened:(NSNotification *)notification
+{
+    NSEvent *event = [notification object];
+}
+
+-(void)keyFlagsChanged:(NSNotification *)notification
+{
+    NSEvent *event = [notification object];
+    if ([event modifierFlags] & NSCommandKeyMask) {
+        commandIsHeld = true;
+    }
+    else
+    {
+        commandIsHeld = false;
+    }
+    for(GLViewTool *t in allTools.allValues) t.modifierFlags = event.modifierFlags;
 }
 
 - (IBAction)linkDimsToggle:(id)sender {
@@ -101,6 +128,8 @@
         [t setTooltip:tooltip];
         t.currentAnnotationType = @"none";
     }
+    [self displayTypeDidChange:nil];
+
 //    [self linkDimsToggle:nil];
 
 }
@@ -147,6 +176,35 @@
         previousStatusLabel = statusLabel.stringValue;
         [statusLabel setStringValue:[NSString stringWithFormat:@"Now using %@",[keysForTools objectForKey:currentTool]]];
     }
+    [self displayTypeDidChange:nil];
+    [self reloadTable];
+}
+
+-(IBAction)displayTypeDidChange:(id)sender
+{
+    [visibleTools removeAllObjects];
+    if ([displayCurrentCheckbox state] > 0) {
+        [visibleTools addObject:currentTool];
+        [displayrectCheckbox setEnabled:NO];
+        [displayellipseCheckbox setEnabled:NO];
+        [displayPointCheckbox setEnabled:NO];
+    }
+    else {
+        [displayrectCheckbox setEnabled:YES];
+        [displayellipseCheckbox setEnabled:YES];
+        [displayPointCheckbox setEnabled:YES];
+        if ([displayrectCheckbox state]) {
+            [visibleTools addObject:rectangleTool];
+        }
+        if ([displayellipseCheckbox state])
+        {
+            [visibleTools addObject:ellipseTool];
+        }
+        if ([displayPointCheckbox state])
+        {
+            [visibleTools addObject:pointTool];
+        }
+    }
     [self reloadTable];
 }
 
@@ -189,10 +247,7 @@
     }
     [self reloadTable];
 }
--(IBAction)textClick:(id)sender
-{
-    
-}
+
 -(void)controlTextDidBeginEditing:(NSNotification *)obj{
     
 }
@@ -261,8 +316,10 @@
 
 -(void)setSelectedTableRow:(NSNotification *)notification
 {
-    int row = [(NSNumber *)notification.object intValue];
-    NSIndexSet *i = [[NSIndexSet alloc] initWithIndex:row];
+    GLViewTool *tool = [notification.object objectAtIndex:0];
+    int row = [(NSNumber *)[notification.object objectAtIndex:1] intValue];
+    int tableIndex = [self tableIndexForVisibleTool:tool andElementIndex:row];
+    NSIndexSet *i = [[NSIndexSet alloc] initWithIndex:tableIndex];
     [mainTableView selectRowIndexes:i byExtendingSelection:NO];
     if (row < 0) {
         [mainTableView deselectAll:nil];
@@ -271,29 +328,87 @@
 
 -(NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
-    return currentTool.count;
+    int total = 0;
+    for(GLViewTool *t in visibleTools) total+= [t count];
+    return total;
 }
 - (NSView *)tableView:(NSTableView *)tableView
    viewForTableColumn:(NSTableColumn *)tableColumn
                   row:(NSInteger)row
 {
     NSTextField *result;
+    NSString *toolKey;
+    GLViewTool *tool;
+    int toolElementIndex = -1;
+    NSArray *toolProps = [self toolAndKeyForTableIndex:row];
+    toolKey = [toolProps objectAtIndex:0];
+    tool = [allTools objectForKey:toolKey];
+    toolElementIndex = [[toolProps objectAtIndex:1] intValue];
+    
     result = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, tableColumn.width, 21)];
     if ([tableColumn.identifier isEqualToString:@"Location"]) {
-               result.stringValue = [currentTool stringForIndex:row];
+        NSString *val =[tool stringForIndex:toolElementIndex];
+        result.stringValue = val;
         [result setEditable:NO];
         [result setSelectable:NO];
     }
     else{
-        result.stringValue = [currentTool.getKeys objectAtIndex:row];
+        NSString *key =[tool.getKeys objectAtIndex:toolElementIndex];
+        result.stringValue = key;
         [tableViewCells setObject:result forKey:@(row)];
     }
-    if(row == currentTool.count -1)
+    if(row == [self numberOfRowsInTableView:nil] -1)
     {
         [self relinkTableCells];
     }
     [result setDelegate:self];
     return result;
+}
+
+-(void)tableHoverRect:(NSNotification *)notification
+{
+    if ([notification.name isEqualToString:@"TableViewHoverEnded"]) {
+        for(GLViewTool *otherTool in visibleTools) [otherTool tableHoverRect:[NSNotification notificationWithName:@"" object:@(-1)]];
+        return;
+    }
+    int tableIndex = [notification.object intValue];
+    NSArray *toolProps = [self toolAndKeyForTableIndex:tableIndex];
+    GLViewTool *t = [allTools objectForKey:[toolProps objectAtIndex:0]];
+    int index = [[toolProps objectAtIndex:1] intValue];
+    [t tableHoverRect:[NSNotification notificationWithName:@"none" object:@(index)]];
+    for(GLViewTool *otherTool in visibleTools) if(otherTool != t) [otherTool tableHoverRect:[NSNotification notificationWithName:@"" object:@(-1)]];
+}
+
+-(int)tableIndexForVisibleTool:(GLViewTool *)t andElementIndex:(int)elIndex
+{
+    int offsetCount = 0;
+    for(int i = 0; i < visibleTools.count; i++)
+    {
+        if ([visibleTools objectAtIndex:i] == t) {
+            break;
+        }
+        else offsetCount+= [[visibleTools objectAtIndex:i] count];
+    }
+    return elIndex+offsetCount;
+}
+
+-(NSArray *)toolAndKeyForTableIndex:(int)tableIndex
+{
+    GLViewTool *correctTool = [[allTools allValues] objectAtIndex:0];
+    int toolIndex = -1;
+    int countIndex = 0;
+
+    for(int i = 0; i < visibleTools.count; i++)
+    {
+        if (tableIndex < [[visibleTools objectAtIndex:i] count]+countIndex ) {
+            correctTool = [visibleTools objectAtIndex:i];
+            toolIndex = tableIndex-countIndex;
+            
+            break;
+        }
+        countIndex +=[[visibleTools objectAtIndex:i] count];
+    }
+    return @[[toolNames objectAtIndex:[tools indexOfObject:correctTool]],@(toolIndex)];
 }
 
 - (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex

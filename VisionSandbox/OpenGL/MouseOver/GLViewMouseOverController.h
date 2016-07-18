@@ -52,19 +52,32 @@
     IBOutlet NSSegmentedControl *toolMenu;
     IBOutlet NSSegmentedControl *lassoMenu;
     IBOutlet NSTextField *statusLabel;
+    
+    IBOutlet NSButton *displayCurrentCheckbox;
+    IBOutlet NSButton *displayrectCheckbox;
+    IBOutlet NSButton *displayellipseCheckbox;
+    IBOutlet NSButton *displayPointCheckbox;
+    
     NSMutableDictionary *tableViewCells;
     NSMutableDictionary *keysForTools;
+    NSMutableArray *visibleTools;
+    NSMutableDictionary *toolIndexToTableIndex;
+    NSMutableDictionary *tableIndexToToolIndex;
+    NSArray *tools;
+    NSArray *toolNames;
     IntelligentScissors *scissorTool;
     NSString *previousStatusLabel;
     int lassoMenuHeight;
     NSImage *linkImg;
     NSImage *unlinkImg;
+    bool commandIsHeld;
 
 }
 @property (assign) GLRectangleDragger *rectangleTool;
 @property (assign) NSTextField *RectKey;
 @property (assign) NSDictionary *allTools;
 @property (assign) IntelligentScissors *scissorTool;
+@property (readonly) NSMutableArray *visibleTools;
 -(NSString *) currentToolKey;
 - (GLViewTool*)tool;
 - (bool)ActiveInView:(NSView*)view;

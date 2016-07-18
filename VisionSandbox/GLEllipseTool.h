@@ -67,7 +67,6 @@ struct EllipseVis
 @interface GLEllipseTool : GLViewTool
 {
     bool initialized;
-    int draggedIndex;
     int mousedOverPointIndex;
     bool isVertical;
     std::vector<EllipseVis> ellipses;

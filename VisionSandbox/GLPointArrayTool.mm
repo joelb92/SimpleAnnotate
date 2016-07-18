@@ -27,7 +27,7 @@
         pointStructureIndexMap = [[NSMutableArray alloc] init];
         scissorTool = [[IntelligentScissors alloc] init];
         isMagneticArray = [[NSMutableArray alloc] init];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(lassoTypeDidChange:) name:@"LassoSelectionChanged" object:nil];
 
     }
@@ -113,7 +113,7 @@
         }
         
         allPoints.RemoveItemAtIndex(i);
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverPointIndex)];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@[self,@(mousedOverElementIndex)]];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
 }
@@ -186,7 +186,7 @@
 -(void)clearAll
 {
     mousedOverLineIndex = mousedOverPointIndex = -1;
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@[self,@(mousedOverElementIndex)]];
     if (segColors) {
     }
     if (keys) {
@@ -358,7 +358,7 @@
             //display tooltip
             
             
-//            [self drawToolTipAtPosition:spaceConverter.ImageToScreenVector(Vector2(farthestRight)) Corner:0];
+            [self drawToolTipAtPosition:spaceConverter.ImageToScreenVector(Vector2(farthestRight)) Corner:0];
         }
     }
     float minDist = 20*20;
@@ -383,12 +383,9 @@
             break;
         }
 
-//        Vector2 lpos = spaceConverter.ImageToScreenVector(allPoints[i]);
-//        NSRect newframe  = NSMakeRect(lpos.x, lpos.y, 30, 30);
-//        NSTextField *newField = [[NSTextField alloc] initWithFrame:newframe];
-//        [newField setStringValue:[NSString stringWithFormat:@"%i,%i",[[pointStructureMap objectAtIndex:i] intValue],[[pointStructureIndexMap objectAtIndex:i] intValue]]];
-//        [superView addSubview:newField];
-//        [newField setHidden:NO];
+        if (inCont) {
+//            [tooltip setHidden:NO];
+        }
         
         
     }
@@ -420,14 +417,14 @@
         [infoOutput.heightLabel	setStringValue:@"NA"];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"MouseOverToolValueChanged" object:nil];
         mousedOverEllipseIndex = -1;
-        [tooltip setHidden:YES];
+        [tooltip setHidden:YES forObject:self];
 
         
     }
     if(!onPoint) mousedOverPointIndex = -1;
     if(!initialized) [self InitializeWithSpaceConverter:spaceConverter];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@(mousedOverElementIndex)];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@[self,@(mousedOverElementIndex)]];
     
 }
 - (void)DragTo:(Vector3)point Event:(NSEvent *)event
