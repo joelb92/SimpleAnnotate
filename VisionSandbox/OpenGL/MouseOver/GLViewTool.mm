@@ -15,6 +15,7 @@
 	if(self)
 	{
         keys = [[NSMutableArray alloc] init];
+        lock;
         segColors = [[colorArr alloc] init];
 		mousePos = Vector2(NAN,NAN);
 		startMousePos = Vector2(NAN,NAN);

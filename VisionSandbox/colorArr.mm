@@ -99,7 +99,7 @@ const int AddObjectLengthIncrament = 10000;
 {
     if(Length > 0)
     {
-    Length = elements-1;
+    VisableLength = elements-1;
     Color*temp = new Color[Length];
     int j = 0;
     for(int i = 0; i<Length; i++)

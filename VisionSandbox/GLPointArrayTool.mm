@@ -46,6 +46,7 @@
 //        isMagnetic = false;
     }
     }
+
 }
 
 -(void)addElement:(NSRect)er color:(Color)c forKey:(NSString *)key
@@ -84,6 +85,7 @@
 
 -(void)removeElementAtIndex:(int)i
 {
+    [lock lockForWriting];
     if (i < allPoints.Length && i >=0) {
         NSString *key = [pointStructureMap objectAtIndex:i];
         int structureIndex = (int)[keys indexOfObject:key];
@@ -116,6 +118,7 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@[self,@(mousedOverElementIndex)]];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TableReload" object:nil];
+    [lock unlock];
 }
 
 -(NSDictionary *)getElements
@@ -215,9 +218,9 @@
     glPointSize(15);
     
     {
+        
         for(int i=0; i<pointSets.size(); i++)
         {
-            
             [self SetCurrentColor:[segColors elementAtIndex:i]];
             Vector2Arr points = pointSets[i];
             glLineWidth(2);
@@ -241,17 +244,18 @@
 
             [self SetCurrentColor:[segColors elementAtIndex:i]];
             
-
             for(int j=0; j<points.Length; j++)
             {
-                if (mousedOverPointIndex >= 0 && [[pointStructureMap objectAtIndex:mousedOverPointIndex] isEqualToString:[keys objectAtIndex:i]] && [[pointStructureIndexMap objectAtIndex:mousedOverPointIndex] intValue] == j) {
+                if (mousedOverPointIndex >= 0 && mousedOverPointIndex < pointStructureMap.count && mousedOverPointIndex < pointStructureIndexMap.count && i < keys.count && [[pointStructureMap objectAtIndex:mousedOverPointIndex] isEqualToString:[keys objectAtIndex:i]] && [[pointStructureIndexMap objectAtIndex:mousedOverPointIndex] intValue] == j) {
                     [self SetCurrentColor:Yellow];
                 }
+
                 Vector2 v = spaceConverter.ImageToCameraVector(points[j]);
                 glVertex3d(v.x, v.y, minZ);
                 [self SetCurrentColor:[segColors elementAtIndex:i]];
             }
-            if (mousedOverPointIndex >= 0) {
+
+            if (mousedOverPointIndex >= 0 && mousedOverPointIndex < allPoints.Length) {
                 [self SetCurrentColor:Yellow];
                 glVertex3d(allPoints[mousedOverPointIndex].x, allPoints[mousedOverPointIndex].y, minZ);
             }

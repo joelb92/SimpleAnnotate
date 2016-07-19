@@ -70,6 +70,18 @@
             [statusLabel setStringValue:@"'CMD'+''alt' click to begin a new magnetic lasso point set"];
         }
     }
+    if ([[event characters] isEqualToString:@"r"]) {
+        [toolMenu setSelectedSegment:0];
+        [self toolSelection:nil];
+    }
+    else if ([[event characters] isEqualToString:@"c"]) {
+        [toolMenu setSelectedSegment:1];
+        [self toolSelection:nil];
+    }
+    else if ([[event characters] isEqualToString:@"s"]) {
+        [toolMenu setSelectedSegment:2];
+        [self toolSelection:nil];
+    }
 }
 
 -(void)keyUpHappened:(NSNotification *)notification
@@ -284,14 +296,12 @@
 }
 -(void)mouseClickedAtPoint:(Vector2)p SuperViewPoint:(Vector2)SP withEvent:(NSEvent *)event
 {
+    if (previousStatusLabel == nil) previousStatusLabel = @"";
     currentTool.defaultWidth = defaultRectWidthField.intValue;
     currentTool.defaultHeight = defaultRectHeightField.intValue;
     if (currentTool == pointTool and pointTool.scissorTool.scissorActive) {
         previousStatusLabel = [statusLabel stringValue];
         [statusLabel setStringValue:@"Press 'Enter' to finish Magnetic Lasso"];
-    }
-    else{
-        [statusLabel setStringValue:previousStatusLabel];
     }
 
 	[currentTool mouseClickedAtPoint:p superPoint:SP withEvent:event];

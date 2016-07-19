@@ -220,7 +220,7 @@ using namespace std;
                     [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
                     
                     //                    [mainGLView.mouseOverController.rectangleTool setCurrentFrame:[(OpenImageHandler *)[frameForFrameNumber objectForKey:@(newFrameNum)] Cv]];
-                    [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",newFrameNum,numFrames]];
+                    [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%lu",newFrameNum,(unsigned long)imagePathArray.count]];
                     
                     stillGood = true;
                 }
@@ -288,6 +288,7 @@ using namespace std;
                 justLoadedNewProject = false;
                 [annotationsForFrames setObject:annotations forKey:@(frameNum)]; //save current rects for current frame
             }
+            else justLoadedNewProject = false;
             
             
             for(GLViewTool *t in mainGLView.mouseOverController.allTools.allValues) [t clearAll];
@@ -494,7 +495,7 @@ using namespace std;
 - (IBAction)OpenM:(id)sender
 {
     savingStatusLabel.stringValue = @"Opening Files...";
-    acceptableImageTypes = @[[NSPredicate predicateWithFormat:@"self ENDSWITH '.jpg'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.png'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.bmp'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.ppm'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.gif'"]];
+    acceptableImageTypes = @[[NSPredicate predicateWithFormat:@"self ENDSWITH '.tga'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.pgm'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.pct'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.pbm'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.jpe'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.jbg'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.img'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.tiff'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.jpeg'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.jpg'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.png'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.bmp'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.ppm'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.gif'"]];
     NSOpenPanel* openDlg = [NSOpenPanel openPanel];
     [openDlg setCanChooseFiles:YES];
     [openDlg setCanChooseDirectories:YES];
@@ -540,6 +541,7 @@ using namespace std;
                             NSArray *only =[dirContents filteredArrayUsingPredicate:fltr];
                             [onlyImages addObjectsFromArray:only];
                         }
+                        [onlyImages sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
                         for(int i = 0; i < onlyImages.count; i++)
                         {
                             NSString *name = [onlyImages objectAtIndex:i];
@@ -585,7 +587,7 @@ using namespace std;
                             OpenImageHandler *img = [frameForFrameNumber objectForKey:@(0)];
                             [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
                             [mainGLView.mouseOverController.scissorTool setIm:img.Cv];
-                            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",frameNum,numFrames]];
+                            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",frameNum,imagePathArray.count]];
                         }
                     }
                     if (!capture.isOpened() || !didload)
@@ -1098,10 +1100,12 @@ Mat norm_0_255(InputArray _src) {
             
             //now begin saving the annotations for each image file
             int i = 0;
+            NSMutableArray *sortedKeysForAnnotationsForFrames= [annotationsForFrames.allKeys mutableCopy];
+            [sortedKeysForAnnotationsForFrames sortUsingSelector:@selector(compare:)];
             for(i =0; i < annotationsForFrames.count; i++)
             {
                 NSMutableString *saveCSV = @"".mutableCopy;
-                NSNumber *frameKey = [annotationsForFrames.allKeys objectAtIndex:i];
+                NSNumber *frameKey = [sortedKeysForAnnotationsForFrames objectAtIndex:i];
                 NSString *framePath = [framePathForFrameNum objectForKey:frameKey];
                 NSDictionary *allAnnotationsForFrame = [annotationsForFrames objectForKey:frameKey];
                 
@@ -1164,19 +1168,24 @@ Mat norm_0_255(InputArray _src) {
                     [[NSFileManager defaultManager] removeItemAtPath:individualFileSavePath error:nil];
                 }
                 if ([numAnnotationsForFrame objectForKey:frameKey] != nil and [[numAnnotationsForFrame objectForKey:frameKey] intValue] > 0) {
+                    BOOL isDir;
+                    if ([[NSFileManager defaultManager] fileExistsAtPath:individualFileSavePath isDirectory:&isDir] and !isDir) {
+                        [[NSFileManager defaultManager] removeItemAtPath:individualFileSavePath error:nil];
+                    }
                     [saveCSV writeToFile:individualFileSavePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
                 }
                 
             }
             //add the rest of the files we loaded
+//            if (i >0) i -= 1;
             for(i = i; i < imagePathArray.count; i++)
             {
                 [fullSaveFile appendFormat:@"f:%@\n",[imagePathArray objectAtIndex:i]];
             }
             BOOL isDir;
-            if ([[NSFileManager defaultManager] fileExistsAtPath:saveProjectFilePath isDirectory:&isDir] and !isDir)
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[saveProjectFilePath stringByAppendingPathExtension:@"saproj"] isDirectory:&isDir] and !isDir)
             {
-                [[NSFileManager defaultManager] removeItemAtPath:saveProjectFilePath error:nil];
+                [[NSFileManager defaultManager] removeItemAtPath:[saveProjectFilePath stringByAppendingPathExtension:@"saproj"] error:nil];
             }
             [fullSaveFile appendFormat:@"Frame:%i\n",frameNum];
             [fullSaveFile writeToFile:[saveProjectFilePath stringByAppendingPathExtension:@"saproj"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
@@ -1438,14 +1447,21 @@ Mat norm_0_255(InputArray _src) {
                     if ([toolType isEqualToString:@"pointTool"]) {
                         NSMutableArray *coords = [[NSMutableArray alloc] init];
                         NSDictionary *nextEntry = [annotationsForFile objectAtIndex:j+1];
-                        while(j+2 < annotationsForFile.count and ([nextEntry objectForKey:@"name"] == nil or [[nextEntry objectForKey:@"name"] isEqualToString:@""]))
+                        while(j+1 < annotationsForFile.count and nextEntry and ([nextEntry objectForKey:@"name"] == nil or [[nextEntry objectForKey:@"name"] isEqualToString:@""]))
                         {
                             NSPoint p = NSMakePoint([[nextEntry objectForKey:@"x coord"] floatValue], [[nextEntry objectForKey:@"y coord"] floatValue]);
+
                             [coords addObject:[NSValue valueWithPoint:p]];
                             j++;
-                            nextEntry = [annotationsForFile objectAtIndex:j+1];
+                            if (j+1 >= annotationsForFile.count) {
+                                nextEntry = nil;
+                            }
+                            else
+                            {
+                                nextEntry = [annotationsForFile objectAtIndex:j+1];
+                            }
                         }
-                        j++;
+//                        j++;
                         [entry setObject:coords forKey:@"coords"];
                     }
                     NSMutableDictionary *toolAnnotationEntries;

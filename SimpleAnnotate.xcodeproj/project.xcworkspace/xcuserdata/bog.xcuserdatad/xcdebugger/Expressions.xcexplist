@@ -51,6 +51,9 @@
          contextName = "-[AppDelegate save:]:AppDelegate.mm">
          <PersistentStrings>
             <PersistentString
+               value = "saveProjectFilePath">
+            </PersistentString>
+            <PersistentString
                value = "framePath">
             </PersistentString>
          </PersistentStrings>
@@ -79,6 +82,9 @@
          contextName = "-[GLRectangleDragger SetMousePosition:UsingSpaceConverter:]:GLRectangleDragger.mm">
       </ContextState>
       <ContextState
+         contextName = "-[GLPointArrayTool addElement:color:forKey:andType:]:GLPointArrayTool.mm">
+      </ContextState>
+      <ContextState
          contextName = "-[GLEllipseTool GraphUsingSpaceConverter:]:GLEllipseTool.mm">
       </ContextState>
       <ContextState
@@ -100,6 +106,11 @@
       </ContextState>
       <ContextState
          contextName = "-[GLPointArrayTool removeElementAtIndex:]:GLPointArrayTool.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "[segColors  elementAtIndex:0]">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "-[GLViewMouseOverController relinkTableCells]:GLViewMouseOverController.mm">
