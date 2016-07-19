@@ -1380,7 +1380,7 @@ Mat norm_0_255(InputArray _src) {
             for(i = 1; i < projectLines.count; i++)
             {
                 NSArray *lineValues = [[projectLines objectAtIndex:i] componentsSeparatedByString:@","];
-                if (lineValues.ount > 0 and [[lineValues objectAtIndex:0]hasPrefix:@"Frame:"]) {
+                if (lineValues.count > 0 and [[lineValues objectAtIndex:0]hasPrefix:@"Frame:"]) {
                     NSArray *frameResumeArr = [[lineValues objectAtIndex:0] componentsSeparatedByString:@":"];
                     if (frameResumeArr.count > 1) {
                         resumeFrameNum = [[frameResumeArr objectAtIndex:1] intValue];
