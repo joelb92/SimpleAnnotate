@@ -38,7 +38,7 @@
                 http://www.joelbrogan.com/SimpleAnnotate/2.0.5.html
             </sparkle:releaseNotesLink>
             <pubDate>Tue, 19 Jul 2016 10:52:00 +0000</pubDate>
-            <enclosure url="http://www.joelbrogan.com/SimpleAnnotate/SimpleAnnotate_2.0.4.zip" sparkle:version="2.0.5" length="46303703" type="application/octet-stream" sparkle:dsaSignature="MC4CFQDNDRUm0A+0P8lCzPnYt6AXEs4LXQIVAPApLF4I6diDu3QD1X7R2BRSS88/" />
+            <enclosure url="http://www.joelbrogan.com/SimpleAnnotate/SimpleAnnotate_2.0.4.zip" sparkle:version="2.0.5" length="46377588" type="application/octet-stream" sparkle:dsaSignature="MC0CFQD0Dn06ii4k76oJCNJlVGhombbvXgIUBLfniHsMm4FF12loYKCPN3SpzJc=" />
             <sparkle:minimumSystemVersion>10.8</sparkle:minimumSystemVersion>
             <sparkle:version>2.0.5</sparkle:version>
         </item>
