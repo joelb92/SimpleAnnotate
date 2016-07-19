@@ -320,6 +320,7 @@ using namespace std;
         frameNum = newFrameNum;
         //        [self copyRectsFromLastNonEmptyFrame];
     }
+    [self autoSave];
     return stillGood;
 }
 -(void)controlTextDidEndEditing:(NSNotification *)obj
@@ -1026,6 +1027,28 @@ Mat norm_0_255(InputArray _src) {
     
 }
 
+-(void)autoSave
+{
+    NSString *prevSaveDir = saveProjectFileDir.copy;
+    NSString *prevSavePath = saveProjectFilePath.copy;
+    saveProjectFileDir = [[NSBundle mainBundle] resourcePath];
+    saveProjectFilePath = [saveProjectFileDir stringByAppendingPathComponent:@"autosavefile"];
+    bool prevHasPath = hasSavePath;
+    hasSavePath = true;
+    didCancelSave = false;
+    [self save:nil];
+    saveProjectFilePath = prevSavePath;
+    saveProjectFileDir = prevSaveDir;
+    hasSavePath = prevHasPath;
+    
+}
+
+-(IBAction)recoverProject:(id)sender
+{
+    NSString *recoverFilePath = [[NSBundle mainBundle] pathForResource:@"autosavefile" ofType:@"saproj"];
+    [self loadProjectFile:recoverFilePath];
+}
+
 - (IBAction)save:(id)senders
 {
     
@@ -1155,6 +1178,7 @@ Mat norm_0_255(InputArray _src) {
             {
                 [[NSFileManager defaultManager] removeItemAtPath:saveProjectFilePath error:nil];
             }
+            [fullSaveFile appendFormat:@"Frame:%i\n",frameNum];
             [fullSaveFile writeToFile:[saveProjectFilePath stringByAppendingPathExtension:@"saproj"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
         NSDate *currDate = [NSDate date];
@@ -1352,9 +1376,16 @@ Mat norm_0_255(InputArray _src) {
             //Build the initial dictionary containing all entries
             NSString *currentFileName = @"";
             int i = 1;
+            int resumeFrameNum = 0;
             for(i = 1; i < projectLines.count; i++)
             {
                 NSArray *lineValues = [[projectLines objectAtIndex:i] componentsSeparatedByString:@","];
+                if (lineValues.ount > 0 and [[lineValues objectAtIndex:0]hasPrefix:@"Frame:"]) {
+                    NSArray *frameResumeArr = [[lineValues objectAtIndex:0] componentsSeparatedByString:@":"];
+                    if (frameResumeArr.count > 1) {
+                        resumeFrameNum = [[frameResumeArr objectAtIndex:1] intValue];
+                    }
+                }
                 if (lineValues.count > 0 and [[lineValues objectAtIndex:0] hasPrefix:@"f:"]) { //this starts a new file
                     if (allAnnotations.count > 0)
                     {
@@ -1450,6 +1481,10 @@ Mat norm_0_255(InputArray _src) {
             //            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",0,framePathForFrameNum.count]];
             justLoadedNewProject = true;
             [self GoToFrame:0];
+            if (resumeFrameNum >= 0 and resumeFrameNum < allFileNames.count) {
+                [self GoToFrame:resumeFrameNum];
+            }
+
         }
     }
 }
