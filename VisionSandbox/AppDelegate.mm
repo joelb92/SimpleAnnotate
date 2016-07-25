@@ -14,7 +14,7 @@ using namespace std;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     lock = [[NSLock alloc] init ];
-    
+//    [self extractPatchesFromProjectFile:@"/Volumes/BTAS/ORNL_Tattos_Piercings/tattoos/tattoos_joel_project/joel_tattoos_project.saproj"];
     [self splashSequence];
     lock = [[NSLock alloc] init];
     matchedScenes = [[NSMutableIndexSet alloc] init];
@@ -61,8 +61,8 @@ using namespace std;
     {
         NSRect nsr = faceDetector.dets[i];
         cv::Rect r(nsr.origin.x,nsr.origin.y,nsr.size.width,nsr.size.height);
-        cv::Mat face = currentImage.Cv(r).clone();
-        OpenImageHandler *faceImage = [[OpenImageHandler alloc] initWithCVMat:face Color:Black BinaryImage:false];
+//        cv::Mat face = currentImage.Cv(r).clone();
+//        OpenImageHandler *faceImage = [[OpenImageHandler alloc] initWithCVMat:face Color:Black BinaryImage:false];
         [[mainGLView.mouseOverController rectangleTool] addElement:nsr color:Green forKey:[NSString stringWithFormat:@"Face %i",i] andType:@"Face"];
     }
 
@@ -1362,6 +1362,7 @@ Mat norm_0_255(InputArray _src) {
     [imagePathArray removeAllObjects];
 }
 
+
 -(void)loadProjectFile:(NSString *)projFilePath
 {
     NSString *projectName = [[projFilePath lastPathComponent] stringByDeletingPathExtension];
@@ -1438,8 +1439,164 @@ Mat norm_0_255(InputArray _src) {
                 NSString *fileName =[allFileNames objectAtIndex:i];
                 NSArray *annotationsForFile = [allAnnotationsForFileName objectForKey:fileName];
                 if (annotationsForFile){
+                    NSMutableDictionary *annotationsByToolForFile = [[NSMutableDictionary alloc] init];
+                    NSString *currentTool = @"";
+                    for (int j = 0; j < annotationsForFile.count; j++) {
+                        NSMutableDictionary *entry = [[annotationsForFile objectAtIndex:j] mutableCopy];
+                        NSString *entryName = [entry objectForKey:@"name"];
+                        NSString *toolType = [entry objectForKey:@"annotationType"];
+                        if ([toolType isEqualToString:@"pointTool"]) {
+                            NSMutableArray *coords = [[NSMutableArray alloc] init];
+                            NSDictionary *nextEntry = [annotationsForFile objectAtIndex:j+1];
+                            while(j+1 < annotationsForFile.count and nextEntry and ([nextEntry objectForKey:@"name"] == nil or [[nextEntry objectForKey:@"name"] isEqualToString:@""]))
+                            {
+                                NSPoint p = NSMakePoint([[nextEntry objectForKey:@"x coord"] floatValue], [[nextEntry objectForKey:@"y coord"] floatValue]);
+                                
+                                [coords addObject:[NSValue valueWithPoint:p]];
+                                j++;
+                                if (j+1 >= annotationsForFile.count) {
+                                    nextEntry = nil;
+                                }
+                                else
+                                {
+                                    nextEntry = [annotationsForFile objectAtIndex:j+1];
+                                }
+                            }
+                            //                        j++;
+                            [entry setObject:coords forKey:@"coords"];
+                        }
+                        NSMutableDictionary *toolAnnotationEntries;
+                        if ([annotationsByToolForFile objectForKey:toolType]) {
+                            toolAnnotationEntries = [annotationsByToolForFile objectForKey:toolType];
+                        }
+                        else
+                        {
+                            toolAnnotationEntries = [[NSMutableDictionary alloc] init];
+                            [annotationsByToolForFile setObject:toolAnnotationEntries forKey:toolType];
+                        }
+                        [toolAnnotationEntries setObject:entry forKey:[entry objectForKey:@"name"]];
+                    }
+                    if (i == 0)
+                    {
+                        cv::Mat img = cv::imread(fileName.UTF8String);
+                        
+                        if (img.empty()) {
+                            NSLog(@"WARNING: could not open '%@', the file is either corrupt or non-existant",fileName);
+                            img = cv::Mat::eye(500, 500, CV_8UC3);
+                        }
+                        OpenImageHandler *imageH = [[OpenImageHandler alloc] initWithCVMat:img Color:White BinaryImage:false];
+                        [frameForFrameNumber setObject:imageH forKey:@(i)];
+                    }
+                    [framePathForFrameNum setObject:fileName forKey:@(i)];
+                    [annotationsForFrames setObject:annotationsByToolForFile forKey:@(i)];
+                }
+            }
+            numFrames = allFileNames.count;
+            //            OpenImageHandler *img = [frameForFrameNumber objectForKey:@(0)];
+            //            [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
+            //            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
+            //            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",0,framePathForFrameNum.count]];
+            justLoadedNewProject = true;
+            [self GoToFrame:0];
+            if (resumeFrameNum >= 0 and resumeFrameNum < allFileNames.count) {
+                [self GoToFrame:resumeFrameNum];
+            }
+            
+        }
+    }
+}
+
+
+-(void)extractPatchesFromProjectFile:(NSString *)projFilePath
+{
+    NSString *projectName = [[projFilePath lastPathComponent] stringByDeletingPathExtension];
+//    savingStatusLabel.stringValue = [NSString stringWithFormat:@"Loading Project %@", projectName];
+    NSFileManager *fm = [NSFileManager defaultManager];
+    BOOL isdir;
+    if ([fm fileExistsAtPath:projFilePath isDirectory:&isdir] and !isdir and [projFilePath hasSuffix:@"saproj"]) {
+        NSString *projectCSVString = [NSString stringWithContentsOfFile:projFilePath encoding:NSUTF8StringEncoding error:nil];
+        NSArray *projectLines = [projectCSVString componentsSeparatedByString:@"\n"];
+        if (projectLines.count > 0) {
+            int frameCounter = 0;
+            bool shouldSkipFile = false;
+            bool startNewFile = false;
+            NSArray *projectOriginationPath = [projectLines objectAtIndex:0];
+            NSMutableArray *propertyKeys = [[NSMutableArray alloc] init];
+            NSMutableArray *allAnnotations = [[NSMutableArray alloc] init];
+            NSMutableArray *allFileNames = [[NSMutableArray alloc] init];
+            NSMutableDictionary *allAnnotationsForFileName = [[NSMutableDictionary alloc] init];
+            NSMutableDictionary *annotationsForSingleFile = [[NSMutableDictionary alloc] init];
+            //Build the initial dictionary containing all entries
+            NSString *currentFileName = @"";
+            int i = 1;
+            int resumeFrameNum = 0;
+            for(i = 1; i < projectLines.count; i++)
+            {
+                NSArray *lineValues = [[projectLines objectAtIndex:i] componentsSeparatedByString:@","];
+                if (lineValues.count > 0 and [[lineValues objectAtIndex:0]hasPrefix:@"Frame:"]) {
+                    NSArray *frameResumeArr = [[lineValues objectAtIndex:0] componentsSeparatedByString:@":"];
+                    if (frameResumeArr.count > 1) {
+                        resumeFrameNum = [[frameResumeArr objectAtIndex:1] intValue];
+                    }
+                }
+                if (lineValues.count > 0 and [[lineValues objectAtIndex:0] hasPrefix:@"f:"]) { //this starts a new file
+                    if (allAnnotations.count > 0)
+                    {
+                        [allAnnotationsForFileName setObject:allAnnotations.copy forKey:currentFileName];
+                    }
+                    [allAnnotations removeAllObjects];
+                    currentFileName = [[lineValues objectAtIndex:0] substringFromIndex:2];
+                    [imagePathArray addObject:currentFileName];
+                    [allFileNames addObject:currentFileName];
+                    startNewFile = true;
+                }
+                else if (lineValues.count > 1){
+                    if (startNewFile) {
+                        startNewFile = false;
+                        [propertyKeys removeAllObjects];
+                        [propertyKeys addObjectsFromArray:lineValues];
+                        [annotationsForSingleFile removeAllObjects];
+                    }
+                    else{
+                        NSMutableDictionary *entryDictionary = [[NSMutableDictionary alloc] init];
+                        for (int j = 0; j < lineValues.count; j++) {
+                            NSString *val = [lineValues objectAtIndex:j];
+                            if (j < propertyKeys.count)
+                            {
+                                NSString *pkey = [propertyKeys objectAtIndex:j];
+                                if (![val isEqualToString:@""]) {
+                                    [entryDictionary setObject:val forKey:pkey];
+                                }
+                            }
+                            
+                        }
+                        [allAnnotations addObject:entryDictionary];
+                    }
+                }
+            }
+            if (allAnnotations.count > 0) {
+                [allAnnotationsForFileName setObject:allAnnotations.copy forKey:currentFileName];
+            }
+            //Build individual annotation sets for each image file
+            for (int i = 0; i < allFileNames.count; i++) {
+                NSString *fileName =[allFileNames objectAtIndex:i];
+                cv::Mat img = cv::imread(fileName.UTF8String);
+                NSArray *annotationsForFile = [allAnnotationsForFileName objectForKey:fileName];
+                if (annotationsForFile){
                 NSMutableDictionary *annotationsByToolForFile = [[NSMutableDictionary alloc] init];
                 NSString *currentTool = @"";
+                    std::vector<cv::Rect> facesInImage;
+                for (int j = 0; j < annotationsForFile.count; j++) {
+                    NSMutableDictionary *entry = [[annotationsForFile objectAtIndex:j] mutableCopy];
+                    NSString *entryName = [entry objectForKey:@"name"];
+                    NSString *toolType = [entry objectForKey:@"annotationType"];
+                    NSString *typeName = [[entry objectForKey:@"type"] lowercaseString];
+                    if ([typeName isEqualToString:@"face"] or [typeName hasPrefix:@"face"]) {
+                        cv::Rect f([[entry objectForKey:@"x coord"] intValue],[[entry objectForKey:@"y coord"] intValue],[[entry objectForKey:@"width"] intValue],[[entry objectForKey:@"height"] intValue]);
+                        facesInImage.push_back(f);
+                    }
+                    
+                }
                 for (int j = 0; j < annotationsForFile.count; j++) {
                     NSMutableDictionary *entry = [[annotationsForFile objectAtIndex:j] mutableCopy];
                     NSString *entryName = [entry objectForKey:@"name"];
@@ -1464,6 +1621,70 @@ Mat norm_0_255(InputArray _src) {
 //                        j++;
                         [entry setObject:coords forKey:@"coords"];
                     }
+                    cv::Mat imageChip;
+                    if ([toolType isEqualToString:@"pointTool"]) {
+                        NSArray *coords = [entry objectForKey:@"coords"];
+                        std::vector<std::vector<cv::Point> > conts;
+                        std::vector<cv::Point > cont;
+                        for(int x = 0; x < coords.count; x++)
+                        {
+                            NSPoint p = [[coords objectAtIndex:x] pointValue];
+                            cont.push_back(cv::Point(p.x,p.y));
+                        }
+                        conts.push_back(cont);
+                        cv::Rect roi = cv::boundingRect(cont);
+                        if (roi.x >=0 and roi.y >= 0 and roi.x < img.cols and roi.y < img.rows)
+                        {
+                            cv::Mat mask = cv::Mat::zeros(img.rows, img.cols, CV_8UC1);
+                            cv::drawContours(mask, conts, 0, 255,-1);
+                            cv::imshow("mask", mask);
+                            img.copyTo(imageChip, mask);
+                        
+                            cv::Rect roi = cv::boundingRect(cont);
+                            imageChip = imageChip(roi).clone();
+                            mask = mask(roi).clone();
+                            cv::imshow("chip", imageChip);
+                            
+//                            if(true)
+//                            {
+//                                //fill in the empty space pixels
+//                                std::vector<cv::Point> goodPixels;
+//                                for(int y = 0; y < imageChip.rows; y++)
+//                                {
+//                                    for(int x = 0; x < imageChip.cols; x++){
+//                                        if (mask.at<unsigned char>(y,x) > 0) {
+//                                            goodPixels.push_back(cv::Point(x,y));
+//                                        }
+//                                    }
+//                                }
+//                                int count = 0;
+//                                for(int x = 0; x < imageChip.cols; x++)
+//                                {
+//                                    for(int y = 0; y < imageChip.rows; y++)
+//                                    {
+//                                        if (mask.at<unsigned char>(y,x) == 0) {
+//                                            cv::Point p = goodPixels[count%(goodPixels.size())];
+//                                            imageChip.at<cv::Vec3b>(y,x) = imageChip.at<cv::Vec3b>(p);
+//                                            count ++;
+//                                        }
+//                                    }
+//                                }
+//                            }
+                            cv::imshow("chip_patched", imageChip);
+                            cv::waitKey();
+                        }
+                    }
+                    else if ([toolType isEqualToString:@"rectangleTool"])
+                    {
+                        cv::Rect roi([[entry objectForKey:@"x coord"] intValue],[[entry objectForKey:@"y coord"] intValue], [[entry objectForKey:@"width"] intValue], [[entry objectForKey:@"height"] intValue]);
+                        imageChip = img(roi).clone();
+                    }
+                    else if ([toolType isEqualToString:@"ellipseTool"])
+                    {
+                        cv::Rect roi([[entry objectForKey:@"x coord"] intValue],[[entry objectForKey:@"y coord"] intValue], [[entry objectForKey:@"width"] intValue], [[entry objectForKey:@"height"] intValue]);
+                        imageChip = img(roi).clone();
+                    }
+                    
                     NSMutableDictionary *toolAnnotationEntries;
                     if ([annotationsByToolForFile objectForKey:toolType]) {
                         toolAnnotationEntries = [annotationsByToolForFile objectForKey:toolType];
@@ -1475,30 +1696,10 @@ Mat norm_0_255(InputArray _src) {
                     }
                     [toolAnnotationEntries setObject:entry forKey:[entry objectForKey:@"name"]];
                 }
-                if (i == 0)
-                {
-                    cv::Mat img = cv::imread(fileName.UTF8String);
-                    
-                    if (img.empty()) {
-                        NSLog(@"WARNING: could not open '%@', the file is either corrupt or non-existant",fileName);
-                        img = cv::Mat::eye(500, 500, CV_8UC3);
-                    }
-                    OpenImageHandler *imageH = [[OpenImageHandler alloc] initWithCVMat:img Color:White BinaryImage:false];
-                    [frameForFrameNumber setObject:imageH forKey:@(i)];
-                }
+                
                 [framePathForFrameNum setObject:fileName forKey:@(i)];
                 [annotationsForFrames setObject:annotationsByToolForFile forKey:@(i)];
                 }
-            }
-            numFrames = allFileNames.count;
-            //            OpenImageHandler *img = [frameForFrameNumber objectForKey:@(0)];
-            //            [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
-            //            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
-            //            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",0,framePathForFrameNum.count]];
-            justLoadedNewProject = true;
-            [self GoToFrame:0];
-            if (resumeFrameNum >= 0 and resumeFrameNum < allFileNames.count) {
-                [self GoToFrame:resumeFrameNum];
             }
 
         }

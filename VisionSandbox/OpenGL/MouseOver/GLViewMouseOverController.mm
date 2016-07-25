@@ -70,18 +70,21 @@
             [statusLabel setStringValue:@"'CMD'+''alt' click to begin a new magnetic lasso point set"];
         }
     }
-    if ([[event characters] isEqualToString:@"r"]) {
-        [toolMenu setSelectedSegment:0];
-        [self toolSelection:nil];
+    if (event.modifierFlags & NSControlKeyMask) {
+        if ([[event characters] isEqualToString:@"r"]) {
+            [toolMenu setSelectedSegment:0];
+            [self toolSelection:nil];
+        }
+        else if ([[event characters] isEqualToString:@"c"]) {
+            [toolMenu setSelectedSegment:1];
+            [self toolSelection:nil];
+        }
+        else if ([[event characters] isEqualToString:@"s"]) {
+            [toolMenu setSelectedSegment:2];
+            [self toolSelection:nil];
+        }
     }
-    else if ([[event characters] isEqualToString:@"c"]) {
-        [toolMenu setSelectedSegment:1];
-        [self toolSelection:nil];
-    }
-    else if ([[event characters] isEqualToString:@"s"]) {
-        [toolMenu setSelectedSegment:2];
-        [self toolSelection:nil];
-    }
+    
 }
 
 -(void)keyUpHappened:(NSNotification *)notification
