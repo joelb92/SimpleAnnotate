@@ -26,7 +26,8 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include "Tooltip.h"
-
+#include "Landmarker_zhuramanan.h"
+#include "Model3D.h"
 @interface AppDelegate : NSObject <NSApplicationDelegate,NSTextFieldDelegate>
 {
 	IBOutlet GLOutlineViewController *mainGLOutlineView;

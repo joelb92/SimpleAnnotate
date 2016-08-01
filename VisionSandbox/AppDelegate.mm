@@ -1509,6 +1509,8 @@ Mat norm_0_255(InputArray _src) {
 
 -(void)extractPatchesFromProjectFile:(NSString *)projFilePath
 {
+    Landmarker *landmarker = new Landmarker_zhuramanan();
+    Model3D *model = new Model3D("");
     NSString *projectName = [[projFilePath lastPathComponent] stringByDeletingPathExtension];
 //    savingStatusLabel.stringValue = [NSString stringWithFormat:@"Loading Project %@", projectName];
     NSFileManager *fm = [NSFileManager defaultManager];
@@ -1595,8 +1597,11 @@ Mat norm_0_255(InputArray _src) {
                         cv::Rect f([[entry objectForKey:@"x coord"] intValue],[[entry objectForKey:@"y coord"] intValue],[[entry objectForKey:@"width"] intValue],[[entry objectForKey:@"height"] intValue]);
                         facesInImage.push_back(f);
                     }
-                    
+                   
                 }
+                    if (facesInImage.size() == 0) {
+                        
+                    }
                 for (int j = 0; j < annotationsForFile.count; j++) {
                     NSMutableDictionary *entry = [[annotationsForFile objectAtIndex:j] mutableCopy];
                     NSString *entryName = [entry objectForKey:@"name"];
