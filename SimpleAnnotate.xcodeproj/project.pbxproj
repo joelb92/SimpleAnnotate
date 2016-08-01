@@ -99,6 +99,36 @@
 		5DC59E1C1AA9567C00F80674 /* LogoTransparent.gif in Resources */ = {isa = PBXBuildFile; fileRef = 5DC59E1B1AA9567C00F80674 /* LogoTransparent.gif */; };
 		5DC59E1E1AA9568800F80674 /* LogoBoardered.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DC59E1D1AA9568800F80674 /* LogoBoardered.png */; };
 		5DC59E201AA9575A00F80674 /* NDLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DC59E1F1AA9575A00F80674 /* NDLogo.png */; };
+		5DC6B1351D4FD294005D96D6 /* Landmarker_zhuramanan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B12F1D4FD294005D96D6 /* Landmarker_zhuramanan.cpp */; };
+		5DC6B1361D4FD294005D96D6 /* Landmarker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B1311D4FD294005D96D6 /* Landmarker.cpp */; };
+		5DC6B1371D4FD294005D96D6 /* Model3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B1331D4FD294005D96D6 /* Model3D.cpp */; };
+		5DC6B1621D4FD2BE005D96D6 /* Licence_CeCILL-C_V1-en.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5DC6B13B1D4FD2BE005D96D6 /* Licence_CeCILL-C_V1-en.txt */; };
+		5DC6B1631D4FD2BE005D96D6 /* Licence_CeCILL_V2-en.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5DC6B13C1D4FD2BE005D96D6 /* Licence_CeCILL_V2-en.txt */; };
+		5DC6B1641D4FD2BE005D96D6 /* config-doxygen in Resources */ = {isa = PBXBuildFile; fileRef = 5DC6B13D1D4FD2BE005D96D6 /* config-doxygen */; };
+		5DC6B1651D4FD2BE005D96D6 /* cscope.out in Resources */ = {isa = PBXBuildFile; fileRef = 5DC6B13E1D4FD2BE005D96D6 /* cscope.out */; };
+		5DC6B1661D4FD2BE005D96D6 /* eHbbox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B13F1D4FD2BE005D96D6 /* eHbbox.cpp */; };
+		5DC6B1671D4FD2BE005D96D6 /* eHbox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B1411D4FD2BE005D96D6 /* eHbox.cpp */; };
+		5DC6B1681D4FD2BE005D96D6 /* eHfacemodel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B1431D4FD2BE005D96D6 /* eHfacemodel.cpp */; };
+		5DC6B1691D4FD2BE005D96D6 /* eHfeatpyramid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B1451D4FD2BE005D96D6 /* eHfeatpyramid.cpp */; };
+		5DC6B16A1D4FD2BE005D96D6 /* eHfilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B1471D4FD2BE005D96D6 /* eHfilter.cpp */; };
+		5DC6B16B1D4FD2BE005D96D6 /* eHimage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B1491D4FD2BE005D96D6 /* eHimage.cpp */; };
+		5DC6B16C1D4FD2BE005D96D6 /* eHimageFeature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B14B1D4FD2BE005D96D6 /* eHimageFeature.cpp */; };
+		5DC6B16D1D4FD2BE005D96D6 /* eHmatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B14D1D4FD2BE005D96D6 /* eHmatrix.cpp */; };
+		5DC6B16E1D4FD2BE005D96D6 /* eHposemodel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B14F1D4FD2BE005D96D6 /* eHposemodel.cpp */; };
+		5DC6B16F1D4FD2BE005D96D6 /* eHshiftdt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B1511D4FD2BE005D96D6 /* eHshiftdt.cpp */; };
+		5DC6B1701D4FD2BE005D96D6 /* eHutils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B1531D4FD2BE005D96D6 /* eHutils.cpp */; };
+		5DC6B1711D4FD2BE005D96D6 /* face_p146.xml in Resources */ = {isa = PBXBuildFile; fileRef = 5DC6B1551D4FD2BE005D96D6 /* face_p146.xml */; };
+		5DC6B1721D4FD2BE005D96D6 /* face_p99.xml in Resources */ = {isa = PBXBuildFile; fileRef = 5DC6B1561D4FD2BE005D96D6 /* face_p99.xml */; };
+		5DC6B1731D4FD2BE005D96D6 /* facefinder.py in Resources */ = {isa = PBXBuildFile; fileRef = 5DC6B1571D4FD2BE005D96D6 /* facefinder.py */; };
+		5DC6B1741D4FD2BE005D96D6 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 5DC6B1581D4FD2BE005D96D6 /* LICENSE */; };
+		5DC6B1751D4FD2BE005D96D6 /* mainpage.dox in Resources */ = {isa = PBXBuildFile; fileRef = 5DC6B1591D4FD2BE005D96D6 /* mainpage.dox */; };
+		5DC6B1761D4FD2BE005D96D6 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B15A1D4FD2BE005D96D6 /* Makefile */; };
+		5DC6B1771D4FD2BE005D96D6 /* pose_BUFFY.xml in Resources */ = {isa = PBXBuildFile; fileRef = 5DC6B15B1D4FD2BE005D96D6 /* pose_BUFFY.xml */; };
+		5DC6B1781D4FD2BE005D96D6 /* pose_PARSE.xml in Resources */ = {isa = PBXBuildFile; fileRef = 5DC6B15C1D4FD2BE005D96D6 /* pose_PARSE.xml */; };
+		5DC6B1791D4FD2BE005D96D6 /* license.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5DC6B15E1D4FD2BE005D96D6 /* license.txt */; };
+		5DC6B17A1D4FD2BE005D96D6 /* zhurhamanantest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B1611D4FD2BE005D96D6 /* zhurhamanantest.cpp */; };
+		5DC6B17D1D4FD3AB005D96D6 /* libblas.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DC6B17B1D4FD3AB005D96D6 /* libblas.dylib */; };
+		5DC6B17E1D4FD3AB005D96D6 /* libcblas.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DC6B17C1D4FD3AB005D96D6 /* libcblas.dylib */; };
 		5DD4C76219990F470066DFE1 /* ListViewIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DD4C76119990F470066DFE1 /* ListViewIcon.png */; };
 		5DD4C76519991A2B0066DFE1 /* GearIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DD4C76419991A2B0066DFE1 /* GearIcon.png */; };
 		5DEA6CB11B71FE89009D240B /* SemiBoostingApplication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DEA6CAD1B71FE89009D240B /* SemiBoostingApplication.cpp */; };
@@ -340,6 +370,53 @@
 		5DC59E1B1AA9567C00F80674 /* LogoTransparent.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = LogoTransparent.gif; sourceTree = SOURCE_ROOT; };
 		5DC59E1D1AA9568800F80674 /* LogoBoardered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LogoBoardered.png; sourceTree = SOURCE_ROOT; };
 		5DC59E1F1AA9575A00F80674 /* NDLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NDLogo.png; sourceTree = SOURCE_ROOT; };
+		5DC6B12F1D4FD294005D96D6 /* Landmarker_zhuramanan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Landmarker_zhuramanan.cpp; sourceTree = "<group>"; };
+		5DC6B1301D4FD294005D96D6 /* Landmarker_zhuramanan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Landmarker_zhuramanan.h; sourceTree = "<group>"; };
+		5DC6B1311D4FD294005D96D6 /* Landmarker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Landmarker.cpp; sourceTree = "<group>"; };
+		5DC6B1321D4FD294005D96D6 /* Landmarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Landmarker.h; sourceTree = "<group>"; };
+		5DC6B1331D4FD294005D96D6 /* Model3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Model3D.cpp; sourceTree = "<group>"; };
+		5DC6B1341D4FD294005D96D6 /* Model3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Model3D.h; sourceTree = "<group>"; };
+		5DC6B13A1D4FD2BE005D96D6 /* CImg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CImg.h; sourceTree = "<group>"; };
+		5DC6B13B1D4FD2BE005D96D6 /* Licence_CeCILL-C_V1-en.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Licence_CeCILL-C_V1-en.txt"; sourceTree = "<group>"; };
+		5DC6B13C1D4FD2BE005D96D6 /* Licence_CeCILL_V2-en.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Licence_CeCILL_V2-en.txt"; sourceTree = "<group>"; };
+		5DC6B13D1D4FD2BE005D96D6 /* config-doxygen */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "config-doxygen"; sourceTree = "<group>"; };
+		5DC6B13E1D4FD2BE005D96D6 /* cscope.out */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cscope.out; sourceTree = "<group>"; };
+		5DC6B13F1D4FD2BE005D96D6 /* eHbbox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eHbbox.cpp; sourceTree = "<group>"; };
+		5DC6B1401D4FD2BE005D96D6 /* eHbbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eHbbox.h; sourceTree = "<group>"; };
+		5DC6B1411D4FD2BE005D96D6 /* eHbox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eHbox.cpp; sourceTree = "<group>"; };
+		5DC6B1421D4FD2BE005D96D6 /* eHbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eHbox.h; sourceTree = "<group>"; };
+		5DC6B1431D4FD2BE005D96D6 /* eHfacemodel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eHfacemodel.cpp; sourceTree = "<group>"; };
+		5DC6B1441D4FD2BE005D96D6 /* eHfacemodel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eHfacemodel.h; sourceTree = "<group>"; };
+		5DC6B1451D4FD2BE005D96D6 /* eHfeatpyramid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eHfeatpyramid.cpp; sourceTree = "<group>"; };
+		5DC6B1461D4FD2BE005D96D6 /* eHfeatpyramid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eHfeatpyramid.h; sourceTree = "<group>"; };
+		5DC6B1471D4FD2BE005D96D6 /* eHfilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eHfilter.cpp; sourceTree = "<group>"; };
+		5DC6B1481D4FD2BE005D96D6 /* eHfilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eHfilter.h; sourceTree = "<group>"; };
+		5DC6B1491D4FD2BE005D96D6 /* eHimage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eHimage.cpp; sourceTree = "<group>"; };
+		5DC6B14A1D4FD2BE005D96D6 /* eHimage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eHimage.h; sourceTree = "<group>"; };
+		5DC6B14B1D4FD2BE005D96D6 /* eHimageFeature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eHimageFeature.cpp; sourceTree = "<group>"; };
+		5DC6B14C1D4FD2BE005D96D6 /* eHimageFeature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eHimageFeature.h; sourceTree = "<group>"; };
+		5DC6B14D1D4FD2BE005D96D6 /* eHmatrix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eHmatrix.cpp; sourceTree = "<group>"; };
+		5DC6B14E1D4FD2BE005D96D6 /* eHmatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eHmatrix.h; sourceTree = "<group>"; };
+		5DC6B14F1D4FD2BE005D96D6 /* eHposemodel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eHposemodel.cpp; sourceTree = "<group>"; };
+		5DC6B1501D4FD2BE005D96D6 /* eHposemodel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eHposemodel.h; sourceTree = "<group>"; };
+		5DC6B1511D4FD2BE005D96D6 /* eHshiftdt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eHshiftdt.cpp; sourceTree = "<group>"; };
+		5DC6B1521D4FD2BE005D96D6 /* eHshiftdt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eHshiftdt.h; sourceTree = "<group>"; };
+		5DC6B1531D4FD2BE005D96D6 /* eHutils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eHutils.cpp; sourceTree = "<group>"; };
+		5DC6B1541D4FD2BE005D96D6 /* eHutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eHutils.h; sourceTree = "<group>"; };
+		5DC6B1551D4FD2BE005D96D6 /* face_p146.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = face_p146.xml; sourceTree = "<group>"; };
+		5DC6B1561D4FD2BE005D96D6 /* face_p99.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = face_p99.xml; sourceTree = "<group>"; };
+		5DC6B1571D4FD2BE005D96D6 /* facefinder.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = facefinder.py; sourceTree = "<group>"; };
+		5DC6B1581D4FD2BE005D96D6 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		5DC6B1591D4FD2BE005D96D6 /* mainpage.dox */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mainpage.dox; sourceTree = "<group>"; };
+		5DC6B15A1D4FD2BE005D96D6 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		5DC6B15B1D4FD2BE005D96D6 /* pose_BUFFY.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = pose_BUFFY.xml; sourceTree = "<group>"; };
+		5DC6B15C1D4FD2BE005D96D6 /* pose_PARSE.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = pose_PARSE.xml; sourceTree = "<group>"; };
+		5DC6B15E1D4FD2BE005D96D6 /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
+		5DC6B15F1D4FD2BE005D96D6 /* rapidxml.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml.hpp; sourceTree = "<group>"; };
+		5DC6B1601D4FD2BE005D96D6 /* rapidxml_print.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_print.hpp; sourceTree = "<group>"; };
+		5DC6B1611D4FD2BE005D96D6 /* zhurhamanantest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = zhurhamanantest.cpp; sourceTree = "<group>"; };
+		5DC6B17B1D4FD3AB005D96D6 /* libblas.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libblas.dylib; path = usr/lib/libblas.dylib; sourceTree = SDKROOT; };
+		5DC6B17C1D4FD3AB005D96D6 /* libcblas.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcblas.dylib; path = usr/lib/libcblas.dylib; sourceTree = SDKROOT; };
 		5DD4C76119990F470066DFE1 /* ListViewIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ListViewIcon.png; sourceTree = "<group>"; };
 		5DD4C76419991A2B0066DFE1 /* GearIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GearIcon.png; sourceTree = "<group>"; };
 		5DEA6CAD1B71FE89009D240B /* SemiBoostingApplication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SemiBoostingApplication.cpp; path = VisionSandbox/SemiBoostingApplication.cpp; sourceTree = SOURCE_ROOT; };
@@ -418,6 +495,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DC6B17D1D4FD3AB005D96D6 /* libblas.dylib in Frameworks */,
+				5DC6B17E1D4FD3AB005D96D6 /* libcblas.dylib in Frameworks */,
 				D8543A251D30054600BC8F97 /* RHPreferences.framework in Frameworks */,
 				D8543A1C1D2EAD8300BC8F97 /* opencv2.framework in Frameworks */,
 				5DF2E0941B8CB3E100873B9D /* CoreMedia.framework in Frameworks */,
@@ -465,6 +544,8 @@
 		5D2897901991E2300036CFD6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5DC6B17B1D4FD3AB005D96D6 /* libblas.dylib */,
+				5DC6B17C1D4FD3AB005D96D6 /* libcblas.dylib */,
 				D8543A191D2EAD6C00BC8F97 /* Opencv */,
 				D8543A151D2EAC0400BC8F97 /* dlib-18.18 */,
 				D8543A241D30054600BC8F97 /* RHPreferences.framework */,
@@ -518,8 +599,15 @@
 				D8543A2E1D36D1E000BC8F97 /* ComboBoxWithMouseOver.m */,
 				D8543A301D37DCFA00BC8F97 /* IntelligentScissors.h */,
 				D8543A311D37DCFA00BC8F97 /* IntelligentScissors.mm */,
+				5DC6B12F1D4FD294005D96D6 /* Landmarker_zhuramanan.cpp */,
+				5DC6B1301D4FD294005D96D6 /* Landmarker_zhuramanan.h */,
+				5DC6B1311D4FD294005D96D6 /* Landmarker.cpp */,
+				5DC6B1321D4FD294005D96D6 /* Landmarker.h */,
+				5DC6B1331D4FD294005D96D6 /* Model3D.cpp */,
+				5DC6B1341D4FD294005D96D6 /* Model3D.h */,
 				D8C041FC1D3956F000F520CB /* smootour.cpp */,
 				D8C041FD1D3956F000F520CB /* smootour.hpp */,
+				5DC6B1381D4FD2BE005D96D6 /* dpm-face-master */,
 				5DEA6BD21B71F6F5009D240B /* Tracking */,
 				5D2898661992020C0036CFD6 /* Algebra */,
 				5D28988B199202620036CFD6 /* Array Types */,
@@ -799,6 +887,68 @@
 			name = "Visual Parameter Field Views";
 			sourceTree = "<group>";
 		};
+		5DC6B1381D4FD2BE005D96D6 /* dpm-face-master */ = {
+			isa = PBXGroup;
+			children = (
+				5DC6B1391D4FD2BE005D96D6 /* CImg-1.5.0 */,
+				5DC6B13D1D4FD2BE005D96D6 /* config-doxygen */,
+				5DC6B13E1D4FD2BE005D96D6 /* cscope.out */,
+				5DC6B13F1D4FD2BE005D96D6 /* eHbbox.cpp */,
+				5DC6B1401D4FD2BE005D96D6 /* eHbbox.h */,
+				5DC6B1411D4FD2BE005D96D6 /* eHbox.cpp */,
+				5DC6B1421D4FD2BE005D96D6 /* eHbox.h */,
+				5DC6B1431D4FD2BE005D96D6 /* eHfacemodel.cpp */,
+				5DC6B1441D4FD2BE005D96D6 /* eHfacemodel.h */,
+				5DC6B1451D4FD2BE005D96D6 /* eHfeatpyramid.cpp */,
+				5DC6B1461D4FD2BE005D96D6 /* eHfeatpyramid.h */,
+				5DC6B1471D4FD2BE005D96D6 /* eHfilter.cpp */,
+				5DC6B1481D4FD2BE005D96D6 /* eHfilter.h */,
+				5DC6B1491D4FD2BE005D96D6 /* eHimage.cpp */,
+				5DC6B14A1D4FD2BE005D96D6 /* eHimage.h */,
+				5DC6B14B1D4FD2BE005D96D6 /* eHimageFeature.cpp */,
+				5DC6B14C1D4FD2BE005D96D6 /* eHimageFeature.h */,
+				5DC6B14D1D4FD2BE005D96D6 /* eHmatrix.cpp */,
+				5DC6B14E1D4FD2BE005D96D6 /* eHmatrix.h */,
+				5DC6B14F1D4FD2BE005D96D6 /* eHposemodel.cpp */,
+				5DC6B1501D4FD2BE005D96D6 /* eHposemodel.h */,
+				5DC6B1511D4FD2BE005D96D6 /* eHshiftdt.cpp */,
+				5DC6B1521D4FD2BE005D96D6 /* eHshiftdt.h */,
+				5DC6B1531D4FD2BE005D96D6 /* eHutils.cpp */,
+				5DC6B1541D4FD2BE005D96D6 /* eHutils.h */,
+				5DC6B1551D4FD2BE005D96D6 /* face_p146.xml */,
+				5DC6B1561D4FD2BE005D96D6 /* face_p99.xml */,
+				5DC6B1571D4FD2BE005D96D6 /* facefinder.py */,
+				5DC6B1581D4FD2BE005D96D6 /* LICENSE */,
+				5DC6B1591D4FD2BE005D96D6 /* mainpage.dox */,
+				5DC6B15A1D4FD2BE005D96D6 /* Makefile */,
+				5DC6B15B1D4FD2BE005D96D6 /* pose_BUFFY.xml */,
+				5DC6B15C1D4FD2BE005D96D6 /* pose_PARSE.xml */,
+				5DC6B15D1D4FD2BE005D96D6 /* rapidxml-1.13 */,
+				5DC6B1611D4FD2BE005D96D6 /* zhurhamanantest.cpp */,
+			);
+			path = "dpm-face-master";
+			sourceTree = "<group>";
+		};
+		5DC6B1391D4FD2BE005D96D6 /* CImg-1.5.0 */ = {
+			isa = PBXGroup;
+			children = (
+				5DC6B13A1D4FD2BE005D96D6 /* CImg.h */,
+				5DC6B13B1D4FD2BE005D96D6 /* Licence_CeCILL-C_V1-en.txt */,
+				5DC6B13C1D4FD2BE005D96D6 /* Licence_CeCILL_V2-en.txt */,
+			);
+			path = "CImg-1.5.0";
+			sourceTree = "<group>";
+		};
+		5DC6B15D1D4FD2BE005D96D6 /* rapidxml-1.13 */ = {
+			isa = PBXGroup;
+			children = (
+				5DC6B15E1D4FD2BE005D96D6 /* license.txt */,
+				5DC6B15F1D4FD2BE005D96D6 /* rapidxml.hpp */,
+				5DC6B1601D4FD2BE005D96D6 /* rapidxml_print.hpp */,
+			);
+			path = "rapidxml-1.13";
+			sourceTree = "<group>";
+		};
 		5DD4C763199916F40066DFE1 /* GUI Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -984,22 +1134,34 @@
 			files = (
 				5D28979C1991E2300036CFD6 /* InfoPlist.strings in Resources */,
 				5D2897AA1991E2300036CFD6 /* Images.xcassets in Resources */,
+				5DC6B1741D4FD2BE005D96D6 /* LICENSE in Resources */,
 				5D55C56719948EFC00D9F78A /* OpenGL View Icon.png in Resources */,
+				5DC6B1721D4FD2BE005D96D6 /* face_p99.xml in Resources */,
 				5D2897A21991E2300036CFD6 /* Credits.rtf in Resources */,
+				5DC6B1791D4FD2BE005D96D6 /* license.txt in Resources */,
 				5DC59E1C1AA9567C00F80674 /* LogoTransparent.gif in Resources */,
+				5DC6B1751D4FD2BE005D96D6 /* mainpage.dox in Resources */,
+				5DC6B1621D4FD2BE005D96D6 /* Licence_CeCILL-C_V1-en.txt in Resources */,
 				5DC59E1E1AA9568800F80674 /* LogoBoardered.png in Resources */,
+				5DC6B1641D4FD2BE005D96D6 /* config-doxygen in Resources */,
 				5D8D80321B045E47002A1EC6 /* unlink.png in Resources */,
 				D894AAA71D38134200EBFDEB /* lassoicon.png in Resources */,
 				5D2897A81991E2300036CFD6 /* MainMenu.xib in Resources */,
 				5DD4C76219990F470066DFE1 /* ListViewIcon.png in Resources */,
 				5DECC67D1AA96F6F009C2183 /* dsa_pub.pem in Resources */,
+				5DC6B1651D4FD2BE005D96D6 /* cscope.out in Resources */,
+				5DC6B1711D4FD2BE005D96D6 /* face_p146.xml in Resources */,
 				5D77A3C21D33DD9300435C36 /* gear.png in Resources */,
 				5DC59E201AA9575A00F80674 /* NDLogo.png in Resources */,
 				5D55C56619948EFC00D9F78A /* FolderIcon.png in Resources */,
+				5DC6B1731D4FD2BE005D96D6 /* facefinder.py in Resources */,
 				5D8D80311B045E47002A1EC6 /* link.png in Resources */,
+				5DC6B1781D4FD2BE005D96D6 /* pose_PARSE.xml in Resources */,
+				5DC6B1771D4FD2BE005D96D6 /* pose_BUFFY.xml in Resources */,
 				5DD4C76519991A2B0066DFE1 /* GearIcon.png in Resources */,
 				5D7BF1561AA9521200AC2DBE /* mainIcon.iconset in Resources */,
 				D894AAA11D380EA300EBFDEB /* magneticlasso.png in Resources */,
+				5DC6B1631D4FD2BE005D96D6 /* Licence_CeCILL_V2-en.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1018,10 +1180,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DC6B1761D4FD2BE005D96D6 /* Makefile in Sources */,
 				5D2898871992022E0036CFD6 /* Plane.mm in Sources */,
 				5D2898521991FEED0036CFD6 /* trackball.c in Sources */,
 				5D2898441991FA890036CFD6 /* GL3DGeometryDrawer.mm in Sources */,
+				5DC6B1661D4FD2BE005D96D6 /* eHbbox.cpp in Sources */,
 				5D2898481991FA890036CFD6 /* GLObjectList.mm in Sources */,
+				5DC6B16C1D4FD2BE005D96D6 /* eHimageFeature.cpp in Sources */,
 				5D55C53719933FCD00D9F78A /* ReadWriteLock.mm in Sources */,
 				5D28984E1991FA890036CFD6 /* TreeListItem.mm in Sources */,
 				5DEA6CEC1B724989009D240B /* EstimatedGaussDistribution.cpp in Sources */,
@@ -1034,6 +1199,7 @@
 				5D55C5631994556D00D9F78A /* NSImage+OpenCV.mm in Sources */,
 				5D2898B4199202710036CFD6 /* Vector2Arr.mm in Sources */,
 				5D2898C5199202710036CFD6 /* idArr.mm in Sources */,
+				5DC6B1681D4FD2BE005D96D6 /* eHfacemodel.cpp in Sources */,
 				5D2898451991FA890036CFD6 /* GL3DView.mm in Sources */,
 				5D55C5621994556D00D9F78A /* NSImage+saveAsJpegWithName.mm in Sources */,
 				5DEA6CEB1B724989009D240B /* Detector.cpp in Sources */,
@@ -1043,6 +1209,8 @@
 				5D28984A1991FA890036CFD6 /* GLView.mm in Sources */,
 				5D28985F1991FF8E0036CFD6 /* GLRuler.mm in Sources */,
 				5DEA6CF21B724989009D240B /* StrongClassifier.cpp in Sources */,
+				5DC6B16B1D4FD2BE005D96D6 /* eHimage.cpp in Sources */,
+				5DC6B16F1D4FD2BE005D96D6 /* eHshiftdt.cpp in Sources */,
 				5DEA6CB11B71FE89009D240B /* SemiBoostingApplication.cpp in Sources */,
 				5D55C53119933F8800D9F78A /* SingleViewCellView.mm in Sources */,
 				5D7BF1501AA4E8AD00AC2DBE /* ROTableView.m in Sources */,
@@ -1053,6 +1221,8 @@
 				5D2898BE199202710036CFD6 /* colorArr.mm in Sources */,
 				5D2898C7199202710036CFD6 /* CvSeqArr.mm in Sources */,
 				5D2898BB199202710036CFD6 /* boolArr.mm in Sources */,
+				5DC6B17A1D4FD2BE005D96D6 /* zhurhamanantest.cpp in Sources */,
+				5DC6B1691D4FD2BE005D96D6 /* eHfeatpyramid.cpp in Sources */,
 				5D3F3F101B711AC500C9C001 /* CamShiftTracker.mm in Sources */,
 				5DEA6CE91B724989009D240B /* BaseClassifier.cpp in Sources */,
 				5D55C5771995D1AE00D9F78A /* ImageListView.mm in Sources */,
@@ -1066,7 +1236,9 @@
 				5DEA6CF11B724989009D240B /* Regions.cpp in Sources */,
 				5D55C557199453B900D9F78A /* OpenImageHandler.mm in Sources */,
 				5D2898821992022E0036CFD6 /* Ray3.mm in Sources */,
+				5DC6B16E1D4FD2BE005D96D6 /* eHposemodel.cpp in Sources */,
 				5DEA6CF51B724989009D240B /* StrongClassifierStandardSemi.cpp in Sources */,
+				5DC6B1701D4FD2BE005D96D6 /* eHutils.cpp in Sources */,
 				D8543A231D3003D100BC8F97 /* SettingsPanelHandler.mm in Sources */,
 				5DEA6CE41B724989009D240B /* ImageHandler.cpp in Sources */,
 				D8081B7A1D1850F9005AC6F4 /* GLPointArrayTool.mm in Sources */,
@@ -1074,11 +1246,13 @@
 				5D2898B8199202710036CFD6 /* Ray3Arr.mm in Sources */,
 				5D28979E1991E2300036CFD6 /* main.m in Sources */,
 				5D2898BC199202710036CFD6 /* floatArr.mm in Sources */,
+				5DC6B1351D4FD294005D96D6 /* Landmarker_zhuramanan.cpp in Sources */,
 				5D2898B9199202710036CFD6 /* PlaneArr.mm in Sources */,
 				5DB2C7ED1A718A0700A1F815 /* GL2DGeometryDrawer.mm in Sources */,
 				D8E1BC1D1D1C44570092FB0C /* FaceDetectionHandler.mm in Sources */,
 				5DEA6CB21B71FE89009D240B /* SemiBoostingTracker.cpp in Sources */,
 				D8543A2F1D36D1E000BC8F97 /* ComboBoxWithMouseOver.m in Sources */,
+				5DC6B1671D4FD2BE005D96D6 /* eHbox.cpp in Sources */,
 				5D890E0D1D109CF90097F3E0 /* FrameHandler.mm in Sources */,
 				5DEA6CF41B724989009D240B /* StrongClassifierStandard.cpp in Sources */,
 				5D890E131D11C5450097F3E0 /* GLEllipseTool.mm in Sources */,
@@ -1093,6 +1267,7 @@
 				5D2898861992022E0036CFD6 /* Line3.mm in Sources */,
 				5D55C57A1995F04200D9F78A /* FunctionVisualTableCellView.mm in Sources */,
 				5D28984D1991FA890036CFD6 /* TreeList.mm in Sources */,
+				5DC6B1361D4FD294005D96D6 /* Landmarker.cpp in Sources */,
 				5D2898811992022E0036CFD6 /* Ray2.mm in Sources */,
 				5D2898BD199202710036CFD6 /* intArr.mm in Sources */,
 				D8C041FE1D3956F000F520CB /* smootour.cpp in Sources */,
@@ -1104,8 +1279,11 @@
 				5DF796AE199B2B4D003D7930 /* VisualFunctionViewHolder.mm in Sources */,
 				5D55C5811995F36700D9F78A /* FunctionVisualParametersView.mm in Sources */,
 				5D2898B5199202710036CFD6 /* LineSegment2Arr.mm in Sources */,
+				5DC6B16A1D4FD2BE005D96D6 /* eHfilter.cpp in Sources */,
 				5DB2C7F01A720F2E00A1F815 /* InfoOutputController.mm in Sources */,
+				5DC6B16D1D4FD2BE005D96D6 /* eHmatrix.cpp in Sources */,
 				5D94B56E199C319100E080E5 /* CheckboxView.mm in Sources */,
+				5DC6B1371D4FD294005D96D6 /* Model3D.cpp in Sources */,
 				5DF2E0971B8CC3D900873B9D /* objectTracker.mm in Sources */,
 				5D2898C0199202710036CFD6 /* DirectionArray.mm in Sources */,
 				5D2898841992022E0036CFD6 /* LineSegment3.mm in Sources */,
