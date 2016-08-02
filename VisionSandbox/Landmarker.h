@@ -18,7 +18,7 @@ public:
 	int numLandmarks;
 	std::string name;
 
-    virtual std::vector<cv::Point> findLandmarks(cv::Mat img);
+//    virtual std::vector<std::vector<cv::Point> > findLandmarks(cv::Mat img);
     Landmarker();
 
 };

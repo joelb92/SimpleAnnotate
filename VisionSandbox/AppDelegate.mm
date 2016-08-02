@@ -14,7 +14,7 @@ using namespace std;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     lock = [[NSLock alloc] init ];
-//    [self extractPatchesFromProjectFile:@"/Volumes/BTAS/ORNL_Tattos_Piercings/tattoos/tattoos_joel_project/joel_tattoos_project.saproj"];
+    [self extractPatchesFromProjectFile:@"/Volumes/BTAS/ORNL_Tattos_Piercings/tattoos/tattoos_joel_project/joel_tattoos_project.saproj"];
     [self splashSequence];
     lock = [[NSLock alloc] init];
     matchedScenes = [[NSMutableIndexSet alloc] init];
@@ -1509,7 +1509,8 @@ Mat norm_0_255(InputArray _src) {
 
 -(void)extractPatchesFromProjectFile:(NSString *)projFilePath
 {
-    Landmarker *landmarker = new Landmarker_zhuramanan();
+    int normalFaceWidthPx = 400;
+    Landmarker_zhuramanan *landmarker = new Landmarker_zhuramanan();
     Model3D *model = new Model3D("");
     NSString *projectName = [[projFilePath lastPathComponent] stringByDeletingPathExtension];
 //    savingStatusLabel.stringValue = [NSString stringWithFormat:@"Loading Project %@", projectName];
@@ -1600,7 +1601,16 @@ Mat norm_0_255(InputArray _src) {
                    
                 }
                     if (facesInImage.size() == 0) {
-                        
+                        std::vector<bbox_t> faceboxes;
+                        NSLog(@"Detecting Faces");
+                        std::vector<std::vector<cv::Point> > faceLandmarks = landmarker->findLandmarks(img,faceboxes);
+                        NSLog(@"Found %i faces!", faceLandmarks.size());
+                        for(int j = 0; j < faceboxes.size(); j++)
+                        {
+                            bbox_t box = faceboxes[j];
+                            cv::Rect r(box.outer.x1,box.outer.y1,box.outer.x2-box.outer.x1,box.outer.y2-box.outer.y1);
+                            facesInImage.push_back(r);
+                        }
                     }
                 for (int j = 0; j < annotationsForFile.count; j++) {
                     NSMutableDictionary *entry = [[annotationsForFile objectAtIndex:j] mutableCopy];
@@ -1640,6 +1650,28 @@ Mat norm_0_255(InputArray _src) {
                         cv::Rect roi = cv::boundingRect(cont);
                         if (roi.x >=0 and roi.y >= 0 and roi.x < img.cols and roi.y < img.rows)
                         {
+                            int maxoverlap = 0;
+                            int maxoverlapIndex = -1;
+                            //calcualte what face the given annoation belongs to via how much the annotation overlaps with the faces in the image
+                            for (int k = 0; k < facesInImage.size(); k++) {
+                                cv::Rect faceWithForhead(facesInImage[k].x,facesInImage[k].y-facesInImage[k].height*.40,facesInImage[k].width,facesInImage[k].height*1.4);
+                                int overlaparea = calculateIntersectionArea(cv::Mat::zeros(img.rows, img.cols, CV_8UC1), faceWithForhead, cont);
+                                if (overlaparea > maxoverlap)
+                                {
+                                    maxoverlap = overlaparea;
+                                    maxoverlapIndex = k;
+                                }
+                            }
+                            int faceWidth = -1;
+                            if (maxoverlapIndex == -1)
+                            {
+                                //doesnt belong to a face at all
+                                faceWidth = 100;
+                            }
+                            else{
+                                faceWidth = facesInImage[maxoverlapIndex].width;
+                            }
+                            float scalefactor = normalFaceWidthPx/faceWidth;
                             cv::Mat mask = cv::Mat::zeros(img.rows, img.cols, CV_8UC1);
                             cv::drawContours(mask, conts, 0, 255,-1);
                             cv::imshow("mask", mask);
@@ -1648,8 +1680,11 @@ Mat norm_0_255(InputArray _src) {
                             cv::Rect roi = cv::boundingRect(cont);
                             imageChip = imageChip(roi).clone();
                             mask = mask(roi).clone();
-                            cv::imshow("chip", imageChip);
                             
+                            cv::resize(imageChip, imageChip, cv::Size(imageChip.cols*scalefactor,imageChip.rows*scalefactor));
+                            cv::imshow("image",img);
+                            cv::imshow("chip", imageChip);
+                            NSLog(@"Face Width: %i",faceWidth);
 //                            if(true)
 //                            {
 //                                //fill in the empty space pixels
@@ -1663,9 +1698,9 @@ Mat norm_0_255(InputArray _src) {
 //                                    }
 //                                }
 //                                int count = 0;
-//                                for(int x = 0; x < imageChip.cols; x++)
+//                                for(int y = 0; y < imageChip.rows; y++)
 //                                {
-//                                    for(int y = 0; y < imageChip.rows; y++)
+//                                    for(int x = 0; x < imageChip.cols; x++)
 //                                    {
 //                                        if (mask.at<unsigned char>(y,x) == 0) {
 //                                            cv::Point p = goodPixels[count%(goodPixels.size())];
@@ -1675,7 +1710,7 @@ Mat norm_0_255(InputArray _src) {
 //                                    }
 //                                }
 //                            }
-                            cv::imshow("chip_patched", imageChip);
+//                            cv::imshow("chip_patched", imageChip);
                             cv::waitKey();
                         }
                     }
@@ -1711,5 +1746,27 @@ Mat norm_0_255(InputArray _src) {
     }
 }
 
+int calculateIntersectionArea(const cv::Mat& blobImg, cv::Rect contour1, const std::vector<cv::Point> contour2)
+{
+  return  calculateIntersectionArea(blobImg, contour1, cv::boundingRect(contour2));
+}
+
+int calculateIntersectionArea(const cv::Mat& blobImg, cv::Rect contour1, cv::Rect contour2)
+{
+    cv::Mat aux1 = cv::Mat::zeros(blobImg.size(), CV_8UC1);
+    cv::Mat aux2 = cv::Mat::zeros(blobImg.size(), CV_8UC1);
+    
+    cv::rectangle(aux1, contour1, 255, -1, 8, 0);
+    cv::rectangle(aux2, contour2, 255, -1, 8, 0);
+    
+    cv::bitwise_and(blobImg, aux1, aux1);
+    cv::bitwise_and(blobImg, aux2, aux2);
+    
+    cv::Mat intersectionMat = aux1 & aux2;
+    
+    cv::Scalar intersectionArea = cv::sum(intersectionMat);
+    
+    return (intersectionArea[0]);
+}
 
 @end

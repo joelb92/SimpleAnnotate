@@ -13,7 +13,7 @@ Landmarker::Landmarker (){
     name = "None";
 }
 
-std::vector<cv::Point> Landmarker::findLandmarks(cv::Mat img) {
-	std::cout << "You called an empty landmarker..." << std::endl;
-    return std::vector<cv::Point> ();
-}
+//std::vector<std::vector<cv::Point> > Landmarker::findLandmarks(cv::Mat img) {
+//	std::cout << "You called an empty landmarker..." << std::endl;
+//    return std::vector<std::vector<cv::Point> > ();
+//}

@@ -25,8 +25,8 @@ private:
 
 public:
 	Landmarker_zhuramanan();
-    std::vector<cv::Point> findLandmarks(cv::Mat);
-
+    std::vector<std::vector<cv::Point> > findLandmarks(cv::Mat);
+    std::vector<std::vector<cv::Point> > findLandmarks(cv::Mat im,std::vector<bbox_t> &boxes);
 };
 
 #endif /* LANDMARKER_ZHURAMANAN_H_ */

@@ -99,7 +99,7 @@
 		5DC59E1C1AA9567C00F80674 /* LogoTransparent.gif in Resources */ = {isa = PBXBuildFile; fileRef = 5DC59E1B1AA9567C00F80674 /* LogoTransparent.gif */; };
 		5DC59E1E1AA9568800F80674 /* LogoBoardered.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DC59E1D1AA9568800F80674 /* LogoBoardered.png */; };
 		5DC59E201AA9575A00F80674 /* NDLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 5DC59E1F1AA9575A00F80674 /* NDLogo.png */; };
-		5DC6B1351D4FD294005D96D6 /* Landmarker_zhuramanan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B12F1D4FD294005D96D6 /* Landmarker_zhuramanan.cpp */; };
+		5DC6B1351D4FD294005D96D6 /* Landmarker_zhuramanan.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B12F1D4FD294005D96D6 /* Landmarker_zhuramanan.mm */; };
 		5DC6B1361D4FD294005D96D6 /* Landmarker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B1311D4FD294005D96D6 /* Landmarker.cpp */; };
 		5DC6B1371D4FD294005D96D6 /* Model3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC6B1331D4FD294005D96D6 /* Model3D.cpp */; };
 		5DC6B1621D4FD2BE005D96D6 /* Licence_CeCILL-C_V1-en.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5DC6B13B1D4FD2BE005D96D6 /* Licence_CeCILL-C_V1-en.txt */; };
@@ -370,7 +370,7 @@
 		5DC59E1B1AA9567C00F80674 /* LogoTransparent.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = LogoTransparent.gif; sourceTree = SOURCE_ROOT; };
 		5DC59E1D1AA9568800F80674 /* LogoBoardered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LogoBoardered.png; sourceTree = SOURCE_ROOT; };
 		5DC59E1F1AA9575A00F80674 /* NDLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NDLogo.png; sourceTree = SOURCE_ROOT; };
-		5DC6B12F1D4FD294005D96D6 /* Landmarker_zhuramanan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Landmarker_zhuramanan.cpp; sourceTree = "<group>"; };
+		5DC6B12F1D4FD294005D96D6 /* Landmarker_zhuramanan.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Landmarker_zhuramanan.mm; sourceTree = "<group>"; };
 		5DC6B1301D4FD294005D96D6 /* Landmarker_zhuramanan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Landmarker_zhuramanan.h; sourceTree = "<group>"; };
 		5DC6B1311D4FD294005D96D6 /* Landmarker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Landmarker.cpp; sourceTree = "<group>"; };
 		5DC6B1321D4FD294005D96D6 /* Landmarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Landmarker.h; sourceTree = "<group>"; };
@@ -599,7 +599,7 @@
 				D8543A2E1D36D1E000BC8F97 /* ComboBoxWithMouseOver.m */,
 				D8543A301D37DCFA00BC8F97 /* IntelligentScissors.h */,
 				D8543A311D37DCFA00BC8F97 /* IntelligentScissors.mm */,
-				5DC6B12F1D4FD294005D96D6 /* Landmarker_zhuramanan.cpp */,
+				5DC6B12F1D4FD294005D96D6 /* Landmarker_zhuramanan.mm */,
 				5DC6B1301D4FD294005D96D6 /* Landmarker_zhuramanan.h */,
 				5DC6B1311D4FD294005D96D6 /* Landmarker.cpp */,
 				5DC6B1321D4FD294005D96D6 /* Landmarker.h */,
@@ -1246,7 +1246,7 @@
 				5D2898B8199202710036CFD6 /* Ray3Arr.mm in Sources */,
 				5D28979E1991E2300036CFD6 /* main.m in Sources */,
 				5D2898BC199202710036CFD6 /* floatArr.mm in Sources */,
-				5DC6B1351D4FD294005D96D6 /* Landmarker_zhuramanan.cpp in Sources */,
+				5DC6B1351D4FD294005D96D6 /* Landmarker_zhuramanan.mm in Sources */,
 				5D2898B9199202710036CFD6 /* PlaneArr.mm in Sources */,
 				5DB2C7ED1A718A0700A1F815 /* GL2DGeometryDrawer.mm in Sources */,
 				D8E1BC1D1D1C44570092FB0C /* FaceDetectionHandler.mm in Sources */,

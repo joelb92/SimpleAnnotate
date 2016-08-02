@@ -8,17 +8,19 @@
 
 Landmarker_zhuramanan::Landmarker_zhuramanan()
 {
-	std::string facemodelpath = "src/external_libs/dpm-face-master/face_p146.xml";
-	std::string posemodelpath  = "src/external_libs/dpm-face-master/pose_BUFFY.xml";
 
+    NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
+	std::string facemodelpath = [[resourcePath stringByAppendingPathComponent:@"face_p146.xml"] UTF8String];
+	std::string posemodelpath  = [[resourcePath stringByAppendingPathComponent:@"pose_BUFFY.xml"] UTF8String];
+    std::cout << "Loaded " << facemodelpath << std::endl;
 	facemodel = facemodel_readFromFile(facemodelpath.c_str());
 	posemodel = posemodel_readFromFile(posemodelpath.c_str());
 
 }
 
-std::vector<cv::Point> Landmarker_zhuramanan::findLandmarks(cv::Mat im)
+std::vector<std::vector<cv::Point> > Landmarker_zhuramanan::findLandmarks(cv::Mat im,std::vector<bbox_t> &boxes)
 {
-	std::vector<cv::Point> landmarks;
+	std::vector<std::vector<cv::Point> > landmarks;
     image_t* img = image_CVtoZR(im);
 
     if(im.empty()) {
@@ -27,11 +29,14 @@ std::vector<cv::Point> Landmarker_zhuramanan::findLandmarks(cv::Mat im)
     }
     //detect faces and show results
     std::vector<bbox_t> faces;
-
     faces = facemodel_detect(facemodel,posemodel,img);
     if(faces.size() > 0)
     {
-    	bbox_t face = faces[0];
+        for(int j = 0; j < faces.size(); j++)
+        {
+    	bbox_t face = faces[j];
+            boxes.push_back(face);
+            std::vector<cv::Point> landmarkset;
 		for(int i=0; i < face.boxes.size(); i++)
 		{
 			int x = face.boxes[i].x1;
@@ -39,8 +44,10 @@ std::vector<cv::Point> Landmarker_zhuramanan::findLandmarks(cv::Mat im)
 			int w = face.boxes[i].x2-x;
 			int h = face.boxes[i].y2-y;
 			cv::Point p(x+.5*w,y+.5*h);
-			landmarks.push_back(p);
+			landmarkset.push_back(p);
 		}
+            landmarks.push_back(landmarkset);
+        }
     }
 //    if(shouldDisplay)
 //    {
