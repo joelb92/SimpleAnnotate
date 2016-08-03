@@ -26,4 +26,6 @@
 @property (readonly) NSDictionary *faceRectDict;
 -(id)initWithShapePredictorFile:(NSString *) spFile;
 -(void)detectFacesInImage:(OpenImageHandler *)img atScale:(int)scale;
+-(void)detectFacesInMatImage:(cv::Mat )img atScale:(int)scale;
+
 @end

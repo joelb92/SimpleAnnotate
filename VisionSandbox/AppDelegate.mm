@@ -1509,7 +1509,7 @@ Mat norm_0_255(InputArray _src) {
 
 -(void)extractPatchesFromProjectFile:(NSString *)projFilePath
 {
-    int normalFaceWidthPx = 400;
+    int normalFaceWidthPx = 800;
     Landmarker_zhuramanan *landmarker = new Landmarker_zhuramanan();
     Model3D *model = new Model3D("");
     NSString *projectName = [[projFilePath lastPathComponent] stringByDeletingPathExtension];
@@ -1589,22 +1589,38 @@ Mat norm_0_255(InputArray _src) {
                 NSMutableDictionary *annotationsByToolForFile = [[NSMutableDictionary alloc] init];
                 NSString *currentTool = @"";
                     std::vector<cv::Rect> facesInImage;
+                    NSMutableArray *skipIndexes = [[NSMutableArray alloc] init];
                 for (int j = 0; j < annotationsForFile.count; j++) {
                     NSMutableDictionary *entry = [[annotationsForFile objectAtIndex:j] mutableCopy];
                     NSString *entryName = [entry objectForKey:@"name"];
                     NSString *toolType = [entry objectForKey:@"annotationType"];
                     NSString *typeName = [[entry objectForKey:@"type"] lowercaseString];
-                    if ([typeName isEqualToString:@"face"] or [typeName hasPrefix:@"face"]) {
+                    if ([typeName isEqualToString:@"face"] or [typeName hasPrefix:@"face"] or [typeName rangeOfString:@"face"].location != NSNotFound){
                         cv::Rect f([[entry objectForKey:@"x coord"] intValue],[[entry objectForKey:@"y coord"] intValue],[[entry objectForKey:@"width"] intValue],[[entry objectForKey:@"height"] intValue]);
                         facesInImage.push_back(f);
+                        if([typeName rangeOfString:@"face"].location != NSNotFound and [typeName rangeOfString:@"full"].location != NSNotFound)
+                        {
+                            //This is a full face tatoo annotation.  We should extract this.
+                            NSLog(@"found full face tattoo");
+                        }
+                        else{
+                            [skipIndexes addObject:@(j)];
+                        }
                     }
-                   
+
                 }
+                    cv::imshow("image", img);
+                    cv::waitKey();
+                    if (facesInImage.size() == 0) {
+                        facesInImage = [self findFacesUsingDlibInFrame:img];
+                        NSLog(@"Found %lu dlib faces",facesInImage.size());
+                    }
                     if (facesInImage.size() == 0) {
                         std::vector<bbox_t> faceboxes;
                         NSLog(@"Detecting Faces");
                         std::vector<std::vector<cv::Point> > faceLandmarks = landmarker->findLandmarks(img,faceboxes);
-                        NSLog(@"Found %i faces!", faceLandmarks.size());
+                        
+                        NSLog(@"Found %lu zr faces]", faceLandmarks.size());
                         for(int j = 0; j < faceboxes.size(); j++)
                         {
                             bbox_t box = faceboxes[j];
@@ -1613,6 +1629,9 @@ Mat norm_0_255(InputArray _src) {
                         }
                     }
                 for (int j = 0; j < annotationsForFile.count; j++) {
+                    if ([skipIndexes containsObject:@(j)]) {
+                        continue;
+                    }
                     NSMutableDictionary *entry = [[annotationsForFile objectAtIndex:j] mutableCopy];
                     NSString *entryName = [entry objectForKey:@"name"];
                     NSString *toolType = [entry objectForKey:@"annotationType"];
@@ -1637,6 +1656,8 @@ Mat norm_0_255(InputArray _src) {
                         [entry setObject:coords forKey:@"coords"];
                     }
                     cv::Mat imageChip;
+                    std::vector<cv::Mat>imageChips;
+                    NSMutableArray *imageChipNames = [[NSMutableArray alloc] init];
                     if ([toolType isEqualToString:@"pointTool"]) {
                         NSArray *coords = [entry objectForKey:@"coords"];
                         std::vector<std::vector<cv::Point> > conts;
@@ -1650,6 +1671,7 @@ Mat norm_0_255(InputArray _src) {
                         cv::Rect roi = cv::boundingRect(cont);
                         if (roi.x >=0 and roi.y >= 0 and roi.x < img.cols and roi.y < img.rows)
                         {
+//                            NSLog(@"x: %i y:%i W:%i H:%i",roi.x,roi.y,roi.width,roi.height);
                             int maxoverlap = 0;
                             int maxoverlapIndex = -1;
                             //calcualte what face the given annoation belongs to via how much the annotation overlaps with the faces in the image
@@ -1671,52 +1693,77 @@ Mat norm_0_255(InputArray _src) {
                             else{
                                 faceWidth = facesInImage[maxoverlapIndex].width;
                             }
-                            float scalefactor = normalFaceWidthPx/faceWidth;
+                            float scalefactor = normalFaceWidthPx*(1.0)/faceWidth;
                             cv::Mat mask = cv::Mat::zeros(img.rows, img.cols, CV_8UC1);
                             cv::drawContours(mask, conts, 0, 255,-1);
-                            cv::imshow("mask", mask);
                             img.copyTo(imageChip, mask);
                         
                             cv::Rect roi = cv::boundingRect(cont);
                             imageChip = imageChip(roi).clone();
                             mask = mask(roi).clone();
                             
-                            cv::resize(imageChip, imageChip, cv::Size(imageChip.cols*scalefactor,imageChip.rows*scalefactor));
-                            cv::imshow("image",img);
-                            cv::imshow("chip", imageChip);
+//                            cv::resize(imageChip, imageChip, cv::Size(imageChip.cols*scalefactor,imageChip.rows*scalefactor));
+//                            cv::imshow("image",img);
                             NSLog(@"Face Width: %i",faceWidth);
-//                            if(true)
-//                            {
-//                                //fill in the empty space pixels
-//                                std::vector<cv::Point> goodPixels;
-//                                for(int y = 0; y < imageChip.rows; y++)
-//                                {
-//                                    for(int x = 0; x < imageChip.cols; x++){
-//                                        if (mask.at<unsigned char>(y,x) > 0) {
-//                                            goodPixels.push_back(cv::Point(x,y));
-//                                        }
-//                                    }
-//                                }
-//                                int count = 0;
-//                                for(int y = 0; y < imageChip.rows; y++)
-//                                {
-//                                    for(int x = 0; x < imageChip.cols; x++)
-//                                    {
-//                                        if (mask.at<unsigned char>(y,x) == 0) {
-//                                            cv::Point p = goodPixels[count%(goodPixels.size())];
-//                                            imageChip.at<cv::Vec3b>(y,x) = imageChip.at<cv::Vec3b>(p);
-//                                            count ++;
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                            cv::imshow("chip_patched", imageChip);
+                            std::vector<cv::Mat> fillChips;
+                            int roiWidth =imageChip.cols*.15;
+                            int roiHeight =imageChip.rows*.15;
+                            for(int y = 0; y < imageChip.rows-roiHeight; y++)
+                            {
+                                for(int x = 0; x < imageChip.cols-roiWidth; x++)
+                                {
+                                    cv::Rect r(x,y,roiWidth,roiHeight);
+                                    cv::Mat overlap = mask(r).clone();
+                                    int nonzero = cv::countNonZero(overlap);
+                                    if (nonzero == overlap.cols*overlap.rows) {
+                                        //this rect doesn't contain areas of masked out sace
+                                        fillChips.push_back(imageChip(r).clone());
+                                    }
+                                }
+                            }
+                            cv::Mat filledImageChip = cv::Mat::zeros(imageChip.rows, imageChip.cols, CV_8UC3);
+                            for(int y = 0; y < imageChip.rows-roiHeight; y+=roiHeight)
+                            {
+                                for(int x = 0; x < imageChip.cols-roiWidth; x+=roiWidth)
+                                {
+                                    cv::Rect r(x,y,roiWidth,roiHeight);
+                                    fillChips[arc4random() % fillChips.size()-1].copyTo(filledImageChip(r));
+                                    
+                                }
+                            }
+                            cv::Mat fillImagetmp;
+                            filledImageChip.copyTo(fillImagetmp, 255-mask);
+                            imageChip+=fillImagetmp;
+                            cv::imshow("chip_patched", imageChip);
                             cv::waitKey();
                         }
                     }
                     else if ([toolType isEqualToString:@"rectangleTool"])
                     {
+                        
                         cv::Rect roi([[entry objectForKey:@"x coord"] intValue],[[entry objectForKey:@"y coord"] intValue], [[entry objectForKey:@"width"] intValue], [[entry objectForKey:@"height"] intValue]);
+                        int maxoverlap = 0;
+                        int maxoverlapIndex = -1;
+                        //calcualte what face the given annoation belongs to via how much the annotation overlaps with the faces in the image
+                        for (int k = 0; k < facesInImage.size(); k++) {
+                            cv::Rect faceWithForhead(facesInImage[k].x,facesInImage[k].y-facesInImage[k].height*.40,facesInImage[k].width,facesInImage[k].height*1.4);
+                            int overlaparea = calculateIntersectionArea(cv::Mat::zeros(img.rows, img.cols, CV_8UC1), faceWithForhead, roi);
+                            if (overlaparea > maxoverlap)
+                            {
+                                maxoverlap = overlaparea;
+                                maxoverlapIndex = k;
+                            }
+                        }
+                        int faceWidth = -1;
+                        if (maxoverlapIndex == -1)
+                        {
+                            //doesnt belong to a face at all
+                            faceWidth = 100;
+                        }
+                        else{
+                            faceWidth = facesInImage[maxoverlapIndex].width;
+                        }
+                        float scalefactor = normalFaceWidthPx*(1.0)/faceWidth;
                         imageChip = img(roi).clone();
                     }
                     else if ([toolType isEqualToString:@"ellipseTool"])
@@ -1725,6 +1772,7 @@ Mat norm_0_255(InputArray _src) {
                         imageChip = img(roi).clone();
                     }
                     
+//                    NSString *saveName =
                     NSMutableDictionary *toolAnnotationEntries;
                     if ([annotationsByToolForFile objectForKey:toolType]) {
                         toolAnnotationEntries = [annotationsByToolForFile objectForKey:toolType];
@@ -1736,7 +1784,6 @@ Mat norm_0_255(InputArray _src) {
                     }
                     [toolAnnotationEntries setObject:entry forKey:[entry objectForKey:@"name"]];
                 }
-                
                 [framePathForFrameNum setObject:fileName forKey:@(i)];
                 [annotationsForFrames setObject:annotationsByToolForFile forKey:@(i)];
                 }
@@ -1745,7 +1792,21 @@ Mat norm_0_255(InputArray _src) {
         }
     }
 }
-
+-(std::vector<cv::Rect>)findFacesUsingDlibInFrame:(cv::Mat)img
+{
+    OpenImageHandler *currentImage =[frameForFrameNumber objectForKey:@(frameNum)];
+    [faceDetector detectFacesInImage:currentImage atScale:0];
+    std::vector<cv::Rect> faces;
+    for(int i = 0; i < faceDetector.dets.size(); i++)
+    {
+        NSRect nsr = faceDetector.dets[i];
+        cv::Rect r(nsr.origin.x,nsr.origin.y,nsr.size.width,nsr.size.height);
+        //        cv::Mat face = currentImage.Cv(r).clone();
+        //        OpenImageHandler *faceImage = [[OpenImageHandler alloc] initWithCVMat:face Color:Black BinaryImage:false];
+        faces.push_back(r);
+    }
+    return faces;
+}
 int calculateIntersectionArea(const cv::Mat& blobImg, cv::Rect contour1, const std::vector<cv::Point> contour2)
 {
   return  calculateIntersectionArea(blobImg, contour1, cv::boundingRect(contour2));
@@ -1755,17 +1816,11 @@ int calculateIntersectionArea(const cv::Mat& blobImg, cv::Rect contour1, cv::Rec
 {
     cv::Mat aux1 = cv::Mat::zeros(blobImg.size(), CV_8UC1);
     cv::Mat aux2 = cv::Mat::zeros(blobImg.size(), CV_8UC1);
-    
+    cv::Mat blob = blobImg.clone();
     cv::rectangle(aux1, contour1, 255, -1, 8, 0);
     cv::rectangle(aux2, contour2, 255, -1, 8, 0);
-    
-    cv::bitwise_and(blobImg, aux1, aux1);
-    cv::bitwise_and(blobImg, aux2, aux2);
-    
     cv::Mat intersectionMat = aux1 & aux2;
-    
     cv::Scalar intersectionArea = cv::sum(intersectionMat);
-    
     return (intersectionArea[0]);
 }
 
