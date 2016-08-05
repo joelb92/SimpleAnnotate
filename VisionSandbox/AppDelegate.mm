@@ -1706,35 +1706,66 @@ Mat norm_0_255(InputArray _src) {
 //                            cv::imshow("image",img);
                             NSLog(@"Face Width: %i",faceWidth);
                             std::vector<cv::Mat> fillChips;
-                            int roiWidth =imageChip.cols*.15;
-                            int roiHeight =imageChip.rows*.15;
-                            for(int y = 0; y < imageChip.rows-roiHeight; y++)
+                            float boxPercent = .15;
+                            int roiWidth =imageChip.cols*boxPercent;
+                            int roiHeight =imageChip.rows*boxPercent;
+                            cv::Mat rotatedChip, rotatedMask;
+                            int counter = 0;
+                            for(int r = 0; r < 360; r+=45)
                             {
-                                for(int x = 0; x < imageChip.cols-roiWidth; x++)
+                                NSLog(@"extracting chips at rotation %i",r);
+                                cv::Point2f rcenter(imageChip.cols/2.0,imageChip.rows/2.0);
+                                cv::Mat rmat = cv::getRotationMatrix2D(rcenter, r*M_PI/180, 1);
+                                cv::warpAffine(imageChip, rotatedChip, rmat, imageChip.size());
+                                cv::warpAffine(mask, rotatedMask, rmat, rotatedMask.size());
+                                cv::threshold(rotatedMask, rotatedMask, 127, 255, CV_8UC1);
+                                for(int y = 0; y < rotatedChip.rows-roiHeight; y+=5)
                                 {
-                                    cv::Rect r(x,y,roiWidth,roiHeight);
-                                    cv::Mat overlap = mask(r).clone();
-                                    int nonzero = cv::countNonZero(overlap);
-                                    if (nonzero == overlap.cols*overlap.rows) {
-                                        //this rect doesn't contain areas of masked out sace
-                                        fillChips.push_back(imageChip(r).clone());
+                                    for(int x = 0; x < rotatedChip.cols-roiWidth; x+=5)
+                                    {
+                                        cv::Rect r(x,y,roiWidth,roiHeight);
+                                        cv::Mat overlap = rotatedMask(r).clone();
+                                        int nonzero = cv::countNonZero(overlap);
+                                        if (nonzero == overlap.cols*overlap.rows) {
+                                            //this rect doesn't contain areas of masked out sace
+                                            imageChips.push_back(rotatedChip(r).clone());
+                                            NSString *saveName = [[[fileName stringByDeletingPathExtension] stringByAppendingFormat:@"_%@_%i",entryName,counter] stringByAppendingPathExtension:@".png"];
+                                            [imageChipNames addObject:saveName];
+                                            counter++;
+//                                            fillChips.push_back(rotatedChip(r).clone());
+                                        
+                                        }
                                     }
                                 }
                             }
-                            cv::Mat filledImageChip = cv::Mat::zeros(imageChip.rows, imageChip.cols, CV_8UC3);
-                            for(int y = 0; y < imageChip.rows-roiHeight; y+=roiHeight)
-                            {
-                                for(int x = 0; x < imageChip.cols-roiWidth; x+=roiWidth)
-                                {
-                                    cv::Rect r(x,y,roiWidth,roiHeight);
-                                    fillChips[arc4random() % fillChips.size()-1].copyTo(filledImageChip(r));
-                                    
-                                }
-                            }
-                            cv::Mat fillImagetmp;
-                            filledImageChip.copyTo(fillImagetmp, 255-mask);
-                            imageChip+=fillImagetmp;
-                            cv::imshow("chip_patched", imageChip);
+//                            for(int y = 0; y < imageChip.rows-roiHeight; y++)
+//                            {
+//                                for(int x = 0; x < imageChip.cols-roiWidth; x++)
+//                                {
+//                                    cv::Rect r(x,y,roiWidth,roiHeight);
+//                                    cv::Mat overlap = mask(r).clone();
+//                                    int nonzero = cv::countNonZero(overlap);
+//                                    if (nonzero == overlap.cols*overlap.rows) {
+//                                        //this rect doesn't contain areas of masked out sace
+//                                        fillChips.push_back(imageChip(r).clone());
+//                                    }
+//                                }
+//                            }
+//                            cv::Mat filledImageChip = cv::Mat::zeros(imageChip.rows*(1+boxPercent), imageChip.cols*(1+boxPercent), CV_8UC3);
+//                            for(int y = 0; y < filledImageChip.rows-roiHeight; y+=roiHeight)
+//                            {
+//                                for(int x = 0; x < filledImageChip.cols-roiWidth; x+=roiWidth)
+//                                {
+//                                    cv::Rect r(x,y,roiWidth,roiHeight);
+//                                    fillChips[arc4random() % fillChips.size()-1].copyTo(filledImageChip(r));
+//                                    
+//                                }
+//                            }
+//                            cv::Mat fillImagetmp;
+//                            filledImageChip = filledImageChip(cv::Rect(0,0,imageChip.cols,imageChip.rows)).clone();
+//                            filledImageChip.copyTo(fillImagetmp, 255-mask);
+//                            imageChip+=fillImagetmp;
+//                            cv::imshow("chip_patched", imageChip);
                             cv::waitKey();
                         }
                     }
@@ -1771,8 +1802,16 @@ Mat norm_0_255(InputArray _src) {
                         cv::Rect roi([[entry objectForKey:@"x coord"] intValue],[[entry objectForKey:@"y coord"] intValue], [[entry objectForKey:@"width"] intValue], [[entry objectForKey:@"height"] intValue]);
                         imageChip = img(roi).clone();
                     }
-                    
-//                    NSString *saveName =
+                    NSString *saveDir = [[fileName stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"SavedChips"];
+                    BOOL isDir;
+                    if (![[NSFileManager defaultManager] fileExistsAtPath:saveDir isDirectory:&isDir] or !isDir) {
+                        [[NSFileManager defaultManager] createDirectoryAtPath:saveDir withIntermediateDirectories:YES attributes:nil error:nil];
+                    }
+                    for (int x = 0; x < imageChips.size(); x++) {
+                        cv::Mat im = imageChips[x];
+                        NSString *savePath = [saveDir stringByAppendingPathComponent:[[imageChipNames objectAtIndex:x] lastPathComponent]];
+                        cv::imwrite(savePath.UTF8String, im);
+                    }
                     NSMutableDictionary *toolAnnotationEntries;
                     if ([annotationsByToolForFile objectForKey:toolType]) {
                         toolAnnotationEntries = [annotationsByToolForFile objectForKey:toolType];
