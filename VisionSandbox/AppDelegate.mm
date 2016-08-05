@@ -1510,6 +1510,9 @@ Mat norm_0_255(InputArray _src) {
 -(void)extractPatchesFromProjectFile:(NSString *)projFilePath
 {
     int normalFaceWidthPx = 800;
+    int sampleDivision = 20;
+    float boxPercent = .10; // We will be creating boxes that are 5% of the face (20 boxes wide)
+
     Landmarker_zhuramanan *landmarker = new Landmarker_zhuramanan();
     Model3D *model = new Model3D("");
     NSString *projectName = [[projFilePath lastPathComponent] stringByDeletingPathExtension];
@@ -1595,10 +1598,10 @@ Mat norm_0_255(InputArray _src) {
                     NSString *entryName = [entry objectForKey:@"name"];
                     NSString *toolType = [entry objectForKey:@"annotationType"];
                     NSString *typeName = [[entry objectForKey:@"type"] lowercaseString];
-                    if ([typeName isEqualToString:@"face"] or [typeName hasPrefix:@"face"] or [typeName rangeOfString:@"face"].location != NSNotFound){
+                    if (typeName != nil and ( [typeName isEqualToString:@"face"] or [typeName hasPrefix:@"face"] or [typeName rangeOfString:@"face"].location != NSNotFound)){
                         cv::Rect f([[entry objectForKey:@"x coord"] intValue],[[entry objectForKey:@"y coord"] intValue],[[entry objectForKey:@"width"] intValue],[[entry objectForKey:@"height"] intValue]);
                         facesInImage.push_back(f);
-                        if([typeName rangeOfString:@"face"].location != NSNotFound and [typeName rangeOfString:@"full"].location != NSNotFound)
+                        if(typeName != nil and [typeName rangeOfString:@"face"].location != NSNotFound and [typeName rangeOfString:@"full"].location != NSNotFound)
                         {
                             //This is a full face tatoo annotation.  We should extract this.
                             NSLog(@"found full face tattoo");
@@ -1610,7 +1613,6 @@ Mat norm_0_255(InputArray _src) {
 
                 }
                     cv::imshow("image", img);
-                    cv::waitKey();
                     if (facesInImage.size() == 0) {
                         facesInImage = [self findFacesUsingDlibInFrame:img];
                         NSLog(@"Found %lu dlib faces",facesInImage.size());
@@ -1620,7 +1622,7 @@ Mat norm_0_255(InputArray _src) {
                         NSLog(@"Detecting Faces");
                         std::vector<std::vector<cv::Point> > faceLandmarks = landmarker->findLandmarks(img,faceboxes);
                         
-                        NSLog(@"Found %lu zr faces]", faceLandmarks.size());
+                        NSLog(@"Found %lu zr faces", faceLandmarks.size());
                         for(int j = 0; j < faceboxes.size(); j++)
                         {
                             bbox_t box = faceboxes[j];
@@ -1669,7 +1671,7 @@ Mat norm_0_255(InputArray _src) {
                         }
                         conts.push_back(cont);
                         cv::Rect roi = cv::boundingRect(cont);
-                        if (roi.x >=0 and roi.y >= 0 and roi.x < img.cols and roi.y < img.rows)
+                        if (roi.x >=0 and roi.y >= 0 and roi.x < img.cols and roi.y < img.rows and roi.x+roi.width < img.cols and roi.y+roi.height < img.rows)
                         {
 //                            NSLog(@"x: %i y:%i W:%i H:%i",roi.x,roi.y,roi.width,roi.height);
                             int maxoverlap = 0;
@@ -1706,33 +1708,39 @@ Mat norm_0_255(InputArray _src) {
 //                            cv::imshow("image",img);
                             NSLog(@"Face Width: %i",faceWidth);
                             std::vector<cv::Mat> fillChips;
-                            float boxPercent = .15;
-                            int roiWidth =imageChip.cols*boxPercent;
-                            int roiHeight =imageChip.rows*boxPercent;
-                            cv::Mat rotatedChip, rotatedMask;
+                            cv::Mat rotatedChip, rotatedMask,sizedChip,sizedMask;
+                            //Normalize the chip to contain the face at 800px wide
+                            cv::resize(imageChip, sizedChip,cv::Size(imageChip.cols*scalefactor,imageChip.rows*scalefactor));
+                            cv::resize(mask, sizedMask,cv::Size(mask.cols*scalefactor,mask.rows*scalefactor));
+                            int roiWidth =normalFaceWidthPx*boxPercent;
+                            int roiHeight =normalFaceWidthPx*boxPercent;
+                            
+                            
                             int counter = 0;
-                            for(int r = 0; r < 360; r+=45)
+                            for(int r = -30; r <= 30; r+=15)
                             {
                                 NSLog(@"extracting chips at rotation %i",r);
-                                cv::Point2f rcenter(imageChip.cols/2.0,imageChip.rows/2.0);
-                                cv::Mat rmat = cv::getRotationMatrix2D(rcenter, r*M_PI/180, 1);
-                                cv::warpAffine(imageChip, rotatedChip, rmat, imageChip.size());
-                                cv::warpAffine(mask, rotatedMask, rmat, rotatedMask.size());
+                                cv::Point2f rcenter(sizedChip.cols/2.0,sizedChip.rows/2.0);
+                                cv::Mat rmat = cv::getRotationMatrix2D(rcenter, r, 1);
+                                cv::warpAffine(sizedChip, rotatedChip, rmat, sizedChip.size());
+                                cv::warpAffine(sizedMask, rotatedMask, rmat, sizedMask.size());
                                 cv::threshold(rotatedMask, rotatedMask, 127, 255, CV_8UC1);
-                                for(int y = 0; y < rotatedChip.rows-roiHeight; y+=5)
+                                for(int y = 0; y < rotatedChip.rows-roiHeight; y+=(roiWidth*1.0)/5)
                                 {
-                                    for(int x = 0; x < rotatedChip.cols-roiWidth; x+=5)
+                                    for(int x = 0; x < rotatedChip.cols-roiWidth; x+=(roiWidth*1.0)/5)
                                     {
                                         cv::Rect r(x,y,roiWidth,roiHeight);
+                                        if (r.x >= 0 && r.y >= 0 && r.x+r.width < rotatedChip.cols && r.y+r.height < rotatedChip.rows ) {
                                         cv::Mat overlap = rotatedMask(r).clone();
                                         int nonzero = cv::countNonZero(overlap);
-                                        if (nonzero == overlap.cols*overlap.rows) {
+                                        if (nonzero == int(overlap.cols*overlap.rows*1.0/1.5)) {
                                             //this rect doesn't contain areas of masked out sace
                                             imageChips.push_back(rotatedChip(r).clone());
-                                            NSString *saveName = [[[fileName stringByDeletingPathExtension] stringByAppendingFormat:@"_%@_%i",entryName,counter] stringByAppendingPathExtension:@".png"];
+                                            NSString *saveName = [[[fileName stringByDeletingPathExtension] stringByAppendingFormat:@"_%@_%@_%i",[entry objectForKey:@"type"],entryName,counter] stringByAppendingPathExtension:@".png"];
                                             [imageChipNames addObject:saveName];
                                             counter++;
 //                                            fillChips.push_back(rotatedChip(r).clone());
+                                        }
                                         
                                         }
                                     }
@@ -1766,7 +1774,7 @@ Mat norm_0_255(InputArray _src) {
 //                            filledImageChip.copyTo(fillImagetmp, 255-mask);
 //                            imageChip+=fillImagetmp;
 //                            cv::imshow("chip_patched", imageChip);
-                            cv::waitKey();
+//                            cv::waitKey();
                         }
                     }
                     else if ([toolType isEqualToString:@"rectangleTool"])
@@ -1795,7 +1803,58 @@ Mat norm_0_255(InputArray _src) {
                             faceWidth = facesInImage[maxoverlapIndex].width;
                         }
                         float scalefactor = normalFaceWidthPx*(1.0)/faceWidth;
-                        imageChip = img(roi).clone();
+                        
+                        imageChip = img.clone();
+                        
+                        cv::Mat rotatedChip, rotatedMask,sizedChip,sizedMask;
+                        //Normalize the chip to contain the face at 800px wide
+                        cv::resize(imageChip, sizedChip,cv::Size(imageChip.cols*scalefactor,imageChip.rows*scalefactor));
+                        roi.x *= scalefactor;
+                        roi.y *= scalefactor;
+                        roi.width *= scalefactor;
+                        roi.height *= scalefactor;
+                        int roiWidth =roi.width;
+                        int roiHeight =roi.height;
+                        NSMutableDictionary *entry = [[annotationsForFile objectAtIndex:j] mutableCopy];
+                        NSString *typeName = [[entry objectForKey:@"type"] lowercaseString];
+//                        if(typeName != nil and [typeName rangeOfString:@"face"].location != NSNotFound and [typeName rangeOfString:@"full"].location != NSNotFound)
+//                        {
+                            roiWidth =normalFaceWidthPx*boxPercent;
+                            roiHeight =normalFaceWidthPx*boxPercent;
+//                        }
+
+                        
+                        
+                        int counter = 0;
+                        for(int r = -30; r <= 30; r+=15)
+                        {
+                            NSLog(@"extracting chips at rotation %i",r);
+                            cv::Point2f rCenter(roi.x+roi.width/2,roi.y+roi.height/2);
+                            cv::Mat rmat = cv::getRotationMatrix2D(rCenter, r, 1);
+                            cv::warpAffine(sizedChip, rotatedChip, rmat, sizedChip.size());
+                            cv::Point rotatedCenter(rmat.at<double>(0,0)*rCenter.x + rmat.at<double>(0,1)*rCenter.y + rmat.at<double>(0,2),rmat.at<double>(1,0)*rCenter.x + rmat.at<double>(1,1)*rCenter.y + rmat.at<double>(1,2));
+                            cv::Point2f rotatedStart(rotatedCenter.x-roi.width*1.0/2,rotatedCenter.y-roi.height*1.0/2);
+                            for(int y = rotatedStart.y; y < rotatedChip.rows-roiHeight and y < rotatedStart.y+roi.height/2 ; y+=(roiWidth*1.0)/5)
+                            {
+                                for(int x = rotatedStart.x; x < rotatedChip.cols-roiWidth and x < rotatedStart.x+roi.width/2; x+=(roiWidth*1.0)/5)
+                                {
+                                    cv::Rect r(x,y,roiWidth,roiHeight);
+                                    if (true) {
+                                        //this rect doesn't contain areas of masked out sace
+                                        if (r.x >= 0 && r.y >= 0 && r.x+r.width < rotatedChip.cols && r.y+r.height < rotatedChip.rows ) {
+                                            
+                                        
+                                        imageChips.push_back(rotatedChip(r).clone());
+                                        NSString *saveName = [[[fileName stringByDeletingPathExtension] stringByAppendingFormat:@"_%@_%@_%i",[entry objectForKey:@"type"],entryName,counter] stringByAppendingPathExtension:@".png"];
+                                        [imageChipNames addObject:saveName];
+                                        counter++;
+                                        }
+                                        //                                            fillChips.push_back(rotatedChip(r).clone());
+                                        
+                                    }
+                                }
+                            }
+                        }
                     }
                     else if ([toolType isEqualToString:@"ellipseTool"])
                     {
@@ -1807,24 +1866,27 @@ Mat norm_0_255(InputArray _src) {
                     if (![[NSFileManager defaultManager] fileExistsAtPath:saveDir isDirectory:&isDir] or !isDir) {
                         [[NSFileManager defaultManager] createDirectoryAtPath:saveDir withIntermediateDirectories:YES attributes:nil error:nil];
                     }
+                    if (imageChips.size() == 0) {
+                        NSLog(@"on ho");
+                    }
+                    NSLog(@"Writing %lu files...",imageChips.size());
                     for (int x = 0; x < imageChips.size(); x++) {
                         cv::Mat im = imageChips[x];
                         NSString *savePath = [saveDir stringByAppendingPathComponent:[[imageChipNames objectAtIndex:x] lastPathComponent]];
-                        cv::imwrite(savePath.UTF8String, im);
+//                        NSLog(@"saving to: %@",savePath);
+                        cv::Scalar sum = cv::sum(im);
+                        int imsum = sum[0]+sum[1]+sum[2];
+                        //at max, we want 200 randomly sampled images per annotation
+                        float guessnum = imageChips.size()/200.0;
+                        if (guessnum < 1) guessnum = 1;
+                        int randSample = arc4random() % (int)guessnum;
+                        if (imsum and randSample == 0)  cv::imwrite(savePath.UTF8String, im);
+                        else{
+//                            NSLog(@"all dark");
+                        }
                     }
-                    NSMutableDictionary *toolAnnotationEntries;
-                    if ([annotationsByToolForFile objectForKey:toolType]) {
-                        toolAnnotationEntries = [annotationsByToolForFile objectForKey:toolType];
-                    }
-                    else
-                    {
-                        toolAnnotationEntries = [[NSMutableDictionary alloc] init];
-                        [annotationsByToolForFile setObject:toolAnnotationEntries forKey:toolType];
-                    }
-                    [toolAnnotationEntries setObject:entry forKey:[entry objectForKey:@"name"]];
+                    NSLog(@"Done writing files");
                 }
-                [framePathForFrameNum setObject:fileName forKey:@(i)];
-                [annotationsForFrames setObject:annotationsByToolForFile forKey:@(i)];
                 }
             }
 

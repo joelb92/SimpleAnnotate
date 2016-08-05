@@ -51,15 +51,18 @@
          contextName = "-[AppDelegate save:]:AppDelegate.mm">
          <PersistentStrings>
             <PersistentString
-               value = "saveProjectFilePath">
+               value = "framePath">
             </PersistentString>
             <PersistentString
-               value = "framePath">
+               value = "saveProjectFilePath">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "-[GLEllipseTool getElements]:GLEllipseTool.mm">
+      </ContextState>
+      <ContextState
+         contextName = "-[GLPointArrayTool addElement:color:forKey:andType:]:GLPointArrayTool.mm">
       </ContextState>
       <ContextState
          contextName = "-[AppDelegate GoToFrame:]:AppDelegate.mm">
@@ -82,7 +85,24 @@
          contextName = "-[GLRectangleDragger SetMousePosition:UsingSpaceConverter:]:GLRectangleDragger.mm">
       </ContextState>
       <ContextState
-         contextName = "-[GLPointArrayTool addElement:color:forKey:andType:]:GLPointArrayTool.mm">
+         contextName = "-[AppDelegate extractPatchesFromProjectFile:]:AppDelegate.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "i">
+            </PersistentString>
+            <PersistentString
+               value = "rotatedStart">
+            </PersistentString>
+            <PersistentString
+               value = "rotatedChip">
+            </PersistentString>
+            <PersistentString
+               value = "j">
+            </PersistentString>
+            <PersistentString
+               value = "annotationsForFile">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "-[GLEllipseTool GraphUsingSpaceConverter:]:GLEllipseTool.mm">
