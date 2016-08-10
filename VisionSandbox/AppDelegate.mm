@@ -14,7 +14,8 @@ using namespace std;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     lock = [[NSLock alloc] init ];
-    [self extractPatchesFromProjectFile:@"/Volumes/BTAS/ORNL_Tattos_Piercings/tattoos/tattoos_joel_project/joel_tattoos_project.saproj"];
+//    [self extractPatchesFromProjectFile:@"/Volumes/biometrics/Biometric_Datasets/ORNL_Tattos_Piercings/tattoos/tattoos_nisha/nisha.saproj"];
+    [self extractNonTattooPatchesFromProjectFile:@"/Volumes/BTAS/ORNL_Tattos_Piercings/tattoos/tattoos_joel_project/joel_tattoos_project.saproj"];
     [self splashSequence];
     lock = [[NSLock alloc] init];
     matchedScenes = [[NSMutableIndexSet alloc] init];
@@ -1638,7 +1639,10 @@ Mat norm_0_255(InputArray _src) {
                         }
                         
                     }
-                    cv::imshow("image", img);
+                    if (!img.empty() && img.cols > 0 && img.rows > 0) {
+                        cv::imshow("image", img);
+                    }
+                    
                     if (facesInImage.size() == 0) {
                         facesInImage = [self findFacesUsingDlibInFrame:img];
                         NSLog(@"Found %lu dlib faces",facesInImage.size());
@@ -1686,6 +1690,8 @@ Mat norm_0_255(InputArray _src) {
                         cv::Mat imageChip;
                         std::vector<cv::Mat>imageChips;
                         NSMutableArray *imageChipNames = [[NSMutableArray alloc] init];
+                        
+                        
                         if ([toolType isEqualToString:@"pointTool"]) {
                             NSArray *coords = [entry objectForKey:@"coords"];
                             std::vector<std::vector<cv::Point> > conts;
@@ -1724,7 +1730,7 @@ Mat norm_0_255(InputArray _src) {
                                 float scalefactor = normalFaceWidthPx*(1.0)/faceWidth;
                                 cv::Mat mask = cv::Mat::zeros(img.rows, img.cols, CV_8UC1);
                                 cv::drawContours(mask, conts, 0, 255,-1);
-                                img.copyTo(imageChip, mask);
+                                img.copyTo(imageChip);
                                 
                                 cv::Rect roi = cv::boundingRect(cont);
                                 imageChip = imageChip(roi).clone();
@@ -1736,76 +1742,78 @@ Mat norm_0_255(InputArray _src) {
                                 std::vector<cv::Mat> fillChips;
                                 cv::Mat rotatedChip, rotatedMask,sizedChip,sizedMask;
                                 //Normalize the chip to contain the face at 800px wide
-                                cv::resize(imageChip, sizedChip,cv::Size(imageChip.cols*scalefactor,imageChip.rows*scalefactor));
-                                cv::resize(mask, sizedMask,cv::Size(mask.cols*scalefactor,mask.rows*scalefactor));
-                                int roiWidth =normalFaceWidthPx*boxPercent;
-                                int roiHeight =normalFaceWidthPx*boxPercent;
-                                
-                                
-                                int counter = 0;
-                                for(int r = -30; r <= 30; r+=15)
-                                {
-                                    NSLog(@"extracting chips at rotation %i",r);
-                                    cv::Point2f rcenter(sizedChip.cols/2.0,sizedChip.rows/2.0);
-                                    cv::Mat rmat = cv::getRotationMatrix2D(rcenter, r, 1);
-                                    cv::warpAffine(sizedChip, rotatedChip, rmat, sizedChip.size());
-                                    cv::warpAffine(sizedMask, rotatedMask, rmat, sizedMask.size());
-                                    cv::threshold(rotatedMask, rotatedMask, 127, 255, CV_8UC1);
-                                    for(int y = 0; y < rotatedChip.rows-roiHeight; y+=(roiWidth*1.0)/5)
+                                cv::Size resizedSize(imageChip.cols*scalefactor,imageChip.rows*scalefactor);
+                                if (resizedSize.width > 0 and resizedSize.height > 0 and !imageChip.empty() && imageChip.cols > 0 && imageChip.rows > 0) {
+                                    cv::resize(imageChip, sizedChip,resizedSize);
+                                    cv::resize(mask, sizedMask,resizedSize);
+                                    int roiWidth =normalFaceWidthPx*boxPercent;
+                                    int roiHeight =normalFaceWidthPx*boxPercent;
+                                    
+                                    
+                                    int counter = 0;
+                                    for(int r = -30; r <= 30; r+=15)
                                     {
-                                        for(int x = 0; x < rotatedChip.cols-roiWidth; x+=(roiWidth*1.0)/5)
+                                        cv::Point2f rcenter(sizedChip.cols/2.0,sizedChip.rows/2.0);
+                                        cv::Mat rmat = cv::getRotationMatrix2D(rcenter, r, 1);
+                                        cv::warpAffine(sizedChip, rotatedChip, rmat, sizedChip.size());
+                                        cv::warpAffine(sizedMask, rotatedMask, rmat, sizedMask.size());
+                                        cv::threshold(rotatedMask, rotatedMask, 127, 255, CV_8UC1);
+                                        for(int y = 0; y < rotatedChip.rows-roiHeight; y+=(roiWidth*1.0)/5)
                                         {
-                                            cv::Rect r(x,y,roiWidth,roiHeight);
-                                            if (r.x >= 0 && r.y >= 0 && r.x+r.width < rotatedChip.cols && r.y+r.height < rotatedChip.rows ) {
-                                                cv::Mat overlap = rotatedMask(r).clone();
-                                                int nonzero = cv::countNonZero(overlap);
-                                                if (nonzero > int(overlap.cols*overlap.rows*1.0/1.5)) {
-                                                    //this rect doesn't contain areas of masked out sace
-                                                    if ([[[entry objectForKey:@"type"] lowercaseString] rangeOfString:@"tattoo"].location != NSNotFound) {
-                                                        imageChips.push_back(rotatedChip(r).clone());
-                                                        NSString *saveName = [[[fileName stringByDeletingPathExtension] stringByAppendingFormat:@"_%@_%@_%i",[entry objectForKey:@"type"],entryName,counter] stringByAppendingPathExtension:@".png"];
-                                                        [imageChipNames addObject:saveName];
-                                                        //                                            cv::imshow("chip", rotatedChip(r).clone());
-                                                        //                                            cv::waitKey();
-                                                        counter++;
-                                                        
+                                            for(int x = 0; x < rotatedChip.cols-roiWidth; x+=(roiWidth*1.0)/5)
+                                            {
+                                                cv::Rect r(x,y,roiWidth,roiHeight);
+                                                if (r.x >= 0 && r.y >= 0 && r.x+r.width < rotatedChip.cols && r.y+r.height < rotatedChip.rows ) {
+                                                    cv::Mat overlap = rotatedMask(r).clone();
+                                                    int nonzero = cv::countNonZero(overlap);
+                                                    if (nonzero > int(overlap.cols*overlap.rows*1.0/1.5)) {
+                                                        //this rect doesn't contain areas of masked out sace
+                                                        if ([[[entry objectForKey:@"type"] lowercaseString] rangeOfString:@"tattoo"].location != NSNotFound) {
+                                                            imageChips.push_back(rotatedChip(r).clone());
+                                                            NSString *saveName = [[[fileName stringByDeletingPathExtension] stringByAppendingFormat:@"_%@_%@_%i",[entry objectForKey:@"type"],entryName,counter] stringByAppendingPathExtension:@".png"];
+                                                            [imageChipNames addObject:saveName];
+                                                            //                                            cv::imshow("chip", rotatedChip(r).clone());
+                                                            //                                            cv::waitKey();
+                                                            counter++;
+                                                            
+                                                        }
+                                                        //                                            fillChips.push_back(rotatedChip(r).clone());
                                                     }
-                                                    //                                            fillChips.push_back(rotatedChip(r).clone());
+                                                    
                                                 }
-                                                
                                             }
                                         }
                                     }
+                                    //                            for(int y = 0; y < imageChip.rows-roiHeight; y++)
+                                    //                            {
+                                    //                                for(int x = 0; x < imageChip.cols-roiWidth; x++)
+                                    //                                {
+                                    //                                    cv::Rect r(x,y,roiWidth,roiHeight);
+                                    //                                    cv::Mat overlap = mask(r).clone();
+                                    //                                    int nonzero = cv::countNonZero(overlap);
+                                    //                                    if (nonzero == overlap.cols*overlap.rows) {
+                                    //                                        //this rect doesn't contain areas of masked out sace
+                                    //                                        fillChips.push_back(imageChip(r).clone());
+                                    //                                    }
+                                    //                                }
+                                    //                            }
+                                    //                            cv::Mat filledImageChip = cv::Mat::zeros(imageChip.rows*(1+boxPercent), imageChip.cols*(1+boxPercent), CV_8UC3);
+                                    //                            for(int y = 0; y < filledImageChip.rows-roiHeight; y+=roiHeight)
+                                    //                            {
+                                    //                                for(int x = 0; x < filledImageChip.cols-roiWidth; x+=roiWidth)
+                                    //                                {
+                                    //                                    cv::Rect r(x,y,roiWidth,roiHeight);
+                                    //                                    fillChips[arc4random() % fillChips.size()-1].copyTo(filledImageChip(r));
+                                    //
+                                    //                                }
+                                    //                            }
+                                    //                            cv::Mat fillImagetmp;
+                                    //                            filledImageChip = filledImageChip(cv::Rect(0,0,imageChip.cols,imageChip.rows)).clone();
+                                    //                            filledImageChip.copyTo(fillImagetmp, 255-mask);
+                                    //                            imageChip+=fillImagetmp;
+                                    //                            cv::imshow("chip_patched", imageChip);
+                                    //                            cv::waitKey();
                                 }
-                                //                            for(int y = 0; y < imageChip.rows-roiHeight; y++)
-                                //                            {
-                                //                                for(int x = 0; x < imageChip.cols-roiWidth; x++)
-                                //                                {
-                                //                                    cv::Rect r(x,y,roiWidth,roiHeight);
-                                //                                    cv::Mat overlap = mask(r).clone();
-                                //                                    int nonzero = cv::countNonZero(overlap);
-                                //                                    if (nonzero == overlap.cols*overlap.rows) {
-                                //                                        //this rect doesn't contain areas of masked out sace
-                                //                                        fillChips.push_back(imageChip(r).clone());
-                                //                                    }
-                                //                                }
-                                //                            }
-                                //                            cv::Mat filledImageChip = cv::Mat::zeros(imageChip.rows*(1+boxPercent), imageChip.cols*(1+boxPercent), CV_8UC3);
-                                //                            for(int y = 0; y < filledImageChip.rows-roiHeight; y+=roiHeight)
-                                //                            {
-                                //                                for(int x = 0; x < filledImageChip.cols-roiWidth; x+=roiWidth)
-                                //                                {
-                                //                                    cv::Rect r(x,y,roiWidth,roiHeight);
-                                //                                    fillChips[arc4random() % fillChips.size()-1].copyTo(filledImageChip(r));
-                                //
-                                //                                }
-                                //                            }
-                                //                            cv::Mat fillImagetmp;
-                                //                            filledImageChip = filledImageChip(cv::Rect(0,0,imageChip.cols,imageChip.rows)).clone();
-                                //                            filledImageChip.copyTo(fillImagetmp, 255-mask);
-                                //                            imageChip+=fillImagetmp;
-                                //                            cv::imshow("chip_patched", imageChip);
-                                //                            cv::waitKey();
                             }
                         }
                         else if ([toolType isEqualToString:@"rectangleTool"])
@@ -1838,54 +1846,57 @@ Mat norm_0_255(InputArray _src) {
                             
                             cv::Mat rotatedChip, rotatedMask,sizedChip,sizedMask;
                             //Normalize the chip to contain the face at 800px wide
-                            cv::resize(imageChip, sizedChip,cv::Size(imageChip.cols*scalefactor,imageChip.rows*scalefactor));
-                            roi.x *= scalefactor;
-                            roi.y *= scalefactor;
-                            roi.width *= scalefactor;
-                            roi.height *= scalefactor;
-                            int roiWidth =roi.width;
-                            int roiHeight =roi.height;
-                            NSMutableDictionary *entry = [[annotationsForFile objectAtIndex:j] mutableCopy];
-                            NSString *typeName = [[entry objectForKey:@"type"] lowercaseString];
-                            //                        if(typeName != nil and [typeName rangeOfString:@"face"].location != NSNotFound and [typeName rangeOfString:@"full"].location != NSNotFound)
-                            //                        {
-                            roiWidth =normalFaceWidthPx*boxPercent;
-                            roiHeight =normalFaceWidthPx*boxPercent;
-                            //                        }
-                            
-                            
-                            
-                            int counter = 0;
-                            for(int r = -30; r <= 30; r+=15)
-                            {
-                                NSLog(@"extracting chips at rotation %i",r);
-                                cv::Point2f rCenter(roi.x+roi.width/2,roi.y+roi.height/2);
-                                cv::Mat rmat = cv::getRotationMatrix2D(rCenter, r, 1);
-                                cv::warpAffine(sizedChip, rotatedChip, rmat, sizedChip.size());
-                                cv::Point rotatedCenter(rmat.at<double>(0,0)*rCenter.x + rmat.at<double>(0,1)*rCenter.y + rmat.at<double>(0,2),rmat.at<double>(1,0)*rCenter.x + rmat.at<double>(1,1)*rCenter.y + rmat.at<double>(1,2));
-                                cv::Point2f rotatedStart(rotatedCenter.x-roi.width*1.0/2,rotatedCenter.y-roi.height*1.0/2);
-                                int startX = rotatedStart.x-roi.width/2;
-                                int startY = rotatedStart.y-roi.height/2;
-                                if (startX < 0) startX = rotatedStart.x;
-                                if (startY < 0) startY = rotatedStart.y;
-                                for(int y = startY; y < rotatedChip.rows-roiHeight and y < rotatedStart.y+roi.height/2 ; y+=(roiWidth*1.0)/5)
+                            cv::Size resizedSize(imageChip.cols*scalefactor,imageChip.rows*scalefactor);
+                            if (resizedSize.width > 0 and resizedSize.height > 0 and !imageChip.empty() && imageChip.cols > 0 && imageChip.rows > 0) {
+                                cv::resize(imageChip, sizedChip,cv::Size(imageChip.cols*scalefactor,imageChip.rows*scalefactor));
+                                roi.x *= scalefactor;
+                                roi.y *= scalefactor;
+                                roi.width *= scalefactor;
+                                roi.height *= scalefactor;
+                                int roiWidth =roi.width;
+                                int roiHeight =roi.height;
+                                NSMutableDictionary *entry = [[annotationsForFile objectAtIndex:j] mutableCopy];
+                                NSString *typeName = [[entry objectForKey:@"type"] lowercaseString];
+                                //                        if(typeName != nil and [typeName rangeOfString:@"face"].location != NSNotFound and [typeName rangeOfString:@"full"].location != NSNotFound)
+                                //                        {
+                                roiWidth =normalFaceWidthPx*boxPercent;
+                                roiHeight =normalFaceWidthPx*boxPercent;
+                                //                        }
+                                
+                                
+                                
+                                int counter = 0;
+                                for(int r = -30; r <= 30; r+=15)
                                 {
-                                    for(int x = startX; x < rotatedChip.cols-roiWidth and x < rotatedStart.x+roi.width/2; x+=(roiWidth*1.0)/5)
+                                    NSLog(@"extracting chips at rotation %i",r);
+                                    cv::Point2f rCenter(roi.x+roi.width/2,roi.y+roi.height/2);
+                                    cv::Mat rmat = cv::getRotationMatrix2D(rCenter, r, 1);
+                                    cv::warpAffine(sizedChip, rotatedChip, rmat, sizedChip.size());
+                                    cv::Point rotatedCenter(rmat.at<double>(0,0)*rCenter.x + rmat.at<double>(0,1)*rCenter.y + rmat.at<double>(0,2),rmat.at<double>(1,0)*rCenter.x + rmat.at<double>(1,1)*rCenter.y + rmat.at<double>(1,2));
+                                    cv::Point2f rotatedStart(rotatedCenter.x-roi.width*1.0/2,rotatedCenter.y-roi.height*1.0/2);
+                                    int startX = rotatedStart.x-roi.width/2;
+                                    int startY = rotatedStart.y-roi.height/2;
+                                    if (startX < 0) startX = rotatedStart.x;
+                                    if (startY < 0) startY = rotatedStart.y;
+                                    for(int y = startY; y < rotatedChip.rows-roiHeight and y < rotatedStart.y+roi.height/2 ; y+=(roiWidth*1.0)/5)
                                     {
-                                        cv::Rect r(x,y,roiWidth,roiHeight);
-                                        if (true) {
-                                            //this rect doesn't contain areas of masked out sace
-                                            if (r.x >= 0 && r.y >= 0 && r.x+r.width < rotatedChip.cols && r.y+r.height < rotatedChip.rows ) {
-                                                if ([[[entry objectForKey:@"type"] lowercaseString] rangeOfString:@"tattoo"].location != NSNotFound) {
-                                                    
-                                                    imageChips.push_back(rotatedChip(r).clone());
-                                                    NSString *saveName = [[[fileName stringByDeletingPathExtension] stringByAppendingFormat:@"_%@_%@_%i",[entry objectForKey:@"type"],entryName,counter] stringByAppendingPathExtension:@".png"];
-                                                    [imageChipNames addObject:saveName];
-                                                    counter++;
+                                        for(int x = startX; x < rotatedChip.cols-roiWidth and x < rotatedStart.x+roi.width/2; x+=(roiWidth*1.0)/5)
+                                        {
+                                            cv::Rect r(x,y,roiWidth,roiHeight);
+                                            if (true) {
+                                                //this rect doesn't contain areas of masked out sace
+                                                if (r.x >= 0 && r.y >= 0 && r.x+r.width < rotatedChip.cols && r.y+r.height < rotatedChip.rows ) {
+                                                    if ([[[entry objectForKey:@"type"] lowercaseString] rangeOfString:@"tattoo"].location != NSNotFound or true) {
+                                                        
+                                                        imageChips.push_back(rotatedChip(r).clone());
+                                                        NSString *saveName = [[[fileName stringByDeletingPathExtension] stringByAppendingFormat:@"_%@_%@_%i",[entry objectForKey:@"type"],entryName,counter] stringByAppendingPathExtension:@".png"];
+                                                        [imageChipNames addObject:saveName];
+                                                        counter++;
+                                                    }
                                                 }
+                                                //                                            fillChips.push_back(rotatedChip(r).clone());
+                                                
                                             }
-                                            //                                            fillChips.push_back(rotatedChip(r).clone());
-                                            
                                         }
                                     }
                                 }
@@ -1896,15 +1907,17 @@ Mat norm_0_255(InputArray _src) {
                             cv::Rect roi([[entry objectForKey:@"x coord"] intValue],[[entry objectForKey:@"y coord"] intValue], [[entry objectForKey:@"width"] intValue], [[entry objectForKey:@"height"] intValue]);
                             imageChip = img(roi).clone();
                         }
-                        NSString *saveDir = [[fileName stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"SavedChips"];
+                        //                        NSString *saveDir = [[fileName stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"SavedChips"];
+                        NSString *saveDir = [@"/Users/bog/Desktop" stringByAppendingPathComponent: fileName.stringByDeletingLastPathComponent.lastPathComponent];
                         BOOL isDir;
                         if (![[NSFileManager defaultManager] fileExistsAtPath:saveDir isDirectory:&isDir] or !isDir) {
                             [[NSFileManager defaultManager] createDirectoryAtPath:saveDir withIntermediateDirectories:YES attributes:nil error:nil];
                         }
                         if (imageChips.size() == 0) {
-                            NSLog(@"on ho");
+                            //                            NSLog(@"on ho");
                         }
-                        NSLog(@"Writing %lu files...",imageChips.size());
+                        //                        NSLog(@"Writing %lu files...",imageChips.size());
+                        int writecount = 0;
                         for (int x = 0; x < imageChips.size(); x++) {
                             cv::Mat im = imageChips[x];
                             NSString *savePath = [saveDir stringByAppendingPathComponent:[[imageChipNames objectAtIndex:x] lastPathComponent]];
@@ -1912,16 +1925,291 @@ Mat norm_0_255(InputArray _src) {
                             cv::Scalar sum = cv::sum(im);
                             int imsum = sum[0]+sum[1]+sum[2];
                             //at max, we want 200 randomly sampled images per annotation
-                            float guessnum = imageChips.size()/100.0;
+                            float guessnum = imageChips.size()/30.0;
                             if (guessnum < 1) guessnum = 1;
                             int randSample = arc4random() % (int)guessnum;
-                            if (imsum and randSample == 0)  cv::imwrite(savePath.UTF8String, im);
+                            if (imsum and randSample == 0)
+                            {
+                                cv::imwrite(savePath.UTF8String, im);
+                                writecount++;
+                            }
                             else{
                                 //                            NSLog(@"all dark");
                             }
                         }
-                        NSLog(@"Done writing files");
+                        NSLog(@"Wrote %i files",writecount);
                     }
+                }
+            }
+            
+        }
+    }
+}
+
+-(void)extractNonTattooPatchesFromProjectFile:(NSString *)projFilePath
+{
+    int normalFaceWidthPx = 800;
+    int sampleDivision = 20;
+    float boxPercent = .10; // We will be creating boxes that are 5% of the face (20 boxes wide)
+    
+    Landmarker_zhuramanan *landmarker = new Landmarker_zhuramanan();
+    Model3D *model = new Model3D("");
+    NSString *projectName = [[projFilePath lastPathComponent] stringByDeletingPathExtension];
+    //    savingStatusLabel.stringValue = [NSString stringWithFormat:@"Loading Project %@", projectName];
+    NSFileManager *fm = [NSFileManager defaultManager];
+    BOOL isdir;
+    if ([fm fileExistsAtPath:projFilePath isDirectory:&isdir] and !isdir and [projFilePath hasSuffix:@"saproj"]) {
+        NSString *projectCSVString = [NSString stringWithContentsOfFile:projFilePath encoding:NSUTF8StringEncoding error:nil];
+        NSArray *projectLines = [projectCSVString componentsSeparatedByString:@"\n"];
+        if (projectLines.count > 0) {
+            int frameCounter = 0;
+            bool shouldSkipFile = false;
+            bool startNewFile = false;
+            NSArray *projectOriginationPath = [projectLines objectAtIndex:0];
+            NSMutableArray *propertyKeys = [[NSMutableArray alloc] init];
+            NSMutableArray *allAnnotations = [[NSMutableArray alloc] init];
+            NSMutableArray *allFileNames = [[NSMutableArray alloc] init];
+            NSMutableDictionary *allAnnotationsForFileName = [[NSMutableDictionary alloc] init];
+            NSMutableDictionary *annotationsForSingleFile = [[NSMutableDictionary alloc] init];
+            //Build the initial dictionary containing all entries
+            NSString *currentFileName = @"";
+            int i = 1;
+            int resumeFrameNum = 0;
+            for(i = 1; i < projectLines.count; i++)
+            {
+                NSArray *lineValues = [[projectLines objectAtIndex:i] componentsSeparatedByString:@","];
+                if (lineValues.count > 0 and [[lineValues objectAtIndex:0]hasPrefix:@"Frame:"]) {
+                    NSArray *frameResumeArr = [[lineValues objectAtIndex:0] componentsSeparatedByString:@":"];
+                    if (frameResumeArr.count > 1) {
+                        resumeFrameNum = [[frameResumeArr objectAtIndex:1] intValue];
+                    }
+                }
+                if (lineValues.count > 0 and [[lineValues objectAtIndex:0] hasPrefix:@"f:"]) { //this starts a new file
+                    if (allAnnotations.count > 0)
+                    {
+                        [allAnnotationsForFileName setObject:allAnnotations.copy forKey:currentFileName];
+                    }
+                    [allAnnotations removeAllObjects];
+                    currentFileName = [[lineValues objectAtIndex:0] substringFromIndex:2];
+                    [imagePathArray addObject:currentFileName];
+                    [allFileNames addObject:currentFileName];
+                    startNewFile = true;
+                }
+                else if (lineValues.count > 1){
+                    if (startNewFile) {
+                        startNewFile = false;
+                        [propertyKeys removeAllObjects];
+                        [propertyKeys addObjectsFromArray:lineValues];
+                        [annotationsForSingleFile removeAllObjects];
+                    }
+                    else{
+                        NSMutableDictionary *entryDictionary = [[NSMutableDictionary alloc] init];
+                        for (int j = 0; j < lineValues.count; j++) {
+                            NSString *val = [lineValues objectAtIndex:j];
+                            if (j < propertyKeys.count)
+                            {
+                                NSString *pkey = [propertyKeys objectAtIndex:j];
+                                if (![val isEqualToString:@""]) {
+                                    [entryDictionary setObject:val forKey:pkey];
+                                }
+                            }
+                            
+                        }
+                        [allAnnotations addObject:entryDictionary];
+                    }
+                }
+            }
+            if (allAnnotations.count > 0) {
+                [allAnnotationsForFileName setObject:allAnnotations.copy forKey:currentFileName];
+            }
+            //Build individual annotation sets for each image file
+            for (int i = 0; i < allFileNames.count; i++) {
+                NSString *fileName =[allFileNames objectAtIndex:i];
+                cv::Mat img = cv::imread(fileName.UTF8String);
+                NSArray *annotationsForFile = [allAnnotationsForFileName objectForKey:fileName];
+                if (annotationsForFile and !img.empty() and img.cols > 0 and img.rows > 0){
+                    NSMutableDictionary *annotationsByToolForFile = [[NSMutableDictionary alloc] init];
+                    NSString *currentTool = @"";
+                    std::vector<cv::Rect> facesInImage;
+                    NSMutableArray *skipIndexes = [[NSMutableArray alloc] init];
+                    for (int j = 0; j < annotationsForFile.count; j++) {
+                        NSMutableDictionary *entry = [[annotationsForFile objectAtIndex:j] mutableCopy];
+                        NSString *entryName = [entry objectForKey:@"name"];
+                        NSString *toolType = [entry objectForKey:@"annotationType"];
+                        NSString *typeName = [[entry objectForKey:@"type"] lowercaseString];
+                        if (typeName != nil and ( [typeName isEqualToString:@"face"] or [typeName hasPrefix:@"face"] or [typeName rangeOfString:@"face"].location != NSNotFound)){
+                            cv::Rect f([[entry objectForKey:@"x coord"] intValue],[[entry objectForKey:@"y coord"] intValue],[[entry objectForKey:@"width"] intValue],[[entry objectForKey:@"height"] intValue]);
+                            facesInImage.push_back(f);
+                            if(typeName != nil and [typeName rangeOfString:@"face"].location != NSNotFound and [typeName rangeOfString:@"full"].location != NSNotFound)
+                            {
+                                //This is a full face tatoo annotation.  We should extract this.
+                                NSLog(@"found full face tattoo");
+                                [skipIndexes addObject:@(j)];
+
+                            }
+                            else{
+                                [skipIndexes addObject:@(j)];
+                            }
+                        }
+                        
+                    }
+                    if (!img.empty() && img.cols > 0 && img.rows > 0) {
+                        cv::imshow("image", img);
+                    }
+                    
+                    if (facesInImage.size() == 0) {
+                        facesInImage = [self findFacesUsingDlibInFrame:img];
+                        NSLog(@"Found %lu dlib faces",facesInImage.size());
+                    }
+                    if (facesInImage.size() == 0) {
+                        std::vector<bbox_t> faceboxes;
+                        NSLog(@"Detecting Faces");
+                        std::vector<std::vector<cv::Point> > faceLandmarks = landmarker->findLandmarks(img,faceboxes);
+                        
+                        NSLog(@"Found %lu zr faces", faceLandmarks.size());
+                        for(int j = 0; j < faceboxes.size(); j++)
+                        {
+                            bbox_t box = faceboxes[j];
+                            cv::Rect r(box.outer.x1,box.outer.y1,box.outer.x2-box.outer.x1,box.outer.y2-box.outer.y1);
+                            facesInImage.push_back(r);
+                        }
+                    }
+                    std::vector<std::vector<cv::Point> > conts;
+                    for (int j = 0; j < annotationsForFile.count; j++) {
+                        if ([skipIndexes containsObject:@(j)]) {
+                            continue;
+                        }
+                        NSMutableDictionary *entry = [[annotationsForFile objectAtIndex:j] mutableCopy];
+                        NSString *entryName = [entry objectForKey:@"name"];
+                        NSString *toolType = [entry objectForKey:@"annotationType"];
+                        if ([toolType isEqualToString:@"pointTool"]) {
+                            NSMutableArray *coords = [[NSMutableArray alloc] init];
+                            NSDictionary *nextEntry = [annotationsForFile objectAtIndex:j+1];
+                            while(j+1 < annotationsForFile.count and nextEntry and ([nextEntry objectForKey:@"name"] == nil or [[nextEntry objectForKey:@"name"] isEqualToString:@""]))
+                            {
+                                NSPoint p = NSMakePoint([[nextEntry objectForKey:@"x coord"] floatValue], [[nextEntry objectForKey:@"y coord"] floatValue]);
+                                
+                                [coords addObject:[NSValue valueWithPoint:p]];
+                                j++;
+                                if (j+1 >= annotationsForFile.count) {
+                                    nextEntry = nil;
+                                }
+                                else
+                                {
+                                    nextEntry = [annotationsForFile objectAtIndex:j+1];
+                                }
+                            }
+                            //                        j++;
+                            [entry setObject:coords forKey:@"coords"];
+                        }
+                        cv::Mat imageChip;
+                        std::vector<cv::Mat>imageChips;
+                        NSMutableArray *imageChipNames = [[NSMutableArray alloc] init];
+                        
+                        
+                        if ([toolType isEqualToString:@"pointTool"]) {
+                            NSArray *coords = [entry objectForKey:@"coords"];
+                            std::vector<std::vector<cv::Point> > conts;
+                            std::vector<cv::Point > cont;
+                            for(int x = 0; x < coords.count; x++)
+                            {
+                                NSPoint p = [[coords objectAtIndex:x] pointValue];
+                                cont.push_back(cv::Point(p.x,p.y));
+                            }
+                            conts.push_back(cont);
+                            
+                        }
+                        else if ([toolType isEqualToString:@"rectangleTool"])
+                        {
+                            cv::Rect roi([[entry objectForKey:@"x coord"] intValue],[[entry objectForKey:@"y coord"] intValue], [[entry objectForKey:@"width"] intValue], [[entry objectForKey:@"height"] intValue]);
+                            std::vector<cv::Point> cont;
+                            cont.push_back(cv::Point(roi.x,roi.y));
+                            cont.push_back(cv::Point(roi.x,roi.y+roi.height));
+                            cont.push_back(cv::Point(roi.x+roi.width,roi.y+roi.height));
+                            cont.push_back(cv::Point(roi.x+roi.width,roi.y));
+                            conts.push_back(cont);
+                        }
+                        
+                        
+                    }
+                    cv::Mat mask = cv::Mat::zeros(img.rows, img.cols, CV_8UC1);
+                    cv::drawContours(mask, conts, -1, 255,-1);
+                    mask = 255-mask;
+                    std::vector<cv::Mat> imageChips;
+                    NSMutableArray *imageChipNames = [[NSMutableArray alloc] init];
+                    for(int f = 0; f < facesInImage.size(); f++)
+                    {
+                        cv::Rect faceROI = facesInImage[f];
+                        float scalefactor = normalFaceWidthPx*(1.0)/faceROI.width;
+                        if (faceROI.x >= 0 and faceROI.y >=0 and faceROI.x+faceROI.width < img.cols and faceROI.y+faceROI.height < img.rows) {
+                            cv::Mat faceImgsmall = img(faceROI).clone();
+                            cv::Mat faceImg,faceMasksmall,faceMask;
+                            cv::Size scaleSize(faceImgsmall.cols*scalefactor,faceImgsmall.rows*scalefactor);
+                            if (scaleSize.width > 0 and scaleSize.height >0 and !faceImgsmall.empty() and faceImgsmall.rows > 0 and faceImgsmall.cols > 0) {
+                                cv::resize(faceImgsmall, faceImg, scaleSize);
+                                faceMasksmall = mask(faceROI).clone();
+                                cv::resize(faceMasksmall, faceMask, scaleSize);
+                                cv::threshold(faceMask, faceMask, 127, 255, CV_8UC1);
+                                int roiWidth =normalFaceWidthPx*boxPercent;
+                                int roiHeight =normalFaceWidthPx*boxPercent;
+                                int chipCounter = 0;
+                                for(int y = 0; y < faceImg.rows-roiHeight; y+=(roiWidth*1.0)/2)
+                                {
+                                    for(int x = 0; x < faceImg.cols-roiWidth; x+=(roiWidth*1.0)/2)
+                                    {
+                                        cv::Rect r(x,y,roiWidth,roiHeight);
+                                        if (r.x >= 0 && r.y >= 0 && r.x+r.width < faceImg.cols && r.y+r.height < faceImg.rows ) {
+                                            cv::Mat overlap = faceMask(r).clone();
+                                            int nonzero = cv::countNonZero(overlap);
+                                            if (nonzero >= int(overlap.cols*overlap.rows*1.0/1.2)) {
+                                                cv::Mat chip = faceImg(r).clone();
+                                                NSString *saveName = [[fileName.lastPathComponent stringByDeletingPathExtension] stringByAppendingFormat:@"_%i.jpg",chipCounter];
+                                                imageChips.push_back(chip);
+                                                [imageChipNames addObject:saveName];
+                                                chipCounter++;
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                
+                            }
+                            
+                        }
+                        
+                        
+                    }
+                    NSString *saveDir = [[@"/Users/bog/Desktop" stringByAppendingPathComponent:fileName.stringByDeletingLastPathComponent.lastPathComponent] stringByAppendingString:@"non-tattoo"];
+                    BOOL isDir;
+                    if (![[NSFileManager defaultManager] fileExistsAtPath:saveDir isDirectory:&isDir] or !isDir) {
+                        [[NSFileManager defaultManager] createDirectoryAtPath:saveDir withIntermediateDirectories:YES attributes:nil error:nil];
+                    }
+                    if (imageChips.size() == 0) {
+                        //                            NSLog(@"on ho");
+                    }
+                    //                        NSLog(@"Writing %lu files...",imageChips.size());
+                    int writecount = 0;
+                    for (int x = 0; x < imageChips.size(); x++) {
+                        cv::Mat im = imageChips[x];
+                        NSString *savePath = [saveDir stringByAppendingPathComponent:[imageChipNames objectAtIndex:x]];
+                        //                        NSLog(@"saving to: %@",savePath);
+                        cv::Scalar sum = cv::sum(im);
+                        int imsum = sum[0]+sum[1]+sum[2];
+                        //at max, we want 200 randomly sampled images per annotation
+                        float guessnum = imageChips.size()/50.0;
+                        if (guessnum < 1) guessnum = 1;
+                        int randSample = arc4random() % (int)guessnum;
+                        if (imsum and randSample == 0)
+                        {
+                            cv::imwrite(savePath.UTF8String, im);
+                            writecount++;
+                        }
+                        else{
+                            //                            NSLog(@"all dark");
+                        }
+                    }
+                    NSLog(@"Wrote %i files",writecount);
+                    
                 }
             }
             
@@ -1943,6 +2231,8 @@ Mat norm_0_255(InputArray _src) {
     }
     return faces;
 }
+
+
 int calculateIntersectionArea(const cv::Mat& blobImg, cv::Rect contour1, const std::vector<cv::Point> contour2)
 {
     return  calculateIntersectionArea(blobImg, contour1, cv::boundingRect(contour2));
