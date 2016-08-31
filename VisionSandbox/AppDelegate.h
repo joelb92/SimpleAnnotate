@@ -37,6 +37,7 @@
     IBOutlet NSWindow *about;
     IBOutlet NSWindow *help;
     IBOutlet NSWindow *fileFixerWindow;
+    IBOutlet NSWindow *extractChipsWindow;
     IBOutlet NSTextField *versionNumber;
 	IBOutlet InfoOutputController *infoOutput;
 	IBOutlet NSButton *playButton;
@@ -51,6 +52,18 @@
     IBOutlet Tooltip *tooltip;
     IBOutlet NSMenuItem *forwardMenuBotton;
     IBOutlet NSMenuItem *backwardMenuBotton;
+    
+    IBOutlet NSButton *useCurrentProjectDataCheckbox;
+    IBOutlet NSTextField *projectToExtractField;
+    IBOutlet NSTextField *WhereToSaveChipsField;
+    IBOutlet NSTextField *RotationRangeField;
+    IBOutlet NSTextField *ProjectNameField;
+    IBOutlet NSTextField *normalizedFaceSizeField;
+    IBOutlet NSTextField *percentWidthSizeField;
+    IBOutlet NSTextField *numImagesPerFaceField;
+
+    IBOutlet NSButton *extractOnlyLandmarksChecdkbox;
+
 
     
     NSArray *acceptableImageTypes;

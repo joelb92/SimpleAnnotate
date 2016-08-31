@@ -13,9 +13,7 @@
 #include "eHutils.h"
 
 #include "rapidxml-1.13/rapidxml.hpp"
-#include "opencv/cv.h"
-#include "opencv/highgui.h"
-
+#include <opencv2/opencv.hpp>
 #include "iostream"
 #include "fstream"
 

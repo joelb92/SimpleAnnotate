@@ -1456,10 +1456,10 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/opt/X11/include,
-					/opt/local/include,
 					/usr/local/include,
 					/usr/X11/include,
 					"$(SRCROOT)/IncludedFrameworks/dlib-18.18",
+					/opt/local/include/,
 				);
 				INFOPLIST_FILE = "VisionSandbox/SimpleAnnotate-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @executable_path/../Frameworks/dlib-18.18";
@@ -1509,10 +1509,10 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/opt/X11/include,
-					/opt/local/include,
 					/usr/local/include,
 					/usr/X11/include,
 					"$(SRCROOT)/IncludedFrameworks/dlib-18.18",
+					/opt/local/include/,
 				);
 				INFOPLIST_FILE = "VisionSandbox/SimpleAnnotate-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @executable_path/../Frameworks/dlib-18.18";

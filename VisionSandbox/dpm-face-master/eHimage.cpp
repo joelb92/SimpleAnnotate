@@ -16,8 +16,8 @@
 
 #include "rapidxml-1.13/rapidxml.hpp"
 #include "rapidxml-1.13/rapidxml_print.hpp"
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+//#include <opencv/cv.h>
+#include <opencv2/highgui/highgui.hpp>
 
 static inline int round2int(double x) { return (int)(x+0.5);}
 

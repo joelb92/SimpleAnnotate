@@ -14,8 +14,8 @@ using namespace std;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     lock = [[NSLock alloc] init ];
-//    [self extractPatchesFromProjectFile:@"/Volumes/biometrics/Biometric_Datasets/ORNL_Tattos_Piercings/tattoos/tattoos_nisha/nisha.saproj"];
-    [self extractNonTattooPatchesFromProjectFile:@"/Volumes/BTAS/ORNL_Tattos_Piercings/tattoos/tattoos_joel_project/joel_tattoos_project.saproj"];
+    //    [self extractPatchesFromProjectFile:@"/Volumes/biometrics/Biometric_Datasets/ORNL_Tattos_Piercings/tattoos/tattoos_nisha/nisha.saproj"];
+//        [self extractNonTattooPatchesFromProjectFile:@"/Users/joel/Downloads/faces/nontattoo-faces-project.saproj"];
     [self splashSequence];
     lock = [[NSLock alloc] init];
     matchedScenes = [[NSMutableIndexSet alloc] init];
@@ -1534,11 +1534,11 @@ Mat norm_0_255(InputArray _src) {
 }
 
 
--(void)extractPatchesFromProjectFile:(NSString *)projFilePath
+-(void)extractPatchesFromProjectFile:(NSString *)projFilePath forNormalizedFaceScalePixels:(int)normalizedPix andRotationRange:(float)rotationRange andNumberofFilesPerFace:(int)numPerFace andBoxPercentSize:(float)bPercent forSaveDirectory:(NSString *)sDirectory forDatasetName:(NSString *)datasetName
 {
-    int normalFaceWidthPx = 800;
+    int normalFaceWidthPx = normalizedPix; // 800;
     int sampleDivision = 20;
-    float boxPercent = .10; // We will be creating boxes that are 5% of the face (20 boxes wide)
+    float boxPercent = bPercent;//.10; // We will be creating boxes that are 5% of the face (20 boxes wide)
     
     Landmarker_zhuramanan *landmarker = new Landmarker_zhuramanan();
     Model3D *model = new Model3D("");
@@ -1751,7 +1751,7 @@ Mat norm_0_255(InputArray _src) {
                                     
                                     
                                     int counter = 0;
-                                    for(int r = -30; r <= 30; r+=15)
+                                    for(int r = -(int)rotationRange; r <= (int)rotationRange; r+=15)
                                     {
                                         cv::Point2f rcenter(sizedChip.cols/2.0,sizedChip.rows/2.0);
                                         cv::Mat rmat = cv::getRotationMatrix2D(rcenter, r, 1);
@@ -1908,7 +1908,7 @@ Mat norm_0_255(InputArray _src) {
                             imageChip = img(roi).clone();
                         }
                         //                        NSString *saveDir = [[fileName stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"SavedChips"];
-                        NSString *saveDir = [@"/Users/bog/Desktop" stringByAppendingPathComponent: fileName.stringByDeletingLastPathComponent.lastPathComponent];
+                        NSString *saveDir = [[sDirectory stringByAppendingPathComponent:datasetName] stringByAppendingPathComponent:@"negative-samples"];
                         BOOL isDir;
                         if (![[NSFileManager defaultManager] fileExistsAtPath:saveDir isDirectory:&isDir] or !isDir) {
                             [[NSFileManager defaultManager] createDirectoryAtPath:saveDir withIntermediateDirectories:YES attributes:nil error:nil];
@@ -1925,7 +1925,7 @@ Mat norm_0_255(InputArray _src) {
                             cv::Scalar sum = cv::sum(im);
                             int imsum = sum[0]+sum[1]+sum[2];
                             //at max, we want 200 randomly sampled images per annotation
-                            float guessnum = imageChips.size()/30.0;
+                            float guessnum = imageChips.size()/numPerFace;//numperface=30;
                             if (guessnum < 1) guessnum = 1;
                             int randSample = arc4random() % (int)guessnum;
                             if (imsum and randSample == 0)
@@ -1946,11 +1946,11 @@ Mat norm_0_255(InputArray _src) {
     }
 }
 
--(void)extractNonTattooPatchesFromProjectFile:(NSString *)projFilePath
+-(void)extractNonTattooPatchesFromProjectFile:(NSString *)projFilePath forNormalizedFaceScalePixels:(int)normalizedPix andNumberofFilesPerFace:(int)numPerFace andBoxPercentSize:(float)bPercent getLandmarkChipsOnly:(BOOL)getLandmarksOnly forSaveDirectory:(NSString *)sDirectory forDatasetName:(NSString *)datasetName
 {
-    int normalFaceWidthPx = 800;
+    int normalFaceWidthPx = normalizedPix;
     int sampleDivision = 20;
-    float boxPercent = .10; // We will be creating boxes that are 5% of the face (20 boxes wide)
+    float boxPercent = bPercent; // We will be creating boxes that are 5% of the face (20 boxes wide)
     
     Landmarker_zhuramanan *landmarker = new Landmarker_zhuramanan();
     Model3D *model = new Model3D("");
@@ -2027,7 +2027,7 @@ Mat norm_0_255(InputArray _src) {
                 NSString *fileName =[allFileNames objectAtIndex:i];
                 cv::Mat img = cv::imread(fileName.UTF8String);
                 NSArray *annotationsForFile = [allAnnotationsForFileName objectForKey:fileName];
-                if (annotationsForFile and !img.empty() and img.cols > 0 and img.rows > 0){
+                if (!img.empty() and img.cols > 0 and img.rows > 0){
                     NSMutableDictionary *annotationsByToolForFile = [[NSMutableDictionary alloc] init];
                     NSString *currentTool = @"";
                     std::vector<cv::Rect> facesInImage;
@@ -2045,7 +2045,7 @@ Mat norm_0_255(InputArray _src) {
                                 //This is a full face tatoo annotation.  We should extract this.
                                 NSLog(@"found full face tattoo");
                                 [skipIndexes addObject:@(j)];
-
+                                
                             }
                             else{
                                 [skipIndexes addObject:@(j)];
@@ -2056,15 +2056,17 @@ Mat norm_0_255(InputArray _src) {
                     if (!img.empty() && img.cols > 0 && img.rows > 0) {
                         cv::imshow("image", img);
                     }
-                    
+                    bool usedZR = false;
                     if (facesInImage.size() == 0) {
                         facesInImage = [self findFacesUsingDlibInFrame:img];
                         NSLog(@"Found %lu dlib faces",facesInImage.size());
                     }
+                    std::vector<std::vector<cv::Point> > faceLandmarks;
                     if (facesInImage.size() == 0) {
+                        usedZR = true;
                         std::vector<bbox_t> faceboxes;
                         NSLog(@"Detecting Faces");
-                        std::vector<std::vector<cv::Point> > faceLandmarks = landmarker->findLandmarks(img,faceboxes);
+                        faceLandmarks = landmarker->findLandmarks(img,faceboxes);
                         
                         NSLog(@"Found %lu zr faces", faceLandmarks.size());
                         for(int j = 0; j < faceboxes.size(); j++)
@@ -2150,23 +2152,64 @@ Mat norm_0_255(InputArray _src) {
                                 faceMasksmall = mask(faceROI).clone();
                                 cv::resize(faceMasksmall, faceMask, scaleSize);
                                 cv::threshold(faceMask, faceMask, 127, 255, CV_8UC1);
+                                bool getextraparts = false;
+                                cv::Mat partMask = cv::Mat::zeros(faceImgsmall.rows, faceImgsmall.cols, CV_8UC1);
+                                cv::Mat partMaskLarge;
+                                if (usedZR && f < faceLandmarks.size() && getLandmarksOnly) {
+                                    getextraparts = true;
+                                    std::vector<std::vector<cv::Point> > faceparts;
+                                    std::vector<cv::Point> leftEye,rightEye,nose,mouth;
+                                    for(int t = 9; t < 15; t++) leftEye.push_back(faceLandmarks[f][t]-cv::Point(faceROI.x,faceROI.y));
+                                    for(int t = 20; t < 26; t++) rightEye.push_back(faceLandmarks[f][t]-cv::Point(faceROI.x,faceROI.y));
+                                    for(int t = 0; t < 9; t++) nose.push_back(faceLandmarks[f][t]-cv::Point(faceROI.x,faceROI.y));
+                                    for(int t = 31; t < 51; t++) mouth.push_back(faceLandmarks[f][t]-cv::Point(faceROI.x,faceROI.y));
+                                    cv::convexHull(leftEye, leftEye);
+                                    cv::convexHull(rightEye, rightEye);
+                                    cv::convexHull(nose, nose);
+                                    cv::convexHull(mouth, mouth);
+                                    faceparts.push_back(leftEye);
+                                    faceparts.push_back(rightEye);
+                                    faceparts.push_back(nose);
+                                    faceparts.push_back(mouth);
+                                    cv::drawContours(partMask, faceparts, -1, 255,-1);
+                                    cv::resize(partMask, partMaskLarge, scaleSize);
+                                    cv::threshold(partMaskLarge, partMaskLarge, 127, 255, CV_8UC1);
+                                }
                                 int roiWidth =normalFaceWidthPx*boxPercent;
                                 int roiHeight =normalFaceWidthPx*boxPercent;
                                 int chipCounter = 0;
-                                for(int y = 0; y < faceImg.rows-roiHeight; y+=(roiWidth*1.0)/2)
+                                int stride = (roiWidth*1.0)/2;
+                                if (getextraparts) {
+                                    stride = 2;
+                                }
+                                for(int y = 0; y < faceImg.rows-roiHeight; y+=stride)
                                 {
-                                    for(int x = 0; x < faceImg.cols-roiWidth; x+=(roiWidth*1.0)/2)
+                                    for(int x = 0; x < faceImg.cols-roiWidth; x+=stride)
                                     {
                                         cv::Rect r(x,y,roiWidth,roiHeight);
                                         if (r.x >= 0 && r.y >= 0 && r.x+r.width < faceImg.cols && r.y+r.height < faceImg.rows ) {
                                             cv::Mat overlap = faceMask(r).clone();
                                             int nonzero = cv::countNonZero(overlap);
                                             if (nonzero >= int(overlap.cols*overlap.rows*1.0/1.2)) {
-                                                cv::Mat chip = faceImg(r).clone();
-                                                NSString *saveName = [[fileName.lastPathComponent stringByDeletingPathExtension] stringByAppendingFormat:@"_%i.jpg",chipCounter];
-                                                imageChips.push_back(chip);
-                                                [imageChipNames addObject:saveName];
-                                                chipCounter++;
+                                                if (getextraparts) {
+                                                    cv::Mat overlap2 = partMaskLarge(r).clone();
+                                                    int nonzero2 = cv::countNonZero(overlap2);
+                                                    if (nonzero2 > overlap.cols*overlap.rows*.2)
+                                                    {
+                                                        cv::Mat chip = faceImg(r).clone();
+                                                        NSString *saveName = [[fileName.lastPathComponent stringByDeletingPathExtension] stringByAppendingFormat:@"_%i.jpg",chipCounter];
+                                                        imageChips.push_back(chip);
+                                                        [imageChipNames addObject:saveName];
+                                                        chipCounter++;
+                                                    }
+                                                }
+                                                else{
+                                                    cv::Mat chip = faceImg(r).clone();
+                                                    NSString *saveName = [[fileName.lastPathComponent stringByDeletingPathExtension] stringByAppendingFormat:@"_%i.jpg",chipCounter];
+                                                    imageChips.push_back(chip);
+                                                    [imageChipNames addObject:saveName];
+                                                    chipCounter++;
+                                                }
                                             }
                                         }
                                     }
@@ -2179,7 +2222,7 @@ Mat norm_0_255(InputArray _src) {
                         
                         
                     }
-                    NSString *saveDir = [[@"/Users/bog/Desktop" stringByAppendingPathComponent:fileName.stringByDeletingLastPathComponent.lastPathComponent] stringByAppendingString:@"non-tattoo"];
+                    NSString *saveDir = [[sDirectory stringByAppendingPathComponent:datasetName] stringByAppendingPathComponent:@"negative-samples"];
                     BOOL isDir;
                     if (![[NSFileManager defaultManager] fileExistsAtPath:saveDir isDirectory:&isDir] or !isDir) {
                         [[NSFileManager defaultManager] createDirectoryAtPath:saveDir withIntermediateDirectories:YES attributes:nil error:nil];
@@ -2196,7 +2239,7 @@ Mat norm_0_255(InputArray _src) {
                         cv::Scalar sum = cv::sum(im);
                         int imsum = sum[0]+sum[1]+sum[2];
                         //at max, we want 200 randomly sampled images per annotation
-                        float guessnum = imageChips.size()/50.0;
+                        float guessnum = imageChips.size()/numPerFace;
                         if (guessnum < 1) guessnum = 1;
                         int randSample = arc4random() % (int)guessnum;
                         if (imsum and randSample == 0)
@@ -2208,13 +2251,49 @@ Mat norm_0_255(InputArray _src) {
                             //                            NSLog(@"all dark");
                         }
                     }
-                    NSLog(@"Wrote %i files",writecount);
+                    NSLog(@"Wrote %i files to %@",writecount,saveDir);
                     
                 }
             }
             
         }
     }
+}
+
+-(IBAction)ExtractPosAnnotations:(id)sender
+{
+    NSString *file = projectToExtractField.stringValue;
+    if (useCurrentProjectDataCheckbox.state == YES) {
+        [self autoSave];
+        file = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"autosavefile"];
+    }
+    [self extractPatchesFromProjectFile:file forNormalizedFaceScalePixels:[normalizedFaceSizeField intValue] andRotationRange:[RotationRangeField intValue] andNumberofFilesPerFace:[numImagesPerFaceField intValue] andBoxPercentSize:[percentWidthSizeField floatValue] forSaveDirectory:[WhereToSaveChipsField stringValue] forDatasetName:[ProjectNameField stringValue]];
+}
+-(IBAction)ExtractNegAnnotations:(id)sender
+{
+    NSString *file = projectToExtractField.stringValue;
+    if (useCurrentProjectDataCheckbox.state == YES) {
+        [self autoSave];
+        file = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"autosavefile"];
+    }
+    [self extractNonTattooPatchesFromProjectFile:file forNormalizedFaceScalePixels:normalizedFaceSizeField.intValue andNumberofFilesPerFace:numImagesPerFaceField.intValue andBoxPercentSize:percentWidthSizeField.floatValue getLandmarkChipsOnly:(BOOL)extractOnlyLandmarksChecdkbox.state forSaveDirectory:WhereToSaveChipsField.stringValue forDatasetName:ProjectNameField.stringValue];
+}
+-(IBAction)checkUseCurrentProj:(id)sender
+{
+    if (useCurrentProjectDataCheckbox.state == YES) {
+        [projectToExtractField setEnabled:NO];
+    }
+    else
+    {
+        [projectToExtractField setEnabled:YES];
+    }
+}
+-(IBAction)openExtractChipsWindow:(id)sender
+{
+//    if ([extractChipsWindow isVisible]) {
+//        [extractChipsWindow setIsVisible:NO];
+//    }
+    [extractChipsWindow setIsVisible:YES];
 }
 -(std::vector<cv::Rect>)findFacesUsingDlibInFrame:(cv::Mat)img
 {

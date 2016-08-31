@@ -15,8 +15,8 @@
 #include "eHbbox.h"
 
 #include <opencv2/opencv.hpp>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+//#include <opencv/cv.h>
+#include <opencv2/highgui/highgui.hpp>
 
 /** @struct eHimage
  *  @brief Basic image data structure
