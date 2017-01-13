@@ -10,7 +10,7 @@
 @synthesize rectangleTool,RectKey,allTools,scissorTool,visibleTools;
 - (GLViewTool*)tool
 {
-	return [[currentTool retain] autorelease];
+    return [[currentTool retain] autorelease];
     
 }
 
@@ -18,16 +18,16 @@
 {
     self = [super initWithFrame:frame];
     if(self)
-	{
+    {
         previousStatusLabel = @"";
         tableViewCells = [[NSMutableDictionary alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"TableReload" object:nil];
-		rulerTool = [[GLRuler alloc] init];
+        rulerTool = [[GLRuler alloc] init];
         visibleTools = [[NSMutableArray alloc] init];
         toolIndexToTableIndex = [[NSMutableDictionary alloc] init];
         tableIndexToToolIndex = [[NSMutableDictionary alloc] init];
-		protractorTool = [[GLProtractor alloc] init];
-		rectangleTool = [[GLRectangleDragger alloc] initWithOutputView:infoOutput];
+        protractorTool = [[GLProtractor alloc] init];
+        rectangleTool = [[GLRectangleDragger alloc] initWithOutputView:infoOutput];
         ellipseTool = [[GLEllipseTool alloc] initWithOutputView:infoOutput];
         pointTool = [[GLPointArrayTool alloc] initWithOutputView:infoOutput];
         scissorTool = [[IntelligentScissors alloc] init];
@@ -38,10 +38,10 @@
         keysForTools = [[NSMutableDictionary alloc] init];
         labelFields = [[NSMutableDictionary alloc] init];
         annotationTypes = [[NSMutableArray alloc] initWithObjects:@"Face",@"Tattoo",@"Piercing",@"None",@"+Add Other", nil];
-//		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
-		currentTool = rectangleTool;
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UpdateOutput) name:@"MouseOverToolValueChanged" object:nil];
-//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OpenSegmentationAssistant) name:@"Open Segmentation Assistant!" object:nil];
+        //		[mainTableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleNone];
+        currentTool = rectangleTool;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UpdateOutput) name:@"MouseOverToolValueChanged" object:nil];
+        //		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OpenSegmentationAssistant) name:@"Open Segmentation Assistant!" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setSelectedTableRow:) name:@"SelectionChanged" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyDownHappened:) name:@"KeyDownHappened" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyDownHappened:) name:@"KeyUpHappened" object:nil];
@@ -49,8 +49,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverChanged" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tableHoverRect:) name:@"TableViewHoverEnded" object:nil];
         
-
-
+        
+        
         linkImg = [NSImage imageNamed:@"link.png"];
         unlinkImg = [NSImage imageNamed:@"unlink.png"];
         currentTool.linkedDims = false;
@@ -129,11 +129,11 @@
 
 - (void)UpdateOutput
 {
-		[RectKey setStringValue:[NSString stringWithString:currentTool.currentKey]];
+    [RectKey setStringValue:[NSString stringWithString:currentTool.currentKey]];
 }
 - (void)awakeFromNib
 {
-	currentTool.infoOutput = infoOutput;
+    currentTool.infoOutput = infoOutput;
     currentTool.defaultWidth = defaultRectWidthField.intValue;
     currentTool.defaultHeight = defaultRectHeightField.intValue;
     [tooltip.typeSelectionBox addItemsWithObjectValues:annotationTypes];
@@ -144,22 +144,22 @@
         t.currentAnnotationType = @"none";
     }
     [self displayTypeDidChange:nil];
-
-//    [self linkDimsToggle:nil];
-
+    
+    //    [self linkDimsToggle:nil];
+    
 }
 - (void)drawRect:(NSRect)dirtyRect
 {
-	[[NSColor lightGrayColor] set];
-	[[NSColor colorWithCalibratedRed:0.7 green:0.7 blue:0.7 alpha:0.80] set];
-	[[NSBezierPath bezierPathWithRect:dirtyRect] fill];
-	[[NSBezierPath bezierPathWithRect:NSInsetRect([self bounds], 1, 1)] stroke];
+    [[NSColor lightGrayColor] set];
+    [[NSColor colorWithCalibratedRed:0.7 green:0.7 blue:0.7 alpha:0.80] set];
+    [[NSBezierPath bezierPathWithRect:dirtyRect] fill];
+    [[NSBezierPath bezierPathWithRect:NSInsetRect([self bounds], 1, 1)] stroke];
 }
 
 -(IBAction)lassoSelection:(id)sender
 {
     NSSegmentedControl *c = (NSSegmentedControl *) sender;
-
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LassoSelectionChanged" object:@(c.selectedSegment)];
 }
 
@@ -230,6 +230,7 @@
         t.comboBoxIsOpen = true;
     }
     [tooltip setHidden:NO];
+    comboDismissed = true;
 }
 
 -(void)comboBoxWillDismiss:(NSNotification *)notification
@@ -241,12 +242,15 @@
 }
 -(void)comboBoxSelectionDidChange:(NSNotification *)notification
 {
+    if (comboDismissed)
+    {
+        comboDismissed = false;
     NSComboBox *box = notification.object;
     if ([[box identifier] isEqualToString:@"tooltipCombo"]) {
         NSString *comboText = [box stringValue];
         if (![[box objectValues] containsObject:comboText])
         {
-
+            
         }
         else if ([[tooltip.typeSelectionBox.objectValues objectAtIndex:tooltip.typeSelectionBox.indexOfSelectedItem] isEqualToString:@"+Add Other"])
         {
@@ -254,14 +258,24 @@
         }
         else
         {
-            
-            currentAnnotationType = tooltip.typeSelectionBox.indexOfSelectedItem;
-            currentTool.currentAnnotationType = [tooltip.typeSelectionBox.objectValues objectAtIndex:currentAnnotationType];
-            [currentTool setCurrentElementType:currentTool.currentAnnotationType];
-            currentTool.currentAnnotationTypeIndex = currentAnnotationType;
+            int row = (int)mainTableView.selectedRow;
+            if (row >= 0) {
+                NSArray *toolAndIndex = [self toolAndKeyForTableIndex:row];
+                GLViewTool *mousedOverTool = [allTools objectForKey: [toolAndIndex objectAtIndex:0]];
+                if ([mousedOverTool mousedOverElementIndex] >= 0)
+                {
+                    int ind = [[toolAndIndex objectAtIndex:1] intValue];
+                    currentAnnotationType = tooltip.typeSelectionBox.indexOfSelectedItem;
+                    
+                    mousedOverTool.currentAnnotationType = [tooltip.typeSelectionBox.objectValues objectAtIndex:currentAnnotationType];
+                    [mousedOverTool setCurrentElementType:currentTool.currentAnnotationType];
+                    mousedOverTool.currentAnnotationTypeIndex = currentAnnotationType;
+                }
+            }
         }
     }
     [self reloadTable];
+    }
 }
 
 -(void)controlTextDidBeginEditing:(NSNotification *)obj{
@@ -286,14 +300,18 @@
     }
     else
     {
-    int row = (int)mainTableView.selectedRow;
-    int column =mainTableView.selectedColumn;
-    if (row >= 0) {
-        NSString *currentKey = [currentTool.getKeys objectAtIndex:row];
-        NSString *newKey = [(NSTextField *)obj.object stringValue];
-        [currentTool setKey:newKey atIndexed:row];
-//        [[currentTool getKeys] setObject:newKey atIndexedSubscript:row];
-    }
+        int row = (int)mainTableView.selectedRow;
+        int column =mainTableView.selectedColumn;
+        if (row >= 0) {
+            NSArray *toolAndIndex = [self toolAndKeyForTableIndex:row];
+            GLViewTool *mousedOverTool = [allTools objectForKey: [toolAndIndex objectAtIndex:0]];
+            int ind = [[toolAndIndex objectAtIndex:1] intValue];
+            NSString *currentKey = [mousedOverTool.getKeys objectAtIndex:ind];
+            NSString *newKey = [(NSTextField *)obj.object stringValue];
+            [mousedOverTool setKey:newKey atIndexed:ind];
+            
+            //        [[currentTool getKeys] setObject:newKey atIndexedSubscript:row];
+        }
     }
     [self reloadTable];
 }
@@ -306,37 +324,40 @@
         previousStatusLabel = [statusLabel stringValue];
         [statusLabel setStringValue:@"Press 'Enter' to finish Magnetic Lasso"];
     }
-
-	[currentTool mouseClickedAtPoint:p superPoint:SP withEvent:event];
+    
+    [currentTool mouseClickedAtPoint:p superPoint:SP withEvent:event];
 }
 
 - (bool)ActiveInView:(NSView*)view
 {
-	return [self.superview isEqual:view];
+    return [self.superview isEqual:view];
 }
 - (void)ToggleInView:(NSView*)view
 {
-	if([self.superview isEqual:view])
-	{
-		[self removeFromSuperview];
-		return;
-	}
-	
-	if(self.superview) [self removeFromSuperview];
-	
-	[view addSubview:self];
-	[self makeViewFitParentView];
+    if([self.superview isEqual:view])
+    {
+        [self removeFromSuperview];
+        return;
+    }
+    
+    if(self.superview) [self removeFromSuperview];
+    
+    [view addSubview:self];
+    [self makeViewFitParentView];
 }
 
 -(void)setSelectedTableRow:(NSNotification *)notification
 {
     GLViewTool *tool = [notification.object objectAtIndex:0];
-    int row = [(NSNumber *)[notification.object objectAtIndex:1] intValue];
-    int tableIndex = [self tableIndexForVisibleTool:tool andElementIndex:row];
-    NSIndexSet *i = [[NSIndexSet alloc] initWithIndex:tableIndex];
-    [mainTableView selectRowIndexes:i byExtendingSelection:NO];
-    if (row < 0) {
-        [mainTableView deselectAll:nil];
+    if ([tool mousedOverElementIndex] >= 0)
+    {
+        int row = [(NSNumber *)[notification.object objectAtIndex:1] intValue];
+        int tableIndex = [self tableIndexForVisibleTool:tool andElementIndex:row];
+        NSIndexSet *i = [[NSIndexSet alloc] initWithIndex:tableIndex];
+        [mainTableView selectRowIndexes:i byExtendingSelection:NO];
+        if (row < 0) {
+            [mainTableView deselectAll:nil];
+        }
     }
 }
 
@@ -393,6 +414,8 @@
     for(GLViewTool *otherTool in visibleTools) if(otherTool != t) [otherTool tableHoverRect:[NSNotification notificationWithName:@"" object:@(-1)]];
 }
 
+
+
 -(int)tableIndexForVisibleTool:(GLViewTool *)t andElementIndex:(int)elIndex
 {
     int offsetCount = 0;
@@ -411,7 +434,7 @@
     GLViewTool *correctTool = [[allTools allValues] objectAtIndex:0];
     int toolIndex = -1;
     int countIndex = 0;
-
+    
     for(int i = 0; i < visibleTools.count; i++)
     {
         if (tableIndex < [[visibleTools objectAtIndex:i] count]+countIndex ) {
@@ -427,14 +450,14 @@
 
 - (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
-//    if ([[aTableView selectedRowIndexes] containsIndex:rowIndex])
-//    {
-//        [aCell setBackgroundColor: [NSColor yellowColor]];
-//    }
-//    else
-//    {
-//        [aCell setBackgroundColor: [NSColor whiteColor]];
-//    }
+    //    if ([[aTableView selectedRowIndexes] containsIndex:rowIndex])
+    //    {
+    //        [aCell setBackgroundColor: [NSColor yellowColor]];
+    //    }
+    //    else
+    //    {
+    //        [aCell setBackgroundColor: [NSColor whiteColor]];
+    //    }
     [aCell setDrawsBackground:YES];
     if ([(ROTableView *)aTableView mouseOverRow] == rowIndex)
         NSLog(@"%d could be highlighted", rowIndex);
@@ -458,23 +481,23 @@
             }
         }
         
-
+        
     }
-//    for (int i = 0; i < keys.count; i++) {
-//        if (i < keys.count-1) {
-//            NSTextField *t1 = [tableViewCells objectForKey:[keys objectAtIndex:i]];
-//            NSTextField *t2 = [t1 nextKeyView];
-//            NSLog(t2.stringValue);
-//        }
-//    }
+    //    for (int i = 0; i < keys.count; i++) {
+    //        if (i < keys.count-1) {
+    //            NSTextField *t1 = [tableViewCells objectForKey:[keys objectAtIndex:i]];
+    //            NSTextField *t2 = [t1 nextKeyView];
+    //            NSLog(t2.stringValue);
+    //        }
+    //    }
 }
 
 
 - (void)dealloc
 {
-	[rulerTool release];
-	[protractorTool release];
-	[[NSNotificationCenter defaultCenter] removeObserver:self forKeyPath:@"MouseOverToolValueChanged"];
-	[super dealloc];
+    [rulerTool release];
+    [protractorTool release];
+    [[NSNotificationCenter defaultCenter] removeObserver:self forKeyPath:@"MouseOverToolValueChanged"];
+    [super dealloc];
 }
 @end

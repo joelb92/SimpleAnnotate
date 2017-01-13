@@ -49,6 +49,11 @@
 
 }
 
+-(NSArray *)getKeys
+{
+   return [super getKeys];
+}
+
 -(void)addElement:(NSRect)er color:(Color)c forKey:(NSString *)key
 {
     [self addElement:er color:c forKey:key andType:currentAnnotationType];

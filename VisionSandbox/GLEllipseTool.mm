@@ -26,6 +26,10 @@
     return self;
 }
 
+-(NSArray *)getKeys
+{
+    return [super getKeys];
+}
 
 -(void)addElement:(NSRect)er color:(Color)c forKey:(NSString *)key
 {

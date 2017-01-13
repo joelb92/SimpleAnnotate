@@ -173,19 +173,19 @@ using namespace std;
                 
                 // position_slider 0 - 100
                 double noFrame = newFrameNum;
+                double frameratio = (float)cvNumFrames/(float)numFrames;
                 
                 // solution 1
-                //            bool success = capture.set(CV_CAP_PROP_POS_FRAMES, noFrame);
+                            bool success = capture.set(CV_CAP_PROP_POS_FRAMES, noFrame*frameratio);
                 // solution 2
-                double frameRate = capture.get(CV_CAP_PROP_FPS);
-                double frameTime = 1000.0 * noFrame / frameRate;
-                bool success = capture.set(CV_CAP_PROP_POS_MSEC, frameTime);
+//                double frameRate = capture.get(CV_CAP_PROP_FPS);
+//                double frameTime = 1000.0 * noFrame / frameRate;
+//                bool success = capture.set(CV_CAP_PROP_POS_MSEC, frameTime);
                 cv::Mat frame_aux;
                 if (!success) {
                     std::cout << "Cannot set frame position from video file at " << noFrame << std::endl;
                     stillGood = false;
                 }
-                
                 currentPos = capture.get(CV_CAP_PROP_POS_FRAMES);
                 if (currentPos != noFrame) {
                 }
@@ -206,7 +206,7 @@ using namespace std;
                     NSMutableDictionary *annotations = [[NSMutableDictionary alloc] init];
                     for(NSString *k in mainGLView.mouseOverController.allTools.allKeys) [annotations setObject:[[mainGLView.mouseOverController.allTools objectForKey:k] getElements] forKey:k];
                     [annotationsForFrames setObject:annotations forKey:@(frameNum)];
-                    
+                    [framePathForFrameNum setObject:[imagePathArray objectAtIndex:newFrameNum] forKey:@(newFrameNum)];
                     if ([[annotationsForFrames allKeys] containsObject:@(newFrameNum)]) {
                         NSDictionary *annDict = [annotationsForFrames objectForKey:@(newFrameNum)];
                         for (NSString *k in annDict.allKeys) {
@@ -313,7 +313,7 @@ using namespace std;
                 
                 displayFrameNum = newFrameNum+1;
             }
-            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",displayFrameNum,finalVal]];
+            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",displayFrameNum,imagePathArray.count]];
             stillGood = true;
         }
     }
@@ -343,6 +343,8 @@ using namespace std;
                 if (!frame.empty()) {
                     OpenImageHandler *img =[[OpenImageHandler alloc] initWithCVMat:frame Color:White BinaryImage:false];
                     [frameForFrameNumber setObject:img forKey:@(frameNum)];
+                    [framePathForFrameNum setObject:[imagePathArray objectAtIndex:0] forKey:@(0)];
+
                     //                [mainGLView.mouseOverController.rectangleTool setCurrentFrame:frame];
                     
                     return true;
@@ -500,7 +502,7 @@ using namespace std;
     NSOpenPanel* openDlg = [NSOpenPanel openPanel];
     [openDlg setCanChooseFiles:YES];
     [openDlg setCanChooseDirectories:YES];
-    [openDlg setAllowsMultipleSelection:YES];
+    [openDlg setAllowsMultipleSelection:NO];
     [openDlg setPrompt:@"Open"];
     if ([openDlg runModalForDirectory:nil file:nil] == NSOKButton )
     {
@@ -577,18 +579,25 @@ using namespace std;
                         float frames = fps*totalTimeInSeconds;
                         numFrames = round(frames);
                     }
-                    else
-                        numFrames =(int)capture.get(CV_CAP_PROP_FRAME_COUNT);
+                    
+                    
                     capture.open(fileName.UTF8String);
+                    cvNumFrames =(int)capture.get(CV_CAP_PROP_FRAME_COUNT);
+
                     bool didload = false;
                     if (capture.isOpened()) {
+                        for(int i = 0; i < numFrames; i++)
+                        {
+                            [imagePathArray addObject:[currentFilePath stringByAppendingFormat:@"_frame%06d",i]];
+                        }
                         didload = [self loadNewFrame:0];
                         if(didload)
                         {
+                            [self loadNewFrame:0];
                             OpenImageHandler *img = [frameForFrameNumber objectForKey:@(0)];
                             [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
                             [mainGLView.mouseOverController.scissorTool setIm:img.Cv];
-                            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",frameNum,imagePathArray.count]];
+                            [infoOutput.frameNumLabel setStringValue:[NSString stringWithFormat:@"%i/%i",frameNum,(int)imagePathArray.count]];
                         }
                     }
                     if (!capture.isOpened() || !didload)
@@ -656,10 +665,28 @@ using namespace std;
     [self fixFiles:sender];
 }
 
+-(NSArray *)getFrameAndIDForName:(NSString *)name
+{
+    NSArray *parts = [name componentsSeparatedByString:@"_"];
+    NSString *frame;
+    NSString *gid;
+    for(NSString * part in parts)
+    {
+        if ([part hasPrefix:@"frame"])
+        {
+            frame = part;
+        }
+        if ([part hasPrefix:@"gID"]) {
+            gid = part;
+        }
+    }
+    return @[frame,gid];
+}
+
 - (IBAction)fixFiles:(id)sender
 {
     int renamedAmount = 0;
-    acceptableImageTypes = @[[NSPredicate predicateWithFormat:@"self ENDSWITH '.jpg'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.png'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.bmp'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.ppm'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.gif'"]];
+    acceptableImageTypes = @[[NSPredicate predicateWithFormat:@"self ENDSWITH '.jpg'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.png'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.bmp'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '_*'"],[NSPredicate predicateWithFormat:@"self ENDSWITH '.gif'"]];
     fixStatusLabel.stringValue = [NSString stringWithFormat:@"Loading images..."];
     NSString *imageFolder = fixImageFolderField.stringValue;
     NSString *croppedFolder = fixCropFolderField.stringValue;
@@ -689,7 +716,7 @@ using namespace std;
                     [onlyImagesFullPath addObject:fullPath];
                 }
                 onlyCrops = [[[fm contentsOfDirectoryAtPath:croppedFolder error:nil] filteredArrayUsingPredicate:f] mutableCopy];
-                
+                [onlyCrops addObjectsFromArray:[[fm contentsOfDirectoryAtPath:croppedFolder error:nil] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self BEGINSWITH 'temp'"]]];
                 for(int i = 0; i < onlyCrops.count; i++)
                 {
                     NSString *name = [onlyCrops objectAtIndex:i];
@@ -788,16 +815,16 @@ using namespace std;
                 }
                 else{
                     bruteFix = false;
-                    
+                    NSLog(@"Files to Fix: %lu",(unsigned long)onlyCropsFullPath.count);
                     foundMatches = 0;
                     fixStatusLabel.stringValue = [NSString stringWithFormat:@"Running brute force on %lu images",onlyCropsFullPath.count];
                     
-                    NSMutableDictionary *renamedFileMap = [[NSMutableDictionary alloc] init];
-                    for (int i = 0; i < onlyCropsFullPath.count; i++) {
-                        NSString *renamedName = [[[onlyCropsFullPath objectAtIndex:i] stringByDeletingLastPathComponent] stringByAppendingPathComponent:[NSString stringWithFormat:@"temp_%i",i]];
-                        [renamedFileMap setObject:renamedName forKey:[onlyCropsFullPath objectAtIndex:i]];
-                        [fm moveItemAtPath:[onlyCropsFullPath objectAtIndex:i] toPath:renamedName error:nil];
-                    }
+//                    NSMutableDictionary *renamedFileMap = [[NSMutableDictionary alloc] init];
+//                    for (int i = 0; i < onlyCropsFullPath.count; i++) {
+//                        NSString *renamedName = [[[onlyCropsFullPath objectAtIndex:i] stringByDeletingLastPathComponent] stringByAppendingPathComponent:[NSString stringWithFormat:@"temp_%i",i]];
+//                        [renamedFileMap setObject:renamedName forKey:[onlyCropsFullPath objectAtIndex:i]];
+//                        [fm moveItemAtPath:[onlyCropsFullPath objectAtIndex:i] toPath:renamedName error:nil];
+//                    }
                     
                     NSMutableIndexSet *notFixed = [[NSMutableIndexSet alloc]   init];
                     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
@@ -805,24 +832,115 @@ using namespace std;
                     {
                         
                         NSString *unchangedFilePath = [onlyCropsFullPath objectAtIndex:i];
-                        NSString *filePathToRename = [renamedFileMap objectForKey:unchangedFilePath];
+                        NSString *filePathToRename = unchangedFilePath;// [renamedFileMap objectForKey:unchangedFilePath];
                         cv::Mat templ = cv::imread(filePathToRename.UTF8String);
                         NSFileManager *fm = [NSFileManager defaultManager];
                         bool wasreplaced = false;
+                        [queue setMaxConcurrentOperationCount:12];
+                        matchvals.clear();
+                        matchvals = std::vector<double>(sceneImages.size());
+                        matchLocs  = std::vector<cv::Rect>(sceneImages.size());
                         for (int j = 0; j < sceneImages.size(); j++) {
                             NSString *fileToRenameTo =[onlyImagesFullPath objectAtIndex:j];
                             cv::Mat scene = sceneImages[j];
                             cv::Mat result;
                             if (!scene.empty() && !templ.empty()) {
-                                NSString *filePathToRename = [renamedFileMap objectForKey:unchangedFilePath];
-                                NSString *renamedFilePath = [filePathToRename.stringByDeletingLastPathComponent stringByAppendingPathComponent:[NSString stringWithFormat:@"Cropped0_%@",fileToRenameTo.lastPathComponent]];
-                                [NSThread detachNewThreadSelector:@selector(matchImg:) toTarget:self withObject:@[@(i),@(j),filePathToRename,renamedFilePath]];
+                                NSString *sceneName = [onlyImages objectAtIndex:j];
+                                NSString *cropName = [onlyCrops objectAtIndex:i];
+                                NSArray *sceneNameInfo = [self getFrameAndIDForName:sceneName];
+                                NSArray *cropNameInfo = [self getFrameAndIDForName:cropName];
+//                                if ([[sceneNameInfo objectAtIndex:0] isEqualToString:[cropNameInfo objectAtIndex:0]] and [[sceneNameInfo objectAtIndex:1] isEqualToString:[cropNameInfo objectAtIndex:1]]) {
+                                
+                                    NSString *filePathToRename = unchangedFilePath;// [renamedFileMap objectForKey:unchangedFilePath];
+                                    NSString *renamedFilePath = [filePathToRename.stringByDeletingLastPathComponent stringByAppendingPathComponent:[NSString stringWithFormat:@"Cropped0_%@",fileToRenameTo.lastPathComponent]];
+                                    NSInvocationOperation*opp = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(matchImg:) object:@[@(i),@(j),filePathToRename,renamedFilePath]];
+                                    [queue addOperation:opp];
+//                                }
+                                
+//                                [NSThread detachNewThreadSelector:@selector(matchImg:) toTarget:self withObject:];
                                 
                                 
                             }
+                    
+                        }
+                        [queue waitUntilAllOperationsAreFinished];
+                        //Here we have filled the matchvals vector, we can guess the best image match
+                        double minVal = DBL_MAX;
+                        int minIndex = -1;
+                        for(int k = 0; k < matchvals.size(); k++)
+                        {
+                            if (matchvals[k] < minVal) {
+                                minVal = matchvals[k];
+                                minIndex = k;
+                            }
+                        }
+                        if (minIndex >= 0) {
+                            NSLog(@"Found match for crop %i of %i",i,onlyCropsFullPath.count);
+                            NSString *currentPathName = filePathToRename;
+                            
+                            cv::Rect matchRect = matchLocs[minIndex];
+                            NSString *fileToRenameTo = [onlyImagesFullPath objectAtIndex:minIndex];
+                            NSString *renamedFilePath = [filePathToRename.stringByDeletingLastPathComponent stringByAppendingPathComponent:[NSString stringWithFormat:@"Cropped0_%@",fileToRenameTo.lastPathComponent]];
+                            NSString *renameToPathName = renamedFilePath;
+                            
+                            NSString *newpart = [NSString stringWithFormat:@"_x%i_y%i_w%i_h%i.png",matchRect.x,matchRect.y,matchRect.width,matchRect.height];
+                            NSString *newPath =[[renameToPathName stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"renamed"];
+                            BOOL isdir;
+                            if (![[NSFileManager defaultManager] fileExistsAtPath:newPath isDirectory:&isdir]) {
+                                [[NSFileManager defaultManager] createDirectoryAtPath:newPath withIntermediateDirectories:YES attributes:nil error:nil];
+                            }
+                            
+                            NSString *renameTo = [[[newPath stringByAppendingPathComponent:renameToPathName.lastPathComponent] stringByDeletingPathExtension] stringByAppendingString:newpart];
+                            if ([fm fileExistsAtPath:renameTo]) {
+                                NSLog(@"I might need to rename this file");
+                                renameTo = [[renameTo stringByDeletingPathExtension] stringByAppendingString:@"_2.png"];
+                                cv::Mat templ1 = templImages[i];
+                                cv::Mat templ2 = cv::imread(renameTo.UTF8String);
+                                if (templ2.rows == templ1.rows and templ2.cols == templ1.cols) {
+                                    cv::Mat result;
+                                    result = templ1-templ2;
+                                    if (cv::sum(result)[0] == 0)
+                                    {
+                                        renameTo = nil;
+                                    }
+                                    else
+                                    {
+                                        NSLog(@"Not identical!");
+                                        cv::imshow("templ", templ1);
+                                        cv::imshow("templ2", templ2);
+                                        cv::waitKey();
+                                    }
+                                }
+                                else{
+                                    NSLog(@"Not identical sizes!");
+                                    if(templ1.empty() or templ2.empty())
+                                    {
+                                        renameTo = nil;
+                                    }
+                                    else{
+                                    cv::imshow("templ", templ1);
+                                    cv::imshow("templ2", templ2);
+                                    cv::waitKey();
+                                    }
+                                }
+                                
+                                
+                            }
+                            //            NSLog(renameTo);
+                            if (renameTo) {
+                                [[NSFileManager defaultManager] copyItemAtPath:currentPathName toPath:renameTo error:nil];
+
+                            }
+
+                        }
+                        else{
+                            NSLog(@"had no min");
                         }
                         
+                        
                     }
+                    [queue waitUntilAllOperationsAreFinished];
+                    NSLog(@"done!");
                     [onlyCropsFullPath removeObjectsAtIndexes:notFixed];
                     
                     fixStatusLabel.stringValue = [NSString stringWithFormat:@"Warning: %lu cropped images could not be correctly matched.",(unsigned long)notFixed.count];
@@ -874,16 +992,19 @@ using namespace std;
 {
     int templIndex = [[args objectAtIndex:0] intValue];
     int sceneIndex = [[args objectAtIndex:1] intValue];
-    if (templatesFound[templIndex] || templatesFound[sceneIndex]) {
-        return;
-    }
     NSString *currentPathName = [args objectAtIndex:2];
     NSString *renameToPathName = [args objectAtIndex:3];
     if ([renameToPathName hasSuffix:@".png.png"]) {
         NSLog(@"stop!");
     }
+//    if (templatesFound[templIndex] || templatesFound[sceneIndex]) {
+////        [lock unlock];
+//        return;
+//    }
     cv::Mat templ = templImages[templIndex].clone();
     cv::Mat scene = sceneImages[sceneIndex].clone();
+    if(scene.cols >= templ.cols and scene.rows >= templ.rows)
+    {
     cv::Mat result;
     //    for(int x = 0; x < scene.cols-templ.cols; x++)
     //    {
@@ -894,24 +1015,44 @@ using namespace std;
     
     cv::matchTemplate(scene, templ, result, CV_TM_SQDIFF);
     //    normalize( result, result, 0, 1, cv::NORM_MINMAX, -1, cv::Mat() );
-    double minval;
-    cv::minMaxLoc(result, &minval,NULL);
-    if (minval == 0) {
-        [lock lock];
-        if (templatesFound[templIndex] || templatesFound[sceneIndex]) {
-            [lock unlock];
-            return;
-        }
-        NSLog(@"replaced!");
-        cv::resize(templ,templ,cv::Size(templ.cols*5,templ.rows*5));
+    double minVal; double maxVal; cv::Point minLoc; cv::Point maxLoc;
+    cv::Point matchLoc;
+    
+    cv::minMaxLoc( result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+    matchvals[sceneIndex] = minVal;
+    matchLocs[sceneIndex] = cv::Rect(minLoc.x,minLoc.y,templ.cols,templ.rows);
+    if (minVal < 200 && false) {
+//        if (minVal > 0)
+//        {
+//            cv::rectangle(scene, minLoc, cv::Point(minLoc.x+templ.cols,minLoc.y+templ.rows), cv::Scalar(0,0,255));
+//            imshow("template", scene);
+//            imshow("crop",templ);
+//            cv::waitKey();
+//        }
+//        if (templatesFound[templIndex] || templatesFound[sceneIndex]) {
+//            NSLog(@"already found this match");
+//        }
+//        else
+//        {
+//            [lock lock];
+//        cv::resize(templ,templ,cv::Size(templ.cols*5,templ.rows*5));
         //        cv::imshow([[NSString stringWithFormat:@"%i,%i crop",templIndex,sceneIndex] UTF8String], templ);
         //        cv::imshow([[NSString stringWithFormat:@"%i,%i scene",templIndex,sceneIndex] UTF8String], scene);
         //        cv::waitKey();
-        foundMatches++;
-        templatesFound[templIndex] = true;
-        scenesFound[sceneIndex] = true;
-        [[NSFileManager defaultManager] moveItemAtPath:currentPathName toPath:renameToPathName error:nil];
-        [lock unlock];
+//        cv::Rect matchRect(minLoc.x,minLoc.y,templ.cols,templ.rows);
+//        foundMatches++;
+//        NSLog(@"replaced %i file with max score %f",foundMatches,maxVal);
+//        templatesFound[templIndex] = true;
+//        scenesFound[sceneIndex] = true;
+        //            [[NSFileManager defaultManager] moveItemAtPath:currentPathName toPath:renameTo error:nil];
+//        [lock unlock];
+//        }
+    }
+    else
+    {
+//        NSLog(@"Minval: %f",minVal);
+//        NSLog(@"not matched!");
+    }
     }
 }
 Mat norm_0_255(InputArray _src) {
@@ -1109,7 +1250,7 @@ Mat norm_0_255(InputArray _src) {
                 NSNumber *frameKey = [sortedKeysForAnnotationsForFrames objectAtIndex:i];
                 NSString *framePath = [framePathForFrameNum objectForKey:frameKey];
                 NSDictionary *allAnnotationsForFrame = [annotationsForFrames objectForKey:frameKey];
-                cv::Mat img = cv::imread(framePath.UTF8String);
+//                cv::Mat img = cv::imread(framePath.UTF8String);
                 //Create the csv headers
                 [saveCSV appendString:[propertyKeys componentsJoinedByString:@","]];
                 [saveCSV appendString:@"\n"];
@@ -1152,27 +1293,27 @@ Mat norm_0_255(InputArray _src) {
                                     }
                                     [saveCSV appendString:@"\n"];
                                 }
-                                cv::Mat heat = cv::Mat::zeros(img.rows, img.cols, CV_8UC1);
-                                cv::imshow("img", img);
-                                cv::waitKey();
-                                cv::Mat mask = heat.clone();
-                                cv::Mat heatMap,final;
-                                for(int x = 0; x < img.cols; x++)
-                                {
-                                    for (int y = 0; y < img.rows; y++)
-                                    {
-                                        double val = cv::pointPolygonTest(cont, cv::Point(x,y), true);
-                                        if(val >= 0){
-                                            mask.at<unsigned char>(y,x) = 255;
-                                            heat.at<unsigned char>(y,x) = uchar(int(floor(val*255)));
-                                        }
-                                    }
-                                }
-                                cv::imshow("mask", mask);
-                                cv::waitKey();
-                                cv::applyColorMap(heat, heatMap, COLORMAP_JET);
-                                cv::imwrite("heatmap.jpg", heatMap);
-                                cv::imwrite("heat.jpg", heat);
+//                                cv::Mat heat = cv::Mat::zeros(img.rows, img.cols, CV_8UC1);
+//                                cv::imshow("img", img);
+//                                cv::waitKey();
+//                                cv::Mat mask = heat.clone();
+//                                cv::Mat heatMap,final;
+//                                for(int x = 0; x < img.cols; x++)
+//                                {
+//                                    for (int y = 0; y < img.rows; y++)
+//                                    {
+//                                        double val = cv::pointPolygonTest(cont, cv::Point(x,y), true);
+//                                        if(val >= 0){
+//                                            mask.at<unsigned char>(y,x) = 255;
+//                                            heat.at<unsigned char>(y,x) = uchar(int(floor(val*255)));
+//                                        }
+//                                    }
+//                                }
+//                                cv::imshow("mask", mask);
+//                                cv::waitKey();
+//                                cv::applyColorMap(heat, heatMap, COLORMAP_JET);
+//                                cv::imwrite("heatmap.jpg", heatMap);
+//                                cv::imwrite("heat.jpg", heat);
                                 
                                 
                             }
@@ -1215,8 +1356,12 @@ Mat norm_0_255(InputArray _src) {
                 [[NSFileManager defaultManager] removeItemAtPath:[saveProjectFilePath stringByAppendingPathExtension:@"saproj"] error:nil];
             }
             [fullSaveFile appendFormat:@"Frame:%i\n",frameNum];
+            if (videoMode) {
+                [fullSaveFile appendFormat:@"VideoMode"];
+            }
             [fullSaveFile writeToFile:[saveProjectFilePath stringByAppendingPathExtension:@"saproj"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
+
         NSDate *currDate = [NSDate date];
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
         [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
@@ -1234,7 +1379,7 @@ Mat norm_0_255(InputArray _src) {
     for(NSString *k in mainGLView.mouseOverController.allTools.allKeys) [annotations setObject:[[mainGLView.mouseOverController.allTools objectForKey:k] getElements] forKey:k];
     [annotationsForFrames setObject:annotations forKey:@(frameNum)]; //save current rects for current frame
     
-    NSMutableString *rectOutputLog = [@"Frame,Rectagle Key,X,Y,Width,Height,FileName\n" mutableCopy];
+    NSMutableString *rectOutputLog = [@"Frame,Rectagle Key,X,Y,Width,Height,FileName,originalFilePath\n" mutableCopy];
     NSFileManager *fm = [NSFileManager defaultManager];
     
     if (currentFilePath) {
@@ -1248,9 +1393,12 @@ Mat norm_0_255(InputArray _src) {
             [fm createDirectoryAtPath:cropFilePath withIntermediateDirectories:NO attributes:nil error:nil];
         }
         
+        NSSortDescriptor* sortOrder = [NSSortDescriptor sortDescriptorWithKey: @"self"
+                                                                    ascending: YES];
+        NSArray *sortedkeys = [annotationsForFrames.allKeys sortedArrayUsingDescriptors: [NSArray arrayWithObject: sortOrder]];
         for(int i = 0; i < annotationsForFrames.count;i++)
         {
-            NSNumber *key = [annotationsForFrames.allKeys objectAtIndex:i];
+            NSNumber *key = [sortedkeys objectAtIndex:i];
             NSDictionary *anns = [annotationsForFrames objectForKey:key];
             NSDictionary *rectangleDict = [anns objectForKey:@"rectangleTool"];
             int frameNumber = [key intValue];
@@ -1265,6 +1413,7 @@ Mat norm_0_255(InputArray _src) {
                     key = [key substringFromIndex:10];
                 }
                 OpenImageHandler *img = [frameForFrameNumber objectForKey:@(frameNumber)];
+                NSString *originaPath = [framePathForFrameNum objectForKey:@(frameNumber)];
                 cv::Mat m = img.Cv;
                 int x = r.origin.x;
                 int y = r.origin.y;
@@ -1305,7 +1454,7 @@ Mat norm_0_255(InputArray _src) {
                         }
                     }
                     
-                    [rectOutputLog appendFormat:@"%i,%@,%i,%i,%i,%i,%@\n",frameNumber,key,(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height,saveImgPath.lastPathComponent];
+                    [rectOutputLog appendFormat:@"%i,%@,%i,%i,%i,%i,%@,%@\n",frameNumber,key,(int)r.origin.x,(int)r.origin.y,(int)r.size.width,(int)r.size.height,saveImgPath.lastPathComponent,originaPath];
                     cv::imwrite(saveImgPath.UTF8String, m);
                     //                    NSLog(@"written %i,%i,%i,%i",x,y,width,height);
                 }
@@ -1401,6 +1550,13 @@ Mat norm_0_255(InputArray _src) {
         NSString *projectCSVString = [NSString stringWithContentsOfFile:projFilePath encoding:NSUTF8StringEncoding error:nil];
         NSArray *projectLines = [projectCSVString componentsSeparatedByString:@"\n"];
         if (projectLines.count > 0) {
+            if ([[projectLines lastObject] isEqualToString:@"VideoMode"]) {
+                videoMode = true;
+            }
+            else
+            {
+                videoMode = false;
+            }
             int frameCounter = 0;
             bool shouldSkipFile = false;
             bool startNewFile = false;
@@ -1505,8 +1661,38 @@ Mat norm_0_255(InputArray _src) {
                     }
                     if (i == 0)
                     {
-                        cv::Mat img = cv::imread(fileName.UTF8String);
-                        
+                        cv::Mat img;
+                        if (!videoMode) {
+                            img = cv::imread(fileName.UTF8String);
+
+                        }
+                        else{
+                            AVAsset *asset = [AVAsset assetWithURL:[[NSURL alloc] initFileURLWithPath:fileName]];
+                            NSArray *tracks = asset.tracks;
+                            
+                            
+                            if (tracks.count > 0) {
+                                AVAssetTrack *mainTrack = [tracks objectAtIndex:0];
+                                float fps = mainTrack.nominalFrameRate;
+                                CMTimeRange trackRange = mainTrack.timeRange;
+                                float totalTimeInSeconds = CMTimeGetSeconds(trackRange.duration);
+                                float frames = fps*totalTimeInSeconds;
+                                numFrames = round(frames);
+                            }
+                            
+                            if (!capture.isOpened()){
+                                NSString *vidname =[fileName substringToIndex:fileName.length-12];
+                            capture.open(vidname.UTF8String);
+                            cvNumFrames =(int)capture.get(CV_CAP_PROP_FRAME_COUNT);
+                            }
+                            
+                            bool didload = false;
+                            if (capture.isOpened()) {
+                                NSString *frameNumS = [fileName substringFromIndex:fileName.length-6];
+                                int fnum = [frameNumS intValue];
+                                img = capture.set(CV_CAP_PROP_POS_FRAMES, fnum); //needs cv equivalent fnum
+                            }
+                        }
                         if (img.empty()) {
                             NSLog(@"WARNING: could not open '%@', the file is either corrupt or non-existant",fileName);
                             img = cv::Mat::eye(500, 500, CV_8UC3);
@@ -1518,7 +1704,7 @@ Mat norm_0_255(InputArray _src) {
                     [annotationsForFrames setObject:annotationsByToolForFile forKey:@(i)];
                 }
             }
-            numFrames = allFileNames.count;
+//            numFrames = allFileNames.count;
             //            OpenImageHandler *img = [frameForFrameNumber objectForKey:@(0)];
             //            [GLViewListCommand AddObject:img ToViewKeyPath:@"MainView" ForKeyPath:@"First"];
             //            [mainGLView setMaxImageSpaceRect:vector2Rect(0,0,img.size.width,img.size.height)];
@@ -1640,7 +1826,7 @@ Mat norm_0_255(InputArray _src) {
                         
                     }
                     if (!img.empty() && img.cols > 0 && img.rows > 0) {
-                        cv::imshow("image", img);
+//                        cv::imshow("image", img);
                     }
                     
                     if (facesInImage.size() == 0) {
@@ -2328,5 +2514,155 @@ int calculateIntersectionArea(const cv::Mat& blobImg, cv::Rect contour1, cv::Rec
     cv::Scalar intersectionArea = cv::sum(intersectionMat);
     return (intersectionArea[0]);
 }
+
+-(void)generateGraphsForFolder:(NSString *)folderName
+{
+    NSArray *dirContents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:folderName error:nil];
+    for(NSString *n in dirContents)
+    {
+        BOOL isDir;
+        NSString *folderPath = [folderName stringByAppendingPathComponent:n];
+        [[NSFileManager defaultManager] fileExistsAtPath:folderPath isDirectory:&isDir];
+        if (isDir) {
+            NSString *treeFile = [folderPath stringByAppendingPathComponent:@"treeData.csv"];
+            if ([[NSFileManager defaultManager] fileExistsAtPath:treeFile]) {
+                cv::Mat treeImg = [self generateGraphForFile:treeFile];
+                if (!treeImg.empty()) {
+                    cv::imwrite([[folderPath stringByAppendingPathComponent:@"treeImage.jpg"] UTF8String], treeImg);
+                }
+            }
+        }
+    }
+}
+-(cv::Mat)generateGraphForFile:(NSString *)fileName
+{
+    NSString *directoryname = [fileName stringByDeletingLastPathComponent];
+    NSArray *dirContents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directoryname error:nil];
+    NSString *rootNodeFileName = @"";
+    for (NSString *n in dirContents)
+    {
+        if ([n hasPrefix:@"0000_root"]) {
+            rootNodeFileName = n;
+            break;
+        }
+    }
+    if (not [rootNodeFileName isEqualToString:@""]) {
+        NSString *csvFile = [NSString stringWithContentsOfFile:fileName encoding:NSUTF8StringEncoding error:nil];
+        NSArray *rows = [csvFile componentsSeparatedByString:@"\n"];
+        phyloTreeNode rootNode;
+        
+        rootNode.ID = @"root";
+        rootNode.imageFileName = rootNodeFileName;
+        rootNode.parent = NULL;
+        rootNode.parentIDString = nil;
+//        RootNode = &rootNode;
+        NSMutableArray *images;
+        std::vector<phyloTreeNode *> nodes;
+        nodes.push_back(&rootNode);
+        NSMutableDictionary *nodesForID = [[NSMutableDictionary alloc] init];
+        [nodesForID setObject:[NSValue valueWithPointer:&rootNode] forKey:@"root"];
+        
+        //Pass for initializing nodes
+        for (NSString *row in rows){
+            NSArray *parts = [row componentsSeparatedByString:@","];
+            if (parts.count > 2) {
+                NSString *commentID = parts[0];
+                NSString *parentID = parts[1];
+                phyloTreeNode n;
+                n.ID = commentID;
+                n.parentIDString = parentID;
+                n.imageFileName =parts[2];
+                nodes.push_back(&n);
+                [nodesForID setObject:[NSValue valueWithPointer:nodes[nodes.size()-1]] forKey:commentID];
+            }
+        }
+        //Pass for connecting parent pointers
+        
+        for (int i = 0; i < nodes.size(); i++)
+        {
+            phyloTreeNode *n = nodes[i];
+            if ([nodesForID.allKeys containsObject:n->parentIDString]) {
+                phyloTreeNode *parentNode = (phyloTreeNode *)[[nodesForID objectForKey:n->parentIDString] pointerValue];
+                n->parent = parentNode;
+                parentNode->childrenIDs.push_back(n);
+            }
+        }
+        //Pass for discovering layer depth
+        int maxLayer = 0;
+        for (int i = 0; i < nodes.size(); i++) {
+            phyloTreeNode *n = nodes[i];
+            int layerCount = 0;
+            while (n != NULL) {
+                n = n->parent;
+                layerCount++;
+            }
+            if (layerCount > maxLayer) {
+                maxLayer = layerCount;
+            }
+            nodes[i]->layer = layerCount;
+        }
+        std::vector<std::vector<phyloTreeNode *> > treeLevels;
+        for(int i =0; i <= maxLayer; i++){std::vector<phyloTreeNode *> v; treeLevels.push_back(v);};
+        int maxLayerWidth = 0;
+        //Pass for assigning nodes at layers
+        for(int i =0; i < nodes.size(); i++)
+        {
+            int layer = nodes[i]->layer;
+            treeLevels[layer].push_back(nodes[i]);
+            if (treeLevels[layer].size() > maxLayerWidth) {
+                maxLayerWidth = treeLevels[layer].size();
+            }
+        }
+        //Pass for determining nodes at locations
+        cv::Mat treeCanvas;
+        int layerWidth =40;
+        int layerHeight = 80;
+        NSMutableDictionary *pointsForID = [[NSMutableDictionary alloc] init];
+        treeCanvas = cv::Mat::zeros(layerHeight*maxLayer+2*layerHeight,layerWidth*maxLayerWidth+2*layerWidth, CV_8UC3);
+        
+        for(int i = treeLevels.size()-1; i >= 0 ; i--)
+        {
+            std::vector<phyloTreeNode *>layer = treeLevels[i];
+            if (layer.size() > 0) {
+                int thisLayerWidth = layer.size()*layerWidth;
+                int layerCenter = treeCanvas.cols/2-thisLayerWidth/2;
+                int yVal = i*layerHeight+layerHeight;
+                for(int j = 0; j < layer.size(); j++)
+                {
+                    if(j == 54)
+                        NSLog(@"");
+                    cv::Point location(j*layerWidth+layerWidth,yVal);
+                    [pointsForID setObject:[NSValue valueWithPoint:NSMakePoint(location.x, location.y)] forKey:treeLevels[i][j]->ID];
+                    treeLevels[i][j]->pointInSpace = cv::Point(location.x,location.y);
+                    NSLog(@"x: %@",[pointsForID objectForKey:treeLevels[i][j]->ID]);
+                }
+            }
+            
+        }
+        //pass to draw the edges
+        for(int i = 0; i < nodes.size(); i++)
+        {
+            phyloTreeNode *node = nodes[i];
+            if(node->parent != NULL)
+            {
+                NSPoint p1 = [[pointsForID objectForKey:node->ID] pointValue];
+                NSPoint p2 = [[pointsForID objectForKey:node->parent->ID] pointValue];
+                cv::line(treeCanvas, cv::Point(p1.x,p1.y), cv::Point(p2.x,p2.y), cv::Scalar(255,255,0));
+            }
+        }
+        //pass to draw the edges
+        for(int i = 0; i < nodes.size(); i++)
+        {
+            phyloTreeNode *node = nodes[i];
+//            NSLog(@"x: %i y: %i",node->pointInSpace.x,node->pointInSpace.y);
+            NSPoint p1 = [[pointsForID objectForKey:node->ID] pointValue];
+            cv::circle(treeCanvas, cv::Point(p1.x,p1.y), 20, cv::Scalar(255,0,0));
+        }
+        return treeCanvas;
+    }
+    return cv::Mat();
+}
+
+
 
 @end

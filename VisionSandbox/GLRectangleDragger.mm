@@ -30,6 +30,11 @@
     return self;
 }
 
+-(NSArray *)getKeys
+{
+    return [super getKeys];
+}
+
 -(void)addElement:(NSRect)r color:(Color)c forKey:(NSString *)key
 {
     [self addElement:r color:c forKey:key andType:currentAnnotationType];
@@ -341,6 +346,7 @@
     {
         mousedOverLineIndex = -1;
     }
+//    NSLog(@"mousedoverelementindex: %i",mousedOverElementIndex);
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectionChanged" object:@[self,@(mousedOverElementIndex)]];
     
     

@@ -14,6 +14,9 @@
             <PersistentString
                value = "frameNumbers">
             </PersistentString>
+            <PersistentString
+               value = "renameTo">
+            </PersistentString>
          </PersistentStrings>
       </ContextState>
       <ContextState
@@ -25,10 +28,32 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "-[AppDelegate loadProjectFile:]:AppDelegate.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "currentFilePath">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "-[GLRectangleDragger reOrderRectangle:]:GLRectangleDragger.mm">
       </ContextState>
       <ContextState
          contextName = "-[AppDelegate NextFrame:]:AppDelegate.mm">
+      </ContextState>
+      <ContextState
+         contextName = "-[AppDelegate GoToFrame:]:AppDelegate.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "frameRate">
+            </PersistentString>
+            <PersistentString
+               value = "frameForFrameNumber">
+            </PersistentString>
+            <PersistentString
+               value = "currentPos">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "-[GLRectangleDragger getRects]:GLRectangleDragger.mm">
@@ -41,14 +66,6 @@
             </PersistentString>
             <PersistentString
                value = "points[i+2]">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "-[AppDelegate GoToFrame:]:AppDelegate.mm">
-         <PersistentStrings>
-            <PersistentString
-               value = "frameForFrameNumber">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

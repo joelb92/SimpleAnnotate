@@ -28,6 +28,20 @@
 #include "Tooltip.h"
 #include "Landmarker_zhuramanan.h"
 #include "Model3D.h"
+#import <Quartz/Quartz.h>
+#import "ImageAnnotationView.h"
+struct phyloTreeNode
+{
+    NSString *ID;
+    NSString *parentIDString;
+    phyloTreeNode *parent;
+    std::vector<phyloTreeNode *>childrenIDs;
+    NSString *imageFileName;
+    NSImage *theImage;
+    cv::Point pointInSpace;
+    int layer;
+};
+
 @interface AppDelegate : NSObject <NSApplicationDelegate,NSTextFieldDelegate>
 {
 	IBOutlet GLOutlineViewController *mainGLOutlineView;
@@ -63,8 +77,8 @@
     IBOutlet NSTextField *numImagesPerFaceField;
 
     IBOutlet NSButton *extractOnlyLandmarksChecdkbox;
-
-
+    IBOutlet NSImageView *testView;
+    IBOutlet ImageAnnotationView *testImageview;
     
     NSArray *acceptableImageTypes;
     GLViewList *viewList;
@@ -81,6 +95,8 @@
     NSMutableArray *imagePathArray;
     int foundMatches;
     std::vector<cv::Mat> sceneImages,templImages;
+    std::vector<double> matchvals;
+    std::vector<cv::Rect>matchLocs;
     NSIndexSet *matchedTemplates;
     NSIndexSet *matchedScenes;
     std::vector<bool> templatesFound,scenesFound;
@@ -89,6 +105,7 @@
     NSMutableDictionary *trackers;
     NSMutableDictionary *isSubFaceImage;
     int numFrames;
+    int cvNumFrames;
     NSString *saveProjectFilePath;
     NSString *saveProjectFileDir;
     bool separateFaces;

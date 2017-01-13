@@ -71,7 +71,7 @@
     NSImage *linkImg;
     NSImage *unlinkImg;
     bool commandIsHeld;
-
+    bool comboDismissed;
 }
 @property (assign) GLRectangleDragger *rectangleTool;
 @property (assign) NSTextField *RectKey;

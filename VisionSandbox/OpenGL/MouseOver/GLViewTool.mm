@@ -72,6 +72,7 @@
 
 -(void)setCurrentElementType:(NSString *) type;
 {
+    NSLog(@"!");
     if(mousedOverElementIndex >= 0 && mousedOverElementIndex < elementTypes.count){
         [elementTypes replaceObjectAtIndex:mousedOverElementIndex withObject:type];
     }
